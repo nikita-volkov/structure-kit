@@ -5,10 +5,11 @@ module StructureKit.Hamt
   findMapping,
   findAndReplace,
   revision,
+  delete,
 )
 where
 
-import StructureKit.Prelude hiding (empty)
+import StructureKit.Prelude hiding (empty, delete)
 import Data.Primitive.SmallArray (SmallArray)
 import qualified StructureKit.By30Bits as By30Bits
 import qualified PrimitiveExtras.SmallArray as SmallArray
@@ -41,5 +42,15 @@ revision hash select onMissing onPresent (Hamt trie) =
   By30Bits.revisionAt hash
     (fmap (fmap pure) onMissing)
     (SmallArray.detectAndRevision select onMissing onPresent)
+    trie
+    & fmap coerce
+
+delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
+delete hash select (Hamt trie) =
+  By30Bits.revisionAt hash
+    (Nothing, Nothing)
+    (SmallArray.detectAndRevision select
+      (Nothing, Nothing)
+      (\b -> (Just b, Nothing)))
     trie
     & fmap coerce
