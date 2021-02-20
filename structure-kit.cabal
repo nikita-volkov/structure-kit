@@ -28,8 +28,8 @@ library
     StructureKit.ByteArrayMap
     StructureKit.ByteArrayCache
     StructureKit.Hamt
-    StructureKit.HashCache
     StructureKit.KeyRegistry
+    StructureKit.LookupOrderedHashMap
   other-modules:
     StructureKit.Prelude
     StructureKit.ByteArrayCacheEntry

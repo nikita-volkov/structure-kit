@@ -4,7 +4,7 @@ Map indexed by 30 bits.
 module StructureKit.By30Bits
 (
   By30Bits,
-  init,
+  empty,
   lookup,
   adjust,
   mapAt,
@@ -13,7 +13,7 @@ module StructureKit.By30Bits
 )
 where
 
-import StructureKit.Prelude hiding (init, lookup, adjust)
+import StructureKit.Prelude hiding (empty, lookup, adjust)
 import PrimitiveExtras.By6Bits (By6Bits)
 import qualified PrimitiveExtras.By6Bits as By6Bits
 import qualified StructureKit.TrieBitMasks as TrieBitMasks
@@ -22,8 +22,8 @@ import qualified StructureKit.TrieBitMasks as TrieBitMasks
 newtype By30Bits a =
   By30Bits (By6Bits (By6Bits (By6Bits (By6Bits (By6Bits a)))))
 
-init :: By30Bits a
-init =
+empty :: By30Bits a
+empty =
   By30Bits By6Bits.empty
 
 {-|
@@ -75,7 +75,7 @@ revisionAt key onAbsent onPresent (By30Bits trie) =
 dive :: Int -> Maybe a -> (a -> Maybe a) -> By30Bits a -> (Maybe a, By30Bits a)
 dive key onAbsent onPresent model =
   revisionAt key (Nothing, onAbsent) (\a -> (Just a, onPresent a)) model
-    & second (fromMaybe init)
+    & second (fromMaybe empty)
 
 singletonTreeAtLevel1 key =
   By6Bits.singleton (TrieBitMasks.level1 key) .
