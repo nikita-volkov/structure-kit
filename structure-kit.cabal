@@ -28,6 +28,7 @@ library
     StructureKit.ByteArrayMap
     StructureKit.ByteArrayCache
     StructureKit.Hamt
+    StructureKit.LruHashCache
     StructureKit.KeyRegistry
     StructureKit.LookupOrderedHashMap
   other-modules:
