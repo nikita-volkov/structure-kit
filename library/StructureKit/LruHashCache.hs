@@ -17,4 +17,4 @@ data LruHashCache k v =
 
 lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> (Maybe v, LruHashCache k v)
 lookup key (LruHashCache size map) =
-  error "TODO"
+  TouchOrderedHashMap.lookup key map & second (LruHashCache size)
