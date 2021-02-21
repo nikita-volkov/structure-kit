@@ -2,11 +2,12 @@ module StructureKit.TouchOrderedHashMap
 (
   TouchOrderedHashMap,
   lookup,
+  insert,
   evict,
 )
 where
 
-import StructureKit.Prelude hiding (lookup)
+import StructureKit.Prelude hiding (lookup, insert)
 import qualified StructureKit.Hamt as Hamt
 import qualified Deque.Strict as Deque
 
@@ -38,6 +39,25 @@ lookup key (TouchOrderedHashMap deque trie) =
         ,
         Just (Entry (succ count) entryKey value)
         )
+
+insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Bool, TouchOrderedHashMap k v)
+insert key value (TouchOrderedHashMap deque trie) =
+  revisionHamtFinalizing key miss update trie
+  where
+    miss =
+      (finalizer, decision)
+      where
+        finalizer trie =
+          (True, TouchOrderedHashMap (Deque.snoc key deque) trie)
+        decision =
+          Just (Entry 1 key value)
+    update (Entry count _ _) =
+      (finalizer, decision)
+      where
+        finalizer trie =
+          (False, TouchOrderedHashMap (Deque.snoc key deque) trie)
+        decision =
+          Just (Entry (succ count) key value)
 
 {-|
 Evict one entry from the map.
@@ -84,3 +104,13 @@ revisionHamt :: (Functor f, Hashable k, Eq k) =>
   Hamt.Hamt (Entry k v) -> f (Maybe (Hamt.Hamt (Entry k v)))
 revisionHamt key =
   Hamt.revision (hash key) (selectEntry key)
+
+revisionHamtFinalizing :: (Hashable k, Eq k) =>
+  k ->
+  (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v)) ->
+  (Entry k v -> (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v))) ->
+  Hamt.Hamt (Entry k v) ->
+  a
+revisionHamtFinalizing key miss update trie =
+  revisionHamt key miss update trie
+    & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
