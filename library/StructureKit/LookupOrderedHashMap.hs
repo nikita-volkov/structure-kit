@@ -18,8 +18,7 @@ data LookupOrderedHashMap k v =
 
 data Entry k v =
   PresentEntry
-    {-| Amount of instances in deque. -}
-    Int
+    Int {-^ Amount of instances in deque. -}
     k v
   |
   MissingEntry Int k
