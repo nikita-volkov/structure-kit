@@ -1,6 +1,6 @@
-module StructureKit.LookupOrderedHashMap
+module StructureKit.TouchOrderedHashMap
 (
-  LookupOrderedHashMap,
+  TouchOrderedHashMap,
   lookup,
   evict,
 )
@@ -11,8 +11,8 @@ import qualified StructureKit.Hamt as Hamt
 import qualified Deque.Strict as Deque
 
 
-data LookupOrderedHashMap k v =
-  LookupOrderedHashMap
+data TouchOrderedHashMap k v =
+  TouchOrderedHashMap
     (Deque k)
     (Hamt.Hamt (Entry k v))
 
@@ -21,20 +21,20 @@ data Entry k v =
     Int {-^ Amount of instances in deque. -}
     k v
 
-lookup :: (Hashable k, Eq k) => k -> LookupOrderedHashMap k v -> (Maybe v, LookupOrderedHashMap k v)
-lookup key (LookupOrderedHashMap deque trie) =
+lookup :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
+lookup key (TouchOrderedHashMap deque trie) =
   revisionHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
   where
     miss =
       (
-        \trie -> (Nothing, LookupOrderedHashMap deque trie)
+        \trie -> (Nothing, TouchOrderedHashMap deque trie)
         ,
         Nothing
         )
     update (Entry count entryKey value) =
       (
-        \trie -> (Just value, LookupOrderedHashMap (Deque.snoc entryKey deque) trie)
+        \trie -> (Just value, TouchOrderedHashMap (Deque.snoc entryKey deque) trie)
         ,
         Just (Entry (succ count) entryKey value)
         )
@@ -42,8 +42,8 @@ lookup key (LookupOrderedHashMap deque trie) =
 {-|
 Evict one entry from the map.
 -}
-evict :: (Hashable k, Eq k) => LookupOrderedHashMap k v -> (Maybe (k, v), LookupOrderedHashMap k v)
-evict (LookupOrderedHashMap deque trie) =
+evict :: (Hashable k, Eq k) => TouchOrderedHashMap k v -> (Maybe (k, v), TouchOrderedHashMap k v)
+evict (TouchOrderedHashMap deque trie) =
   iterate deque trie
   where
     iterate deque trie =
@@ -59,13 +59,13 @@ evict (LookupOrderedHashMap deque trie) =
                 Entry count entryKey value ->
                   if count == 1
                     then
-                      (\trie -> (Just (entryKey, value), LookupOrderedHashMap nextDeque trie),
+                      (\trie -> (Just (entryKey, value), TouchOrderedHashMap nextDeque trie),
                         Nothing)
                     else
                       (iterate nextDeque,
                         Just (Entry (pred count) entryKey value))
         Nothing ->
-          (Nothing, LookupOrderedHashMap deque trie)
+          (Nothing, TouchOrderedHashMap deque trie)
 
 entryKey :: Entry k v -> k
 entryKey =

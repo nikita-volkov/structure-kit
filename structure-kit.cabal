@@ -30,7 +30,7 @@ library
     StructureKit.Hamt
     StructureKit.LruHashCache
     StructureKit.KeyRegistry
-    StructureKit.LookupOrderedHashMap
+    StructureKit.TouchOrderedHashMap
   other-modules:
     StructureKit.Prelude
     StructureKit.ByteArrayCacheEntry
