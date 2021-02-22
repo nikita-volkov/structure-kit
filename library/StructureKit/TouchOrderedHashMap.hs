@@ -1,13 +1,14 @@
 module StructureKit.TouchOrderedHashMap
 (
   TouchOrderedHashMap,
+  empty,
   lookup,
   insert,
   evict,
 )
 where
 
-import StructureKit.Prelude hiding (lookup, insert)
+import StructureKit.Prelude hiding (lookup, insert, empty)
 import qualified StructureKit.Hamt as Hamt
 import qualified Deque.Strict as Deque
 
@@ -21,6 +22,10 @@ data Entry k v =
   Entry
     Int {-^ Amount of instances in deque. -}
     k v
+
+empty :: TouchOrderedHashMap k v
+empty =
+  TouchOrderedHashMap mempty Hamt.empty
 
 lookup :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
 lookup key (TouchOrderedHashMap deque trie) =
