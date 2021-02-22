@@ -10,18 +10,14 @@ where
 
 import StructureKit.Prelude hiding (lookup, insert, empty)
 import qualified StructureKit.Hamt as Hamt
+import qualified StructureKit.LookupOrderedHashMapEntry as Entry
 import qualified Deque.Strict as Deque
 
 
 data LookupOrderedHashMap k v =
   LookupOrderedHashMap
     (Deque k)
-    (Hamt.Hamt (Entry k v))
-
-data Entry k v =
-  MissingEntry Int k
-  |
-  PresentEntry Int k v
+    (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v))
 
 empty :: LookupOrderedHashMap k v
 empty =
@@ -33,53 +29,24 @@ lookup key (LookupOrderedHashMap deque trie) =
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
   where
     miss =
-      (
-        \trie -> (Nothing, LookupOrderedHashMap (Deque.snoc key deque) trie)
-        ,
-        Just (MissingEntry 1 key)
-        )
+      (\trie -> (Nothing, LookupOrderedHashMap (Deque.snoc key deque) trie),
+        Just (Entry.missing key))
     update =
-      \case
-        PresentEntry count entryKey value ->
-          (
-            \trie -> (Just value, LookupOrderedHashMap (Deque.snoc entryKey deque) trie)
-            ,
-            Just (PresentEntry (succ count) entryKey value)
-            )
-        MissingEntry count entryKey ->
-          (
-            \trie -> (Nothing, LookupOrderedHashMap (Deque.snoc entryKey deque) trie)
-            ,
-            Just (MissingEntry (succ count) entryKey)
-            )
+      Entry.inc >>> \(valuePresent, newEntry) ->
+        (\trie -> (valuePresent, LookupOrderedHashMap (Deque.snoc key deque) trie),
+          Just newEntry)
 
 insert :: (Hashable k, Eq k) => k -> v -> LookupOrderedHashMap k v -> (Maybe v, LookupOrderedHashMap k v)
 insert key value (LookupOrderedHashMap deque trie) =
   revisionHamtFinalizing key miss update trie
   where
     miss =
-      (finalizer, decision)
-      where
-        finalizer trie =
-          (Nothing, LookupOrderedHashMap deque trie)
-        decision =
-          Just (PresentEntry 0 key value)
+      (\trie -> (Nothing, LookupOrderedHashMap deque trie),
+        Just (Entry.present key value))
     update =
-      \case
-        PresentEntry count _ entryValue ->
-          (finalizer, decision)
-          where
-            finalizer trie =
-              (Just entryValue, LookupOrderedHashMap deque trie)
-            decision =
-              Just (PresentEntry (succ count) key value)
-        MissingEntry count _ ->
-          (finalizer, decision)
-          where
-            finalizer trie =
-              (Nothing, LookupOrderedHashMap deque trie)
-            decision =
-              Just (PresentEntry (succ count) key value)
+      Entry.insert value >>> \(valuePresent, newEntry) ->
+        (\trie -> (valuePresent, LookupOrderedHashMap deque trie),
+          Just newEntry)
 
 {-|
 Evict one entry from the map.
@@ -94,51 +61,25 @@ evict (LookupOrderedHashMap deque trie) =
         miss =
           (\trie -> (Just Nothing, LookupOrderedHashMap nextDeque trie),
             Nothing)
-        update =
-          \case
-            PresentEntry count entryKey value ->
-              if count == 0
-                then
-                  (\trie -> (Just (Just (entryKey, value)), LookupOrderedHashMap nextDeque trie),
-                    Nothing)
-                else
-                  (\trie -> (Just Nothing, LookupOrderedHashMap nextDeque trie),
-                    Just (PresentEntry (pred count) entryKey value))
-            MissingEntry count entryKey ->
-              if count == 0
-                then
-                  (\trie -> (Just Nothing, LookupOrderedHashMap nextDeque trie),
-                    Nothing)
-                else
-                  (\trie -> (Just Nothing, LookupOrderedHashMap nextDeque trie),
-                    Just (MissingEntry (pred count) entryKey))
+        update entry =
+          Entry.dec entry & \(valueMaybe, entryMaybe) ->
+            (\trie -> (Just (fmap (key,) valueMaybe), LookupOrderedHashMap nextDeque trie),
+              entryMaybe)
     Nothing ->
       (Nothing, LookupOrderedHashMap deque trie)
 
-entryKey :: Entry k v -> k
-entryKey =
-  \case
-    MissingEntry count entryKey -> entryKey
-    PresentEntry count entryKey value -> entryKey
-
-selectEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
-selectEntry key entry =
-  if entryKey entry == key
-    then Just entry
-    else Nothing
-
 revisionHamt :: (Functor f, Hashable k, Eq k) =>
   k ->
-  f (Maybe (Entry k v)) -> (Entry k v -> f (Maybe (Entry k v))) ->
-  Hamt.Hamt (Entry k v) -> f (Maybe (Hamt.Hamt (Entry k v)))
+  f (Maybe (Entry.LookupOrderedHashMapEntry k v)) -> (Entry.LookupOrderedHashMapEntry k v -> f (Maybe (Entry.LookupOrderedHashMapEntry k v))) ->
+  Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> f (Maybe (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v)))
 revisionHamt key =
-  Hamt.revision (hash key) (selectEntry key)
+  Hamt.revision (hash key) (Entry.select key)
 
 revisionHamtFinalizing :: (Hashable k, Eq k) =>
   k ->
-  (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v)) ->
-  (Entry k v -> (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v))) ->
-  Hamt.Hamt (Entry k v) ->
+  (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> a, Maybe (Entry.LookupOrderedHashMapEntry k v)) ->
+  (Entry.LookupOrderedHashMapEntry k v -> (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> a, Maybe (Entry.LookupOrderedHashMapEntry k v))) ->
+  Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) ->
   a
 revisionHamtFinalizing key miss update trie =
   revisionHamt key miss update trie

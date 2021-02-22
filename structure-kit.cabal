@@ -37,6 +37,7 @@ library
     StructureKit.TouchOrderedHashMap
   other-modules:
     StructureKit.ByteArrayCacheEntry
+    StructureKit.LookupOrderedHashMapEntry
     StructureKit.Prelude
     StructureKit.TrieBitMasks
   build-depends:
