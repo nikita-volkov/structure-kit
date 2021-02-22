@@ -29,6 +29,7 @@ library
     StructureKit.ByteArrayMap
     StructureKit.Hamt
     StructureKit.KeyRegistry
+    StructureKit.LookupOrderedHashMap
     StructureKit.LruHashCache
     StructureKit.TouchOrderedHashMap
   other-modules:
