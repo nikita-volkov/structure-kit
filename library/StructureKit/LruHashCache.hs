@@ -34,14 +34,14 @@ lookup key (LruHashCache occupied avail map) =
 
 insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
 insert key value (LruHashCache occupied avail map) =
-  TouchOrderedHashMap.insert key value map & \(new, map) ->
-    case new of
-      True ->
+  TouchOrderedHashMap.insert key value map & \(valueReplaced, map) ->
+    case valueReplaced of
+      Just _ ->
         case avail > 0 of
           True ->
             (Nothing, LruHashCache (succ occupied) (pred avail) map)
           False ->
             TouchOrderedHashMap.evict map
               & second (LruHashCache occupied avail)
-      False ->
+      Nothing ->
         (Nothing, LruHashCache occupied avail map)

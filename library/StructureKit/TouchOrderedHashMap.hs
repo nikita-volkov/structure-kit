@@ -46,7 +46,7 @@ lookup key (TouchOrderedHashMap deque trie) =
         Just (Entry (succ count) entryKey value)
         )
 
-insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Bool, TouchOrderedHashMap k v)
+insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
 insert key value (TouchOrderedHashMap deque trie) =
   revisionHamtFinalizing key miss update trie
   where
@@ -54,14 +54,14 @@ insert key value (TouchOrderedHashMap deque trie) =
       (finalizer, decision)
       where
         finalizer trie =
-          (True, TouchOrderedHashMap (Deque.snoc key deque) trie)
+          (Nothing, TouchOrderedHashMap (Deque.snoc key deque) trie)
         decision =
           Just (Entry 1 key value)
-    update (Entry count _ _) =
+    update (Entry count _ entryValue) =
       (finalizer, decision)
       where
         finalizer trie =
-          (False, TouchOrderedHashMap (Deque.snoc key deque) trie)
+          (Just entryValue, TouchOrderedHashMap (Deque.snoc key deque) trie)
         decision =
           Just (Entry (succ count) key value)
 
