@@ -1,4 +1,7 @@
 module StructureKit.ByteArrayCache
+(
+  ByteArrayCache,
+)
 where
 
 import StructureKit.Prelude

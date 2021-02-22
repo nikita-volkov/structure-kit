@@ -1,4 +1,10 @@
 module StructureKit.ByteArrayMap
+(
+  ByteArrayMap,
+  here,
+  mapAt,
+  consumeLongestPrefix,
+)
 where
 
 import StructureKit.Prelude
