@@ -22,18 +22,18 @@ library
   ghc-options:
     -funbox-strict-fields
   exposed-modules:
-    StructureKit.By8Bits
     StructureKit.By18Bits
     StructureKit.By30Bits
-    StructureKit.ByteArrayMap
+    StructureKit.By8Bits
     StructureKit.ByteArrayCache
+    StructureKit.ByteArrayMap
     StructureKit.Hamt
-    StructureKit.LruHashCache
     StructureKit.KeyRegistry
+    StructureKit.LruHashCache
     StructureKit.TouchOrderedHashMap
   other-modules:
-    StructureKit.Prelude
     StructureKit.ByteArrayCacheEntry
+    StructureKit.Prelude
     StructureKit.TrieBitMasks
   build-depends:
     base >=4.11 && <5,
