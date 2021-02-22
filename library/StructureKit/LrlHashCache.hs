@@ -23,14 +23,23 @@ data LrlHashCache k v =
     (LookupOrderedHashMap.LookupOrderedHashMap k v)
 
 empty ::
-  {-| Maximum amount of entries to store at one moment.
-      After it\'s reached the least recently used entry will
-      be discarded on each insert. -}
+  {-| Maximum amount of latest lookups to keep the track of.
+      After it\'s reached the entries that were looked up least recently
+      get deleted.
+
+      Transitively determines the maximum amount of cached values. -}
   Int ->
   LrlHashCache k v
 empty avail =
   LrlHashCache 0 avail LookupOrderedHashMap.empty
 
+{-|
+Find a value by key,
+updating the state of least recent lookups.
+
+Returns the possibly found value paired
+with the possibly evicted entry.
+-}
 lookup :: (Hashable k, Eq k) => k -> LrlHashCache k v -> ((Maybe v, Maybe (k, v)), LrlHashCache k v)
 lookup key (LrlHashCache occupied avail map) =
   LookupOrderedHashMap.lookup key map & \(valueFound, map) ->
