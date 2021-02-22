@@ -22,8 +22,10 @@ library
   ghc-options:
     -funbox-strict-fields
   exposed-modules:
+    StructureKit.Bits64
     StructureKit.By18Bits
     StructureKit.By30Bits
+    StructureKit.By6Bits
     StructureKit.By8Bits
     StructureKit.ByteArrayCache
     StructureKit.ByteArrayMap

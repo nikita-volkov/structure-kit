@@ -116,6 +116,11 @@ import DeferredFolds.Unfoldr as Exports (Unfoldr)
 -------------------------
 import Data.Hashable as Exports (Hashable(hash, hashWithSalt))
 
+-- primitive
+-------------------------
+import Data.Primitive as Exports hiding (sizeOf, alignment)
+import Control.Monad.Primitive as Exports
+
 
 mapCoercible :: Coercible a b => (a -> a) -> b -> b
 mapCoercible mapper =
