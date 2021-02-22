@@ -1,7 +1,13 @@
 module StructureKit.By8Bits
+(
+  By8Bits,
+  empty,
+  lookup,
+  insert,
+)
 where
 
-import StructureKit.Prelude
+import StructureKit.Prelude hiding (empty, lookup, insert)
 import qualified StructureKit.By6Bits as By6Bits
 
 
@@ -10,6 +16,10 @@ Map indexed with 8 bits.
 -}
 data By8Bits a =
   By8Bits (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
+
+empty :: By8Bits a
+empty =
+  By8Bits By6Bits.empty By6Bits.empty By6Bits.empty By6Bits.empty
 
 lookup :: Int -> By8Bits a -> Maybe a
 lookup key (By8Bits a b c d) =
