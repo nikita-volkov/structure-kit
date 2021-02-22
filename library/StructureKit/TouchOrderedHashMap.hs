@@ -4,6 +4,7 @@ module StructureKit.TouchOrderedHashMap
   empty,
   lookup,
   insert,
+  revision,
   evict,
 )
 where
@@ -63,6 +64,39 @@ insert key value (TouchOrderedHashMap deque trie) =
           (False, TouchOrderedHashMap (Deque.snoc key deque) trie)
         decision =
           Just (Entry (succ count) key value)
+
+revision :: (Hashable k, Eq k, Functor f) => k -> f (Maybe v) -> (v -> f (Maybe v)) -> TouchOrderedHashMap k v -> f (Maybe (TouchOrderedHashMap k v))
+revision key miss update (TouchOrderedHashMap deque hamt) =
+  revisionHamt key 
+    (Compose (fmap
+      (\case
+        Just value ->
+          (Deque.snoc key, Just (Entry 1 key value))
+        Nothing ->
+          (id, Nothing))
+      miss))
+    (\(Entry count _ oldValue) -> Compose (fmap
+      (\case
+        Just value ->
+          (Deque.snoc key, Just (Entry (succ count) key value))
+        Nothing ->
+          (
+            error "TODO: Delete all occurences of key in deque"
+            ,
+            Nothing
+            ))
+      (update oldValue)))
+    hamt
+    & \(Compose f) ->
+        fmap
+          (\(dequeMapper, hamtMaybe) ->
+            fmap
+              (TouchOrderedHashMap (dequeMapper deque))
+              hamtMaybe)
+          f
+  where
+    updateEntry =
+      error "TODO"
 
 {-|
 Evict one entry from the map.
