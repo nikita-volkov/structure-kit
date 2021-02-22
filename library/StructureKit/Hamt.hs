@@ -29,7 +29,7 @@ findMapping hash cont (Hamt trie) =
 
 findAndReplace :: Int -> (a -> Maybe a) -> Hamt a -> (Maybe a, Hamt a)
 findAndReplace hash cont (Hamt trie) =
-  By30Bits.revisionAt hash
+  By30Bits.revision hash
     (Nothing, Nothing)
     (\array ->
       SmallArray.findAndReplace cont array
@@ -39,7 +39,7 @@ findAndReplace hash cont (Hamt trie) =
 
 revision :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
 revision hash select onMissing onPresent (Hamt trie) =
-  By30Bits.revisionAt hash
+  By30Bits.revision hash
     (fmap (fmap pure) onMissing)
     (SmallArray.detectAndRevision select onMissing onPresent)
     trie
@@ -47,7 +47,7 @@ revision hash select onMissing onPresent (Hamt trie) =
 
 delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash select (Hamt trie) =
-  By30Bits.revisionAt hash
+  By30Bits.revision hash
     (Nothing, Nothing)
     (SmallArray.detectAndRevision select
       (Nothing, Nothing)

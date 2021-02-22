@@ -8,7 +8,7 @@ module StructureKit.By30Bits
   lookup,
   adjust,
   mapAt,
-  revisionAt,
+  revision,
   dive,
 )
 where
@@ -51,8 +51,8 @@ mapAt :: Int -> (a -> a) -> By30Bits a -> By30Bits a
 mapAt key cont =
   adjust cont key
 
-revisionAt :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By30Bits a -> f (Maybe (By30Bits a))
-revisionAt key onAbsent onPresent (By30Bits trie) =
+revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By30Bits a -> f (Maybe (By30Bits a))
+revision key onAbsent onPresent (By30Bits trie) =
   By6Bits.revision
     (onAbsent & fmap (fmap (singletonTreeAtLevel2 key)))
     (By6Bits.revision
@@ -74,7 +74,7 @@ revisionAt key onAbsent onPresent (By30Bits trie) =
 
 dive :: Int -> Maybe a -> (a -> Maybe a) -> By30Bits a -> (Maybe a, By30Bits a)
 dive key onAbsent onPresent model =
-  revisionAt key (Nothing, onAbsent) (\a -> (Just a, onPresent a)) model
+  revision key (Nothing, onAbsent) (\a -> (Just a, onPresent a)) model
     & second (fromMaybe empty)
 
 singletonTreeAtLevel1 key =
