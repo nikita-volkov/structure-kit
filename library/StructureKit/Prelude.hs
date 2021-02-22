@@ -3,6 +3,7 @@ module StructureKit.Prelude
   module Exports,
   mapCoercible,
   mapCoercible2,
+  traverseCoercible,
 )
 where
 
@@ -124,3 +125,6 @@ mapCoercible2 :: Coercible f g => (g a -> g b) -> f a -> f b
 mapCoercible2 mapper =
   coerce . mapper . coerce
 
+traverseCoercible :: (Coercible a b, Functor f) => (a -> f a) -> b -> f b
+traverseCoercible f =
+  fmap coerce . f . coerce
