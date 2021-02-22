@@ -53,7 +53,7 @@ lookup key (LookupOrderedHashMap deque trie) =
             Just (MissingEntry (succ count) entryKey)
             )
 
-insert :: (Hashable k, Eq k) => k -> v -> LookupOrderedHashMap k v -> (Bool, LookupOrderedHashMap k v)
+insert :: (Hashable k, Eq k) => k -> v -> LookupOrderedHashMap k v -> (Maybe v, LookupOrderedHashMap k v)
 insert key value (LookupOrderedHashMap deque trie) =
   revisionHamtFinalizing key miss update trie
   where
@@ -61,23 +61,23 @@ insert key value (LookupOrderedHashMap deque trie) =
       (finalizer, decision)
       where
         finalizer trie =
-          (True, LookupOrderedHashMap deque trie)
+          (Nothing, LookupOrderedHashMap deque trie)
         decision =
           Just (PresentEntry 0 key value)
     update =
       \case
-        PresentEntry count _ _ ->
+        PresentEntry count _ entryValue ->
           (finalizer, decision)
           where
             finalizer trie =
-              (False, LookupOrderedHashMap deque trie)
+              (Just entryValue, LookupOrderedHashMap deque trie)
             decision =
               Just (PresentEntry (succ count) key value)
         MissingEntry count _ ->
           (finalizer, decision)
           where
             finalizer trie =
-              (True, LookupOrderedHashMap deque trie)
+              (Nothing, LookupOrderedHashMap deque trie)
             decision =
               Just (PresentEntry (succ count) key value)
 
