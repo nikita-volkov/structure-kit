@@ -31,12 +31,16 @@ empty ::
 empty avail =
   LrlHashCache 0 avail LookupOrderedHashMap.empty
 
-lookup :: (Hashable k, Eq k) => k -> LrlHashCache k v -> (Maybe v, LrlHashCache k v)
+lookup :: (Hashable k, Eq k) => k -> LrlHashCache k v -> ((Maybe v, Maybe (k, v)), LrlHashCache k v)
 lookup key (LrlHashCache occupied avail map) =
-  LookupOrderedHashMap.lookup key map & second
+  LookupOrderedHashMap.lookup key map & \(valueFound, map) ->
     if avail > 0
-      then LrlHashCache (succ occupied) (pred avail)
-      else LrlHashCache occupied avail . snd . LookupOrderedHashMap.evict
+      then
+        ((valueFound, Nothing), LrlHashCache (succ occupied) (pred avail) map)
+      else
+        LookupOrderedHashMap.evict map & \case
+          (Just entryEvicted, map) -> ((valueFound, entryEvicted), LrlHashCache occupied avail map)
+          (Nothing, map) -> ((valueFound, Nothing), LrlHashCache occupied avail map)
 
 insert :: (Hashable k, Eq k) => k -> v -> LrlHashCache k v -> (Maybe v, LrlHashCache k v)
 insert key value (LrlHashCache occupied avail map) =
