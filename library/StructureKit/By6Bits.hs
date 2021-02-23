@@ -28,10 +28,10 @@ empty =
 An array with a single element at the specified index.
 -}
 singleton :: Int -> a -> By6Bits a
-singleton key e = 
+singleton key a = 
   let
     bitSet = Bits64.singleton key
-    array = runST (newSmallArray 1 e >>= unsafeFreezeSmallArray)
+    array = runST (newSmallArray 1 a >>= unsafeFreezeSmallArray)
     in By6Bits bitSet array
 
 lookup :: Int -> By6Bits a -> Maybe a
