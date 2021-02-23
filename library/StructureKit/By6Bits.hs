@@ -5,6 +5,7 @@ module StructureKit.By6Bits
   singleton,
   lookup,
   insert,
+  revision,
 )
 where
 
@@ -49,3 +50,41 @@ insert key value (By6Bits bitSet array) =
       Nothing ->
         (Just (indexSmallArray array index),
           By6Bits bitSet (SmallArray.insert index value array))
+
+{-|
+Very much like @alterF@ of the \"containers\" package
+with two differences:
+
+- For better performance @(Maybe a -> f (Maybe a))@ is replaced with
+  the following two continuations: @f (Maybe a)@ and @(a -> f (Maybe a))@.
+- The result is packed in @Maybe@ to inform you whether the map
+  has become empty.
+  This is useful for working with tries, since it can be used as
+  a single to remove from a wrapping container.
+-}
+{-# INLINE revision #-}
+revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By6Bits a -> f (Maybe (By6Bits a))
+revision key onMissing onPresent (By6Bits bitSet array) =
+  Bits64.revision key
+    (\index ->
+      Compose (fmap
+        (\case
+          Just value ->
+            (SmallArray.insert index value array, True)
+          Nothing ->
+            (array, False))
+        onMissing))
+    (\index ->
+      Compose (fmap
+        (\case
+          Just value ->
+            (SmallArray.set index value array, True)
+          Nothing ->
+            (array, False))
+        (onPresent
+          (indexSmallArray array index))))
+    bitSet
+    & getCompose
+    & fmap (\(array, bitSetMaybe) ->
+        fmap (\bitSet -> By6Bits bitSet array)
+          bitSetMaybe)

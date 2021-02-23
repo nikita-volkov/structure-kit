@@ -47,7 +47,7 @@ insert value (Bits64 word) =
     newBitSet = if newWord == word then Nothing else Just (Bits64 newWord)
     in (fromIntegral bitAtValue, newBitSet)
 
-revision :: Functor f => Int -> f Bool -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
+revision :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revision value onMissing onPresent (Bits64 word) =
   if value == 0
     then choose 1 0
@@ -67,7 +67,7 @@ revision value onMissing onPresent (Bits64 word) =
                     then Nothing
                     else Just (Bits64 newWord))
         else
-          onMissing
+          onMissing populatedIndex
             & fmap (\case
                 True -> let
                   newWord = word .|. bitAtValue
