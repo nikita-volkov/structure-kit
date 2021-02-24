@@ -41,7 +41,7 @@ revision :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe 
 revision hash select onMissing onPresent (Hamt trie) =
   By30Bits.revision hash
     (fmap (fmap pure) onMissing)
-    (SmallArray.detectAndRevision select onMissing onPresent)
+    (SmallArray.revisionSelected select onMissing onPresent)
     trie
     & fmap coerce
 
@@ -49,7 +49,7 @@ delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash select (Hamt trie) =
   By30Bits.revision hash
     (Nothing, Nothing)
-    (SmallArray.detectAndRevision select
+    (SmallArray.revisionSelected select
       (Nothing, Nothing)
       (\b -> (Just b, Nothing)))
     trie
