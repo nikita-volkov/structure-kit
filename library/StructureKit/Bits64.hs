@@ -18,6 +18,12 @@ import StructureKit.Prelude hiding (empty, lookup, adjust, insert)
 newtype Bits64 =
   Bits64 Int64
 
+instance Semigroup Bits64 where
+  Bits64 l <> Bits64 r = Bits64 (l .|. r)
+
+instance Monoid Bits64 where
+  mempty = Bits64 0
+
 empty :: Bits64
 empty =
   Bits64 0

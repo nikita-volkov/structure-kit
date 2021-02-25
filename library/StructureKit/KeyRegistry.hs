@@ -16,6 +16,13 @@ data KeyRegistry =
     (Deque Int)
     Int
 
+instance Semigroup KeyRegistry where
+  KeyRegistry lDeque lCounter <> KeyRegistry rDeque rCounter =
+    KeyRegistry (lDeque <> rDeque) (max lCounter rCounter)
+
+instance Monoid KeyRegistry where
+  mempty = empty
+
 empty :: KeyRegistry
 empty = KeyRegistry mempty 1
 
