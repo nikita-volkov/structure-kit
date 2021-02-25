@@ -1,13 +1,13 @@
 module StructureKit.KeyRegistry
 (
   KeyRegistry,
-  init,
+  empty,
   return,
   fetch,
 )
 where
 
-import StructureKit.Prelude hiding (return, init)
+import StructureKit.Prelude hiding (return, empty)
 import qualified Deque.Strict as Deque
 
 
@@ -16,8 +16,8 @@ data KeyRegistry =
     (Deque Int)
     Int
 
-init :: KeyRegistry
-init = KeyRegistry mempty 1
+empty :: KeyRegistry
+empty = KeyRegistry mempty 1
 
 return :: Int -> KeyRegistry -> KeyRegistry
 return key (KeyRegistry returned counter) = KeyRegistry (Deque.snoc key returned) counter

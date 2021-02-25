@@ -4,13 +4,13 @@ Map indexed by 18 bits.
 module StructureKit.By18Bits
 (
   By18Bits,
-  init,
+  empty,
   lookup,
   adjust,
 )
 where
 
-import StructureKit.Prelude hiding (init, lookup, adjust)
+import StructureKit.Prelude hiding (empty, lookup, adjust)
 import PrimitiveExtras.By6Bits (By6Bits)
 import qualified PrimitiveExtras.By6Bits as By6Bits
 import qualified StructureKit.TrieBitMasks as TrieBitMasks
@@ -19,8 +19,8 @@ import qualified StructureKit.TrieBitMasks as TrieBitMasks
 newtype By18Bits a =
   By18Bits (By6Bits (By6Bits (By6Bits a)))
 
-init :: By18Bits a
-init =
+empty :: By18Bits a
+empty =
   By18Bits By6Bits.empty
 
 {-|
