@@ -43,11 +43,19 @@ lookup key (TouchOrderedHashMap deque trie) =
         Nothing
         )
     update (Entry presence entryKey valueMaybe) =
-      (
-        \trie -> (valueMaybe, TouchOrderedHashMap (Deque.snoc entryKey deque) trie)
-        ,
-        Just (Entry (succ presence) entryKey valueMaybe)
-        )
+      case valueMaybe of
+        Just value ->
+          (
+            \trie -> (Just value, TouchOrderedHashMap (Deque.snoc entryKey deque) trie)
+            ,
+            Just (Entry (succ presence) entryKey (Just value))
+            )
+        Nothing ->
+          (
+            \trie -> (Nothing, TouchOrderedHashMap deque trie)
+            ,
+            Just (Entry presence entryKey Nothing)
+            )
 
 insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
 insert key value (TouchOrderedHashMap deque trie) =
