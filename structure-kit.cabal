@@ -49,8 +49,6 @@ library
     containers >=0.6 && <0.7,
     deferred-folds >=0.9.16 && <0.10,
     deque >=0.4.3 && <0.5,
-    domain >=0.1 && <0.2,
-    domain-optics >=0.1 && <0.2,
     hashable >=1 && <2,
     primitive >=0.7.1 && <0.8,
     primitive-extras >=0.14 && <0.15,
