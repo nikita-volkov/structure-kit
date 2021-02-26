@@ -21,8 +21,11 @@ data TouchOrderedHashMap k v =
 
 data Entry k v =
   Entry
-    Int {-^ Amount of instances in deque. -}
-    k v
+    {-| Count of records in deque. -}
+    Int
+    k
+    {-| Value if the record is not deleted. -}
+    (Maybe v)
 
 empty :: TouchOrderedHashMap k v
 empty =
@@ -39,11 +42,11 @@ lookup key (TouchOrderedHashMap deque trie) =
         ,
         Nothing
         )
-    update (Entry count entryKey value) =
+    update (Entry presence entryKey valueMaybe) =
       (
-        \trie -> (Just value, TouchOrderedHashMap (Deque.snoc entryKey deque) trie)
+        \trie -> (valueMaybe, TouchOrderedHashMap (Deque.snoc entryKey deque) trie)
         ,
-        Just (Entry (succ count) entryKey value)
+        Just (Entry (succ presence) entryKey valueMaybe)
         )
 
 insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
@@ -56,14 +59,14 @@ insert key value (TouchOrderedHashMap deque trie) =
         finalizer trie =
           (Nothing, TouchOrderedHashMap (Deque.snoc key deque) trie)
         decision =
-          Just (Entry 1 key value)
-    update (Entry count _ entryValue) =
+          Just (Entry 1 key (Just value))
+    update (Entry presence _ oldValueMaybe) =
       (finalizer, decision)
       where
         finalizer trie =
-          (Just entryValue, TouchOrderedHashMap (Deque.snoc key deque) trie)
+          (oldValueMaybe, TouchOrderedHashMap (Deque.snoc key deque) trie)
         decision =
-          Just (Entry (succ count) key value)
+          Just (Entry (succ presence) key (Just value))
 
 revision :: (Hashable k, Eq k, Functor f) => k -> f (Maybe v) -> (v -> f (Maybe v)) -> TouchOrderedHashMap k v -> f (Maybe (TouchOrderedHashMap k v))
 revision key miss update (TouchOrderedHashMap deque hamt) =
@@ -71,21 +74,20 @@ revision key miss update (TouchOrderedHashMap deque hamt) =
     (Compose (fmap
       (\case
         Just value ->
-          (Deque.snoc key, Just (Entry 1 key value))
+          (Deque.snoc key, Just (Entry 1 key (Just value)))
         Nothing ->
           (id, Nothing))
       miss))
-    (\(Entry count _ oldValue) -> Compose (fmap
+    (\(Entry presence _ oldValueMaybe) -> Compose (fmap
       (\case
         Just value ->
-          (Deque.snoc key, Just (Entry (succ count) key value))
+          (Deque.snoc key, Just (Entry (succ presence) key (Just value)))
         Nothing ->
-          (
-            error "TODO: Delete all occurences of key in deque"
-            ,
-            Nothing
-            ))
-      (update oldValue)))
+          (id,
+            if presence == 1
+              then Nothing
+              else Just (Entry (pred presence) key Nothing)))
+      (maybe miss update oldValueMaybe)))
     hamt
     & \(Compose f) ->
         fmap
@@ -94,9 +96,6 @@ revision key miss update (TouchOrderedHashMap deque hamt) =
               (TouchOrderedHashMap (dequeMapper deque))
               hamtMaybe)
           f
-  where
-    updateEntry =
-      error "TODO"
 
 {-|
 Evict one entry from the map.
@@ -113,23 +112,26 @@ evict (TouchOrderedHashMap deque trie) =
           where
             miss =
               (iterate nextDeque, Nothing)
-            update =
-              \case
-                Entry count entryKey value ->
-                  if count == 1
-                    then
-                      (\trie -> (Just (entryKey, value), TouchOrderedHashMap nextDeque trie),
+            update (Entry presence key valueMaybe) =
+              if presence == 1
+                then
+                  case valueMaybe of
+                    Just value ->
+                      (\trie -> (Just (key, value), TouchOrderedHashMap nextDeque trie),
                         Nothing)
-                    else
+                    Nothing ->
                       (iterate nextDeque,
-                        Just (Entry (pred count) entryKey value))
+                        Nothing)
+                else
+                  (iterate nextDeque,
+                    Just (Entry (pred presence) key valueMaybe))
         Nothing ->
           (Nothing, TouchOrderedHashMap deque trie)
 
 entryKey :: Entry k v -> k
 entryKey =
   \case
-    Entry count entryKey value -> entryKey
+    Entry _ entryKey _ -> entryKey
 
 selectEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
 selectEntry key entry =
