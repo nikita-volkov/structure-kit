@@ -32,6 +32,7 @@ library
     StructureKit.ByteArrayCache
     StructureKit.ByteArrayMap
     StructureKit.Hamt
+    StructureKit.IntCountMap
     StructureKit.KeyRegistry
     StructureKit.LookupOrderedHashMap
     StructureKit.LrlHashCache

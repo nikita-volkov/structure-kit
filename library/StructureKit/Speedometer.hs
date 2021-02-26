@@ -1,32 +1,43 @@
 module StructureKit.Speedometer
 (
   Speedometer,
+  empty,
+  register,
+  sample,
 )
 where
 
 import StructureKit.Prelude hiding (lookup, insert, empty)
-import qualified Data.IntMap.Strict as IntMap
+import qualified StructureKit.IntCountMap as IntCountMap
 
 
 data Speedometer =
   Speedometer
     {-| Count by timestamp. -}
-    (IntMap Int)
+    IntCountMap.IntCountMap
+    {-| Aggregate count.
+        For fast calculation of speed. -}
+    Int
     {-| Memory period. -}
     Int
 
 empty :: Int -> Speedometer
-empty = Speedometer mempty
+empty = Speedometer IntCountMap.empty 0
 
 register :: Int -> Speedometer -> Speedometer
-register timestamp =
-  error "TODO"
+register timestamp (Speedometer counter aggregate period) =
+  Speedometer (IntCountMap.bump timestamp counter) (succ aggregate) period
+    & maintain timestamp
 
-cleanUp :: Int -> Speedometer -> Speedometer
-cleanUp timestamp (Speedometer map period) =
-  Speedometer newMap period
-  where
-    oldestTimestamp =
-      timestamp - period
-    newMap =
-      IntMap.split oldestTimestamp map & snd
+maintain :: Int -> Speedometer -> Speedometer
+maintain timestamp (Speedometer counter aggregate period) =
+  IntCountMap.keepLargerSummarizing (timestamp - period) counter & \(droppedCount, newCounter) ->
+    Speedometer newCounter (aggregate - droppedCount) period
+
+calculate :: Speedometer -> Double
+calculate (Speedometer map period count) =
+  fromIntegral count / fromIntegral period
+
+sample :: Int -> Speedometer -> (Double, Speedometer)
+sample timestamp =
+  ((,) <$> calculate <*> id) . maintain timestamp
