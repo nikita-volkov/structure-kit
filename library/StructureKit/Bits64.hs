@@ -12,10 +12,11 @@ module StructureKit.Bits64
   split,
   foldl',
   foldlM,
+  forM_,
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split, foldl', foldlM)
+import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split, foldl', foldlM, forM_)
 
 
 newtype Bits64 =
@@ -120,3 +121,14 @@ foldlM step acc (Bits64 word) =
           then step acc i >>= loop (succ i)
           else loop (succ i) acc
         else return acc
+
+forM_ :: Monad m => (Int -> m ()) -> Bits64 -> m ()
+forM_ fn (Bits64 word) =
+  loop 0
+  where
+    loop i =
+      if i < 64
+        then if testBit word i
+          then fn i >> loop (succ i)
+          else loop (succ i)
+        else return ()
