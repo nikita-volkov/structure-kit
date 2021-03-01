@@ -6,6 +6,7 @@ module StructureKit.Bits64
   Bits64,
   empty,
   null,
+  size,
   singleton,
   lookup,
   insert,
@@ -36,6 +37,10 @@ empty =
 null :: Bits64 -> Bool
 null (Bits64 word) =
   word == 0
+
+size :: Bits64 -> Int
+size (Bits64 word) =
+  popCount word
 
 singleton :: Int -> Bits64
 singleton value =
