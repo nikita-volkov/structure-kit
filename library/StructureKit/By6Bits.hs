@@ -46,10 +46,10 @@ insert key value (By6Bits bitSet array) =
     (index, newBitSetMaybe) -> case newBitSetMaybe of
       Just newBitSet ->
         (Nothing,
-          By6Bits newBitSet (SmallArray.set index value array))
+          By6Bits newBitSet (SmallArray.insert index value array))
       Nothing ->
         (Just (indexSmallArray array index),
-          By6Bits bitSet (SmallArray.insert index value array))
+          By6Bits bitSet (SmallArray.set index value array))
 
 {-|
 Very much like @alterF@ of the \"containers\" package
