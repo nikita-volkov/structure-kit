@@ -5,6 +5,7 @@ module StructureKit.Bits64
 (
   Bits64,
   empty,
+  null,
   singleton,
   lookup,
   insert,
@@ -16,7 +17,7 @@ module StructureKit.Bits64
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split, foldl', foldlM, forM_)
+import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldl', foldlM, forM_)
 
 
 newtype Bits64 =
@@ -31,6 +32,10 @@ instance Monoid Bits64 where
 empty :: Bits64
 empty =
   Bits64 0
+
+null :: Bits64 -> Bool
+null (Bits64 word) =
+  word == 0
 
 singleton :: Int -> Bits64
 singleton value =
