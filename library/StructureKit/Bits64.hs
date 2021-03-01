@@ -11,10 +11,11 @@ module StructureKit.Bits64
   revision,
   split,
   foldl',
+  foldlM,
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split, foldl')
+import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split, foldl', foldlM)
 
 
 newtype Bits64 =
@@ -108,3 +109,14 @@ foldl' step acc (Bits64 word) =
       if i < 64
         then loop (succ i) (if testBit word i then step acc i else acc)
         else acc
+
+foldlM :: Monad m => (a -> Int -> m a) -> a -> Bits64 -> m a
+foldlM step acc (Bits64 word) =
+  loop 0 acc
+  where
+    loop i !acc =
+      if i < 64
+        then if testBit word i
+          then step acc i >>= loop (succ i)
+          else loop (succ i) acc
+        else return acc
