@@ -9,10 +9,11 @@ module StructureKit.Bits64
   lookup,
   insert,
   revision,
+  split,
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, adjust, insert)
+import StructureKit.Prelude hiding (empty, lookup, adjust, insert, split)
 
 
 newtype Bits64 =
@@ -81,3 +82,19 @@ revision value onMissing onPresent (Bits64 word) =
                 False -> if word == 0
                   then Nothing
                   else Just (Bits64 word))
+
+{-|
+Splits the set in two.
+The first one contains all elements smaller than the specified threshold,
+the second - all remaining elements.
+-}
+split :: Int -> Bits64 -> (Bits64, Bits64)
+split value (Bits64 word) =
+  if value == 0
+    then (Bits64 0, Bits64 word)
+    else let
+      bitAtValue = bit value
+      predMask = pred bitAtValue
+      word1 = word .&. predMask
+      word2 = xor word word1
+      in (Bits64 word1, Bits64 word2)
