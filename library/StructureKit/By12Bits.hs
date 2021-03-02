@@ -12,8 +12,8 @@ module StructureKit.By12Bits
 where
 
 import StructureKit.Prelude hiding (empty, lookup, adjust)
-import PrimitiveExtras.By6Bits (By6Bits)
-import qualified PrimitiveExtras.By6Bits as By6Bits
+import StructureKit.By6Bits (By6Bits)
+import qualified StructureKit.By6Bits as By6Bits
 import qualified StructureKit.TrieBitMasks as TrieBitMasks
 
 
@@ -42,12 +42,12 @@ adjust cont key =
 revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By12Bits a -> f (Maybe (By12Bits a))
 revision key onAbsent onPresent (By12Bits trie) =
   By6Bits.revision
+    (TrieBitMasks.level1 key)
     (onAbsent & fmap (fmap (singletonTreeAtLevel2 key)))
     (By6Bits.revision
+      (TrieBitMasks.level2 key)
       onAbsent
-      onPresent
-      (TrieBitMasks.level2 key))
-    (TrieBitMasks.level1 key)
+      onPresent)
     trie
     & fmap coerce
 

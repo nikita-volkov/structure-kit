@@ -5,6 +5,7 @@ module StructureKit.By6Bits
   singleton,
   lookup,
   insert,
+  adjust,
   revision,
   foldrWithKey,
   toList,
@@ -52,6 +53,16 @@ insert key value (By6Bits bitSet array) =
       Nothing ->
         (Just (indexSmallArray array index),
           By6Bits bitSet (SmallArray.set index value array))
+
+{-# INLINE adjust #-}
+adjust :: (a -> a) -> Int -> By6Bits a -> By6Bits a
+adjust fn key (By6Bits bitSet array) =
+  case Bits64.lookup key bitSet of
+    Just index ->
+      By6Bits bitSet
+        (SmallArray.unsafeAdjust fn index array)
+    Nothing ->
+      By6Bits bitSet array
 
 {-|
 Very much like @alterF@ of the \"containers\" package
