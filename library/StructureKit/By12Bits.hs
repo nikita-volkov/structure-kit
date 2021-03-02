@@ -8,6 +8,7 @@ module StructureKit.By12Bits
   lookup,
   adjust,
   revision,
+  foldrWithKey,
 )
 where
 
@@ -50,6 +51,13 @@ revision key onAbsent onPresent (By12Bits trie) =
       onPresent)
     trie
     & fmap coerce
+
+foldrWithKey :: (Int -> a -> b -> b) -> b -> By12Bits a -> b
+foldrWithKey step end (By12Bits trie1) =
+  By6Bits.foldrWithKey
+    (\k1 trie2 next ->
+      By6Bits.foldrWithKey (\k2 -> step (k1 .|. unsafeShiftL k2 6)) next trie2)
+    end trie1
 
 singletonTreeAtLevel1 key =
   By6Bits.singleton (TrieBitMasks.level1 key) .
