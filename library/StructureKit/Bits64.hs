@@ -17,10 +17,11 @@ module StructureKit.Bits64
   foldlM,
   forM_,
   unfoldr,
+  toList,
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr)
+import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList)
 
 
 newtype Bits64 =
@@ -159,3 +160,7 @@ forM_ fn (Bits64 word) =
 unfoldr :: Bits64 -> Unfoldr Int
 unfoldr set =
   Unfoldr (\step acc -> foldr step acc set)
+
+toList :: Bits64 -> [Int]
+toList =
+  foldr (:) []
