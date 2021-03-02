@@ -12,13 +12,14 @@ module StructureKit.Bits64
   insert,
   revision,
   split,
+  foldr,
   foldl',
   foldlM,
   forM_,
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldl', foldlM, forM_)
+import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_)
 
 
 newtype Bits64 =
@@ -111,6 +112,17 @@ split value (Bits64 word) =
       word1 = word .&. predMask
       word2 = xor word word1
       in (Bits64 word1, Bits64 word2)
+
+foldr :: (Int -> a -> a) -> a -> Bits64 -> a
+foldr step acc (Bits64 word) =
+  loop 0
+  where
+    loop i =
+      if i < 64
+        then if testBit word i
+          then step i (loop (succ i))
+          else loop (succ i)
+        else acc
 
 foldl' :: (a -> Int -> a) -> a -> Bits64 -> a
 foldl' step acc (Bits64 word) =
