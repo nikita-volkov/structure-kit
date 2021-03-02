@@ -16,10 +16,11 @@ module StructureKit.Bits64
   foldl',
   foldlM,
   forM_,
+  unfoldr,
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_)
+import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr)
 
 
 newtype Bits64 =
@@ -154,3 +155,7 @@ forM_ fn (Bits64 word) =
           then fn i >> loop (succ i)
           else loop (succ i)
         else return ()
+
+unfoldr :: Bits64 -> Unfoldr Int
+unfoldr set =
+  Unfoldr (\step acc -> foldr step acc set)

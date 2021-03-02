@@ -110,7 +110,7 @@ import Data.Text as Exports (Text)
 
 -- deferred-folds
 -------------------------
-import DeferredFolds.Unfoldr as Exports (Unfoldr)
+import DeferredFolds.Unfoldr as Exports (Unfoldr(..))
 
 -- hashable
 -------------------------
