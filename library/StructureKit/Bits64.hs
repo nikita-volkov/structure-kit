@@ -8,6 +8,7 @@ module StructureKit.Bits64
   null,
   size,
   singleton,
+  member,
   lookup,
   insert,
   revision,
@@ -21,7 +22,7 @@ module StructureKit.Bits64
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList)
+import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList)
 
 
 newtype Bits64 =
@@ -48,6 +49,10 @@ size (Bits64 word) =
 singleton :: Int -> Bits64
 singleton value =
   Bits64 (bit value)
+
+member :: Int -> Bits64 -> Bool
+member value (Bits64 word) =
+  testBit word value
 
 lookup :: Int -> Bits64 -> Maybe Int
 lookup value (Bits64 word) =

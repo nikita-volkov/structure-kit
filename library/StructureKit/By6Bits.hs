@@ -6,10 +6,12 @@ module StructureKit.By6Bits
   lookup,
   insert,
   revision,
+  foldrWithKey,
+  toList,
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, insert)
+import StructureKit.Prelude hiding (empty, lookup, insert, toList)
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified StructureKit.Prelude as Prelude
 import qualified StructureKit.Bits64 as Bits64
@@ -88,3 +90,20 @@ revision key onMissing onPresent (By6Bits bitSet array) =
     & fmap (\(array, bitSetMaybe) ->
         fmap (\bitSet -> By6Bits bitSet array)
           bitSetMaybe)
+
+{-# INLINE foldrWithKey #-}
+foldrWithKey :: (Int -> a -> b -> b) -> b -> By6Bits a -> b
+foldrWithKey step end (By6Bits bits array) =
+  loop 0 0
+  where
+    loop key arrayIndex =
+      if key < 64
+        then if Bits64.member key bits
+          then case indexSmallArray array arrayIndex of
+            element -> step key element (loop (succ key) (succ arrayIndex))
+          else loop (succ key) arrayIndex
+        else end
+
+toList :: By6Bits a -> [(Int, a)]
+toList =
+  foldrWithKey (\k v -> (:) (k, v)) []
