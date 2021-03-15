@@ -1,6 +1,6 @@
-module StructureKit.ByteArrayVector
+module StructureKit.ByteStringArray
 (
-  ByteArrayVector,
+  ByteStringArray,
   getByteStringMonolith,
   foldr,
 )
@@ -17,8 +17,8 @@ Efficient representation of a vector of byte arrays.
 Implemented as a view on a single byte array,
 which knows where to split it into pieces.
 -}
-data ByteArrayVector =
-  ByteArrayVector {
+data ByteStringArray =
+  ByteStringArray {
     boundaryVec :: UVec.Vector Int,
     byteString :: ByteString
   }
@@ -26,11 +26,11 @@ data ByteArrayVector =
 {-|
 Get the underlying monolith vector.
 -}
-getByteStringMonolith :: ByteArrayVector -> ByteString
+getByteStringMonolith :: ByteStringArray -> ByteString
 getByteStringMonolith = byteString
 
-foldr :: (ByteString -> a -> a) -> a -> ByteArrayVector -> a
-foldr step start (ByteArrayVector boundaryVec monolith) =
+foldr :: (ByteString -> a -> a) -> a -> ByteStringArray -> a
+foldr step start (ByteStringArray boundaryVec monolith) =
   UVec.foldr boundaryVecStep boundaryVecFinalize boundaryVec monolith start
   where
     length = ByteString.length monolith

@@ -31,7 +31,7 @@ library
     StructureKit.By8Bits
     StructureKit.ByteArrayCache
     StructureKit.ByteArrayMap
-    StructureKit.ByteArrayVector
+    StructureKit.ByteStringArray
     StructureKit.Hamt
     StructureKit.IntCountMap
     StructureKit.KeyRegistry
