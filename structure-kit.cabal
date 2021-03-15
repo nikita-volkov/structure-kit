@@ -23,6 +23,7 @@ library
     -funbox-strict-fields
   exposed-modules:
     StructureKit.Bits64
+    StructureKit.Bits256
     StructureKit.By12Bits
     StructureKit.By18Bits
     StructureKit.By24Bits
