@@ -22,7 +22,7 @@ module StructureKit.Bits64
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList)
+import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList, singleton)
 
 
 newtype Bits64 =

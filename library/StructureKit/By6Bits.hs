@@ -12,7 +12,7 @@ module StructureKit.By6Bits
 )
 where
 
-import StructureKit.Prelude hiding (empty, lookup, insert, toList)
+import StructureKit.Prelude hiding (empty, lookup, insert, toList, singleton)
 import qualified StructureKit.Util.SmallArray as SmallArray
 import qualified StructureKit.Prelude as Prelude
 import qualified StructureKit.Bits64 as Bits64
