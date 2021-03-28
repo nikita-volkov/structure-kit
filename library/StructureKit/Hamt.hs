@@ -12,7 +12,7 @@ where
 import StructureKit.Prelude hiding (empty, delete)
 import Data.Primitive.SmallArray (SmallArray)
 import qualified StructureKit.By30Bits as By30Bits
-import qualified PrimitiveExtras.SmallArray as SmallArray
+import qualified StructureKit.Util.SmallArray as SmallArray
 import qualified Data.Primitive.SmallArray as SmallArray
 
 

@@ -46,6 +46,7 @@ library
     StructureKit.LookupOrderedHashMapEntry
     StructureKit.Prelude
     StructureKit.TrieBitMasks
+    StructureKit.Util.SmallArray
   build-depends:
     base >=4.11 && <5,
     bytestring >=0.10 && <0.12,
@@ -55,7 +56,6 @@ library
     deque >=0.4.3 && <0.5,
     hashable >=1 && <2,
     primitive >=0.7.1 && <0.8,
-    primitive-extras >=0.14 && <0.15,
     text >=1 && <2,
     transformers >=0.5 && <0.6,
     vector >=0.12 && <0.13
