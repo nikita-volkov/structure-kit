@@ -4,6 +4,7 @@ module StructureKit.By8Bits
   empty,
   lookup,
   insert,
+  adjust,
   foldrWithKey,
 )
 where
@@ -46,6 +47,10 @@ insert key value (By8Bits a b c d) =
         By6Bits.insert key value c & second (\c -> By8Bits a b c d)
       else
         By6Bits.insert key value d & second (\d -> By8Bits a b c d)
+
+adjust :: (a -> a) -> Int -> By8Bits a -> By8Bits a
+adjust =
+  error "TODO"
 
 foldrWithKey :: (Int -> a -> b -> b) -> b -> By8Bits a -> b
 foldrWithKey step end (By8Bits part1 part2 part3 part4) =

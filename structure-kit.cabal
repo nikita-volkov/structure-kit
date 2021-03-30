@@ -28,6 +28,7 @@ library
     StructureKit.By18Bits
     StructureKit.By24Bits
     StructureKit.By30Bits
+    StructureKit.By32Bits
     StructureKit.By6Bits
     StructureKit.By8Bits
     StructureKit.ByteArrayCache
@@ -42,6 +43,7 @@ library
     StructureKit.Speedometer
     StructureKit.TouchOrderedHashMap
   other-modules:
+    StructureKit.By32Bits.KeyOps
     StructureKit.ByteArrayCacheEntry
     StructureKit.LookupOrderedHashMapEntry
     StructureKit.Prelude
