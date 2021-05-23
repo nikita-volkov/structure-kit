@@ -35,6 +35,7 @@ lookup key (LruHashCache occupied avail map) =
 insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
 insert key value (LruHashCache occupied avail map) =
   TouchOrderedHashMap.insert key value map & \(valueReplaced, map) ->
+    {- FIXME: Looks like there's a bug hiding here. -}
     case valueReplaced of
       Just _ ->
         case avail > 0 of
