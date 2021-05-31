@@ -11,6 +11,7 @@ module StructureKit.Bits64
   member,
   lookup,
   insert,
+  delete,
   revision,
   split,
   foldr,
@@ -22,7 +23,7 @@ module StructureKit.Bits64
 )
 where
 
-import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList, singleton)
+import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList, singleton, delete)
 
 
 newtype Bits64 =
@@ -74,6 +75,14 @@ insert value (Bits64 word) =
     bitAtValue = bit value
     index = popCount (word .&. (bitAtValue - 1))
     newWord = word .|. bitAtValue
+    in (index, Bits64 newWord)
+
+delete :: Int -> Bits64 -> (Int, Bits64)
+delete value (Bits64 word) =
+  let
+    bitAtValue = bit value
+    newWord = xor word bitAtValue
+    index = popCount (word .&. pred bitAtValue)
     in (index, Bits64 newWord)
 
 revision :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
