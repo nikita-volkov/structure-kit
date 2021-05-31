@@ -121,6 +121,10 @@ import Data.Hashable as Exports (Hashable(hash, hashWithSalt))
 import Data.Primitive as Exports hiding (sizeOf, alignment)
 import Control.Monad.Primitive as Exports
 
+-- groups
+-------------------------
+import Data.Group as Exports
+
 
 mapCoercible :: Coercible a b => (a -> a) -> b -> b
 mapCoercible mapper =
