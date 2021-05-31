@@ -46,13 +46,13 @@ lookup key (By6Bits bitSet array) =
 insert :: Int -> a -> By6Bits a -> (Maybe a, By6Bits a)
 insert key value (By6Bits bitSet array) =
   Bits64.insert key bitSet & \case
-    (index, newBitSetMaybe) -> case newBitSetMaybe of
-      Just newBitSet ->
-        (Nothing,
-          By6Bits newBitSet (SmallArray.insert index value array))
-      Nothing ->
+    (index, newBitSet) -> if newBitSet == bitSet
+      then
         (Just (indexSmallArray array index),
           By6Bits bitSet (SmallArray.set index value array))
+      else
+        (Nothing,
+          By6Bits newBitSet (SmallArray.insert index value array))
 
 {-# INLINE adjust #-}
 adjust :: (a -> a) -> Int -> By6Bits a -> By6Bits a

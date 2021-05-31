@@ -27,6 +27,7 @@ import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert,
 
 newtype Bits64 =
   Bits64 Int64
+  deriving (Eq)
 
 instance Semigroup Bits64 where
   Bits64 l <> Bits64 r = Bits64 (l .|. r)
@@ -67,14 +68,13 @@ lookup value (Bits64 word) =
         then Just (popCount (word .&. (bitAtValue - 1)))
         else Nothing
 
-insert :: Int -> Bits64 -> (Int, Maybe Bits64)
+insert :: Int -> Bits64 -> (Int, Bits64)
 insert value (Bits64 word) =
   let
     bitAtValue = bit value
     index = popCount (word .&. (bitAtValue - 1))
     newWord = word .|. bitAtValue
-    newBitSet = if newWord == word then Nothing else Just (Bits64 newWord)
-    in (index, newBitSet)
+    in (index, Bits64 newWord)
 
 revision :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revision value onMissing onPresent (Bits64 word) =
