@@ -71,9 +71,10 @@ insert :: Int -> Bits64 -> (Int, Maybe Bits64)
 insert value (Bits64 word) =
   let
     bitAtValue = bit value
+    index = popCount (word .&. (bitAtValue - 1))
     newWord = word .|. bitAtValue
     newBitSet = if newWord == word then Nothing else Just (Bits64 newWord)
-    in (fromIntegral bitAtValue, newBitSet)
+    in (index, newBitSet)
 
 revision :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revision value onMissing onPresent (Bits64 word) =
