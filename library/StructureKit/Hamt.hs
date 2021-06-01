@@ -4,7 +4,7 @@ module StructureKit.Hamt
   empty,
   findMapping,
   findAndReplace,
-  revision,
+  revise,
   delete,
 )
 where
@@ -29,7 +29,7 @@ findMapping hash cont (Hamt trie) =
 
 findAndReplace :: Int -> (a -> Maybe a) -> Hamt a -> (Maybe a, Hamt a)
 findAndReplace hash cont (Hamt trie) =
-  By30Bits.revision hash
+  By30Bits.revise hash
     (Nothing, Nothing)
     (\array ->
       SmallArray.findAndReplace cont array
@@ -37,19 +37,19 @@ findAndReplace hash cont (Hamt trie) =
     trie
     & second (Hamt . fromMaybe By30Bits.empty)
 
-revision :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
-revision hash select onMissing onPresent (Hamt trie) =
-  By30Bits.revision hash
+revise :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
+revise hash select onMissing onPresent (Hamt trie) =
+  By30Bits.revise hash
     (fmap (fmap pure) onMissing)
-    (SmallArray.revisionSelected select onMissing onPresent)
+    (SmallArray.reviseSelected select onMissing onPresent)
     trie
     & fmap coerce
 
 delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash select (Hamt trie) =
-  By30Bits.revision hash
+  By30Bits.revise hash
     (Nothing, Nothing)
-    (SmallArray.revisionSelected select
+    (SmallArray.reviseSelected select
       (Nothing, Nothing)
       (\b -> (Just b, Nothing)))
     trie

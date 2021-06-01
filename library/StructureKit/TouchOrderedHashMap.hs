@@ -4,7 +4,7 @@ module StructureKit.TouchOrderedHashMap
   empty,
   lookup,
   insert,
-  revision,
+  revise,
   evict,
 )
 where
@@ -33,7 +33,7 @@ empty =
 
 lookup :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
 lookup key (TouchOrderedHashMap deque trie) =
-  revisionHamt key miss update trie
+  reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
   where
     miss =
@@ -59,7 +59,7 @@ lookup key (TouchOrderedHashMap deque trie) =
 
 insert :: (Hashable k, Eq k) => k -> v -> TouchOrderedHashMap k v -> (Maybe v, TouchOrderedHashMap k v)
 insert key value (TouchOrderedHashMap deque trie) =
-  revisionHamtFinalizing key miss update trie
+  reviseHamtFinalizing key miss update trie
   where
     miss =
       (finalizer, decision)
@@ -76,9 +76,9 @@ insert key value (TouchOrderedHashMap deque trie) =
         decision =
           Just (Entry (succ presence) key (Just value))
 
-revision :: (Hashable k, Eq k, Functor f) => k -> f (Maybe v) -> (v -> f (Maybe v)) -> TouchOrderedHashMap k v -> f (Maybe (TouchOrderedHashMap k v))
-revision key miss update (TouchOrderedHashMap deque hamt) =
-  revisionHamt key 
+revise :: (Hashable k, Eq k, Functor f) => k -> f (Maybe v) -> (v -> f (Maybe v)) -> TouchOrderedHashMap k v -> f (Maybe (TouchOrderedHashMap k v))
+revise key miss update (TouchOrderedHashMap deque hamt) =
+  reviseHamt key 
     (Compose (fmap
       (\case
         Just value ->
@@ -115,7 +115,7 @@ evict (TouchOrderedHashMap deque trie) =
     iterate deque trie =
       case Deque.uncons deque of
         Just (key, nextDeque) ->
-          revisionHamt key miss update trie
+          reviseHamt key miss update trie
             & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
           where
             miss =
@@ -147,19 +147,19 @@ selectEntry key entry =
     then Just entry
     else Nothing
 
-revisionHamt :: (Functor f, Hashable k, Eq k) =>
+reviseHamt :: (Functor f, Hashable k, Eq k) =>
   k ->
   f (Maybe (Entry k v)) -> (Entry k v -> f (Maybe (Entry k v))) ->
   Hamt.Hamt (Entry k v) -> f (Maybe (Hamt.Hamt (Entry k v)))
-revisionHamt key =
-  Hamt.revision (hash key) (selectEntry key)
+reviseHamt key =
+  Hamt.revise (hash key) (selectEntry key)
 
-revisionHamtFinalizing :: (Hashable k, Eq k) =>
+reviseHamtFinalizing :: (Hashable k, Eq k) =>
   k ->
   (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v)) ->
   (Entry k v -> (Hamt.Hamt (Entry k v) -> a, Maybe (Entry k v))) ->
   Hamt.Hamt (Entry k v) ->
   a
-revisionHamtFinalizing key miss update trie =
-  revisionHamt key miss update trie
+reviseHamtFinalizing key miss update trie =
+  reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)

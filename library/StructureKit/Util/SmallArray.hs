@@ -144,9 +144,9 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
-{-# INLINE revisionSelected #-}
-revisionSelected :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
-revisionSelected select onMissing onPresent array =
+{-# INLINE reviseSelected #-}
+reviseSelected :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
+reviseSelected select onMissing onPresent array =
   let
     size = sizeofSmallArray array
     iterate index =

@@ -25,7 +25,7 @@ empty =
 
 lookup :: (Hashable k, Eq k) => k -> LookupOrderedHashMap k v -> (Maybe v, LookupOrderedHashMap k v)
 lookup key (LookupOrderedHashMap deque trie) =
-  revisionHamt key miss update trie
+  reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
   where
     miss =
@@ -38,7 +38,7 @@ lookup key (LookupOrderedHashMap deque trie) =
 
 insert :: (Hashable k, Eq k) => k -> v -> LookupOrderedHashMap k v -> (Maybe v, LookupOrderedHashMap k v)
 insert key value (LookupOrderedHashMap deque trie) =
-  revisionHamtFinalizing key miss update trie
+  reviseHamtFinalizing key miss update trie
   where
     miss =
       (\trie -> (Nothing, LookupOrderedHashMap deque trie),
@@ -55,7 +55,7 @@ evict :: (Hashable k, Eq k) => LookupOrderedHashMap k v -> (Maybe (Maybe (k, v))
 evict (LookupOrderedHashMap deque trie) =
   case Deque.uncons deque of
     Just (key, nextDeque) ->
-      revisionHamt key miss update trie
+      reviseHamt key miss update trie
         & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
       where
         miss =
@@ -68,19 +68,19 @@ evict (LookupOrderedHashMap deque trie) =
     Nothing ->
       (Nothing, LookupOrderedHashMap deque trie)
 
-revisionHamt :: (Functor f, Hashable k, Eq k) =>
+reviseHamt :: (Functor f, Hashable k, Eq k) =>
   k ->
   f (Maybe (Entry.LookupOrderedHashMapEntry k v)) -> (Entry.LookupOrderedHashMapEntry k v -> f (Maybe (Entry.LookupOrderedHashMapEntry k v))) ->
   Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> f (Maybe (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v)))
-revisionHamt key =
-  Hamt.revision (hash key) (Entry.select key)
+reviseHamt key =
+  Hamt.revise (hash key) (Entry.select key)
 
-revisionHamtFinalizing :: (Hashable k, Eq k) =>
+reviseHamtFinalizing :: (Hashable k, Eq k) =>
   k ->
   (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> a, Maybe (Entry.LookupOrderedHashMapEntry k v)) ->
   (Entry.LookupOrderedHashMapEntry k v -> (Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) -> a, Maybe (Entry.LookupOrderedHashMapEntry k v))) ->
   Hamt.Hamt (Entry.LookupOrderedHashMapEntry k v) ->
   a
-revisionHamtFinalizing key miss update trie =
-  revisionHamt key miss update trie
+reviseHamtFinalizing key miss update trie =
+  reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)

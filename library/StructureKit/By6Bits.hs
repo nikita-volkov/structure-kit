@@ -6,7 +6,7 @@ module StructureKit.By6Bits
   lookup,
   insert,
   adjust,
-  revision,
+  revise,
   foldrWithKey,
   toList,
 )
@@ -75,10 +75,10 @@ with two differences:
   This is useful for working with tries, since it can be used as
   a single to remove from a wrapping container.
 -}
-{-# INLINE revision #-}
-revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By6Bits a -> f (Maybe (By6Bits a))
-revision key onMissing onPresent (By6Bits bitSet array) =
-  Bits64.revision key
+{-# INLINE revise #-}
+revise :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By6Bits a -> f (Maybe (By6Bits a))
+revise key onMissing onPresent (By6Bits bitSet array) =
+  Bits64.revise key
     (\index ->
       Compose (fmap
         (\case

@@ -8,7 +8,7 @@ module StructureKit.By30Bits
   lookup,
   adjust,
   mapAt,
-  revision,
+  revise,
   dive,
 )
 where
@@ -51,21 +51,21 @@ mapAt :: Int -> (a -> a) -> By30Bits a -> By30Bits a
 mapAt key cont =
   adjust cont key
 
-revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By30Bits a -> f (Maybe (By30Bits a))
-revision key onAbsent onPresent (By30Bits trie) =
-  By6Bits.revision
+revise :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By30Bits a -> f (Maybe (By30Bits a))
+revise key onAbsent onPresent (By30Bits trie) =
+  By6Bits.revise
     (TrieBitMasks.level1 key)
     (onAbsent & fmap (fmap (singletonTreeAtLevel2 key)))
-    (By6Bits.revision
+    (By6Bits.revise
       (TrieBitMasks.level2 key)
       (onAbsent & fmap (fmap (singletonTreeAtLevel3 key)))
-      (By6Bits.revision
+      (By6Bits.revise
         (TrieBitMasks.level3 key)
         (onAbsent & fmap (fmap (singletonTreeAtLevel4 key)))
-        (By6Bits.revision
+        (By6Bits.revise
           (TrieBitMasks.level4 key)
           (onAbsent & fmap (fmap (singletonTreeAtLevel5 key)))
-          (By6Bits.revision
+          (By6Bits.revise
             (TrieBitMasks.level5 key)
             onAbsent
             onPresent))))
@@ -74,7 +74,7 @@ revision key onAbsent onPresent (By30Bits trie) =
 
 dive :: Int -> Maybe a -> (a -> Maybe a) -> By30Bits a -> (Maybe a, By30Bits a)
 dive key onAbsent onPresent model =
-  revision key (Nothing, onAbsent) (\a -> (Just a, onPresent a)) model
+  revise key (Nothing, onAbsent) (\a -> (Just a, onPresent a)) model
     & second (fromMaybe empty)
 
 singletonTreeAtLevel1 key =

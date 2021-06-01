@@ -12,7 +12,7 @@ module StructureKit.Bits64
   lookup,
   insert,
   delete,
-  revision,
+  revise,
   split,
   foldr,
   foldl',
@@ -85,8 +85,8 @@ delete value (Bits64 word) =
     index = popCount (word .&. pred bitAtValue)
     in (index, Bits64 newWord)
 
-revision :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
-revision value onMissing onPresent (Bits64 word) =
+revise :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
+revise value onMissing onPresent (Bits64 word) =
   if value == 0
     then choose 1 0
     else let

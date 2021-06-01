@@ -7,7 +7,7 @@ module StructureKit.By18Bits
   empty,
   lookup,
   adjust,
-  revision,
+  revise,
 )
 where
 
@@ -41,15 +41,15 @@ adjust cont key =
         (flip By6Bits.adjust (TrieBitMasks.level3 key)
           cont)))
 
-revision :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By18Bits a -> f (Maybe (By18Bits a))
-revision key onAbsent onPresent (By18Bits trie) =
-  By6Bits.revision
+revise :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By18Bits a -> f (Maybe (By18Bits a))
+revise key onAbsent onPresent (By18Bits trie) =
+  By6Bits.revise
     (TrieBitMasks.level1 key)
     (onAbsent & fmap (fmap (singletonTreeAtLevel2 key)))
-    (By6Bits.revision
+    (By6Bits.revise
       (TrieBitMasks.level2 key)
       (onAbsent & fmap (fmap (singletonTreeAtLevel3 key)))
-      (By6Bits.revision
+      (By6Bits.revise
         (TrieBitMasks.level3 key)
         onAbsent
         onPresent))
