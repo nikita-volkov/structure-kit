@@ -13,13 +13,13 @@ import qualified StructureKit.IntCountMap as IntCountMap
 
 data Speedometer =
   Speedometer
-    {-| Count by timestamp. -}
     IntCountMap.IntCountMap
-    {-| Aggregate count.
+    {-^ Count by timestamp. -}
+    Int
+    {-^ Aggregate count.
         For fast calculation of speed. -}
     Int
-    {-| Memory period. -}
-    Int
+    {-^ Memory period. -}
 
 empty :: Int -> Speedometer
 empty = Speedometer IntCountMap.empty 0

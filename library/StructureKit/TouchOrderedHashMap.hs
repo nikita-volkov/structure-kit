@@ -21,11 +21,12 @@ data TouchOrderedHashMap k v =
 
 data Entry k v =
   Entry
-    {-| Count of records in deque. -}
     Int
+    {-^ Count of records in deque. -}
     k
-    {-| Value if the record is not deleted. -}
+    {-^ Key. -}
     (Maybe v)
+    {-^ Value if the record is not deleted. -}
 
 empty :: TouchOrderedHashMap k v
 empty =
