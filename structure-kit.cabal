@@ -1,6 +1,6 @@
 name: structure-kit
 version: 0.1
-synopsis: Immutable data structures for all kinds of purposes
+synopsis: Rich collection of persistent data-structures
 homepage: https://github.com/nikita-volkov/structure-kit
 bug-reports: https://github.com/nikita-volkov/structure-kit/issues
 author: Nikita Volkov <nikita.y.volkov@mail.ru>
