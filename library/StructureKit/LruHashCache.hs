@@ -21,7 +21,7 @@ data LruHashCache k v =
 
 empty ::
   {-| Maximum amount of entries to store at one moment.
-      After it\'s reached the least recently used entry will
+      After it\'s reached an oldest entry will
       be discarded on each insert. -}
   Int ->
   LruHashCache k v
