@@ -2,12 +2,12 @@ module StructureKit.KeyRegistry
 (
   KeyRegistry,
   empty,
-  return,
+  release,
   fetch,
 )
 where
 
-import StructureKit.Prelude hiding (return, empty)
+import StructureKit.Prelude hiding (empty)
 import qualified Deque.Strict as Deque
 
 
@@ -26,8 +26,8 @@ instance Monoid KeyRegistry where
 empty :: KeyRegistry
 empty = KeyRegistry mempty 1
 
-return :: Int -> KeyRegistry -> KeyRegistry
-return key (KeyRegistry returned counter) = KeyRegistry (Deque.snoc key returned) counter
+release :: Int -> KeyRegistry -> KeyRegistry
+release key (KeyRegistry returned counter) = KeyRegistry (Deque.snoc key returned) counter
 
 fetch :: KeyRegistry -> (Int, KeyRegistry)
 fetch (KeyRegistry returned counter) =
