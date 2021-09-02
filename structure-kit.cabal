@@ -35,8 +35,8 @@ library
     StructureKit.ByteArrayMap
     StructureKit.ByteStringArray
     StructureKit.Hamt
+    StructureKit.IdGen
     StructureKit.IntCountMap
-    StructureKit.KeyRegistry
     StructureKit.LookupOrderedHashMap
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
