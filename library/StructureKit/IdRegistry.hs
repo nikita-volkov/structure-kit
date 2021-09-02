@@ -27,8 +27,20 @@ register payload (IdRegistry gen map) =
       newRegistry = IdRegistry newGen newMap
    in (id, newRegistry)
 
-unregister :: Int -> IdRegistry a -> (Bool, IdRegistry a)
-unregister = error "TODO"
+-- |
+-- Unregister an entry by its key.
+--
+-- Produces the value of the entry if it has been previously registered.
+unregister :: Int -> IdRegistry a -> (Maybe a, IdRegistry a)
+unregister id (IdRegistry gen map) =
+  case IntMap.alterF (maybe (Nothing, Nothing) (\a -> (Just a, Nothing))) id map of
+    (deleted, newMap) ->
+      let newGen = if isNothing deleted then gen else IdGen.release id gen
+          newRegistry = IdRegistry newGen newMap
+       in (deleted, newRegistry)
 
+-- |
+-- Lookup an entry by its key.
 lookup :: Int -> IdRegistry a -> Maybe a
-lookup = error "TODO"
+lookup id (IdRegistry _ map) =
+  IntMap.lookup id map
