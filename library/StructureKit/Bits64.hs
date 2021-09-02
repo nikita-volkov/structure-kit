@@ -1,33 +1,30 @@
-{-|
-Set of 6-bit values represented with a 64-bit word.
--}
+-- |
+-- Set of 6-bit values represented with a 64-bit word.
 module StructureKit.Bits64
-(
-  Bits64,
-  empty,
-  null,
-  size,
-  singleton,
-  member,
-  lookup,
-  insert,
-  delete,
-  revise,
-  split,
-  foldr,
-  foldl',
-  foldlM,
-  forM_,
-  unfoldr,
-  toList,
-)
+  ( Bits64,
+    empty,
+    null,
+    size,
+    singleton,
+    member,
+    lookup,
+    insert,
+    delete,
+    revise,
+    split,
+    foldr,
+    foldl',
+    foldlM,
+    forM_,
+    unfoldr,
+    toList,
+  )
 where
 
-import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList, singleton, delete)
+import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, singleton, split, toList, unfoldr)
 
-
-newtype Bits64 =
-  Bits64 Int64
+newtype Bits64
+  = Bits64 Int64
   deriving (Eq)
 
 instance Semigroup Bits64 where
@@ -59,76 +56,79 @@ member value (Bits64 word) =
 lookup :: Int -> Bits64 -> Maybe Int
 lookup value (Bits64 word) =
   if value == 0
-    then if word .&. 1 /= 0
-      then Just 0
-      else Nothing
-    else let
-      bitAtValue = bit value
-      isPopulated = bitAtValue .&. word /= 0
-      in if isPopulated
-        then Just (popCount (word .&. (bitAtValue - 1)))
+    then
+      if word .&. 1 /= 0
+        then Just 0
         else Nothing
+    else
+      let bitAtValue = bit value
+          isPopulated = bitAtValue .&. word /= 0
+       in if isPopulated
+            then Just (popCount (word .&. (bitAtValue - 1)))
+            else Nothing
 
 insert :: Int -> Bits64 -> (Int, Bits64)
 insert value (Bits64 word) =
-  let
-    bitAtValue = bit value
-    index = popCount (word .&. (bitAtValue - 1))
-    newWord = word .|. bitAtValue
-    in (index, Bits64 newWord)
+  let bitAtValue = bit value
+      index = popCount (word .&. (bitAtValue - 1))
+      newWord = word .|. bitAtValue
+   in (index, Bits64 newWord)
 
 delete :: Int -> Bits64 -> (Int, Bits64)
 delete value (Bits64 word) =
-  let
-    bitAtValue = bit value
-    newWord = xor word bitAtValue
-    index = popCount (word .&. pred bitAtValue)
-    in (index, Bits64 newWord)
+  let bitAtValue = bit value
+      newWord = xor word bitAtValue
+      index = popCount (word .&. pred bitAtValue)
+   in (index, Bits64 newWord)
 
 revise :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revise value onMissing onPresent (Bits64 word) =
   if value == 0
     then choose 1 0
-    else let
-      bitAtValue = bit value
-      in choose bitAtValue (popCount (word .&. (bitAtValue - 1))) 
+    else
+      let bitAtValue = bit value
+       in choose bitAtValue (popCount (word .&. (bitAtValue - 1)))
   where
     choose bitAtValue populatedIndex =
       if word .&. bitAtValue /= 0
         then
           onPresent populatedIndex
-            & fmap (\case
-                True -> Just (Bits64 word)
-                False -> let
-                  newWord = xor word bitAtValue
-                  in if newWord == 0
-                    then Nothing
-                    else Just (Bits64 newWord))
+            & fmap
+              ( \case
+                  True -> Just (Bits64 word)
+                  False ->
+                    let newWord = xor word bitAtValue
+                     in if newWord == 0
+                          then Nothing
+                          else Just (Bits64 newWord)
+              )
         else
           onMissing populatedIndex
-            & fmap (\case
-                True -> let
-                  newWord = word .|. bitAtValue
-                  in Just (Bits64 newWord)
-                False -> if word == 0
-                  then Nothing
-                  else Just (Bits64 word))
+            & fmap
+              ( \case
+                  True ->
+                    let newWord = word .|. bitAtValue
+                     in Just (Bits64 newWord)
+                  False ->
+                    if word == 0
+                      then Nothing
+                      else Just (Bits64 word)
+              )
 
-{-|
-Splits the set in two.
-The first one contains all elements smaller than the specified threshold,
-the second - all remaining elements.
--}
+-- |
+-- Splits the set in two.
+-- The first one contains all elements smaller than the specified threshold,
+-- the second - all remaining elements.
 split :: Int -> Bits64 -> (Bits64, Bits64)
 split value (Bits64 word) =
   if value == 0
     then (Bits64 0, Bits64 word)
-    else let
-      bitAtValue = bit value
-      predMask = pred bitAtValue
-      word1 = word .&. predMask
-      word2 = xor word word1
-      in (Bits64 word1, Bits64 word2)
+    else
+      let bitAtValue = bit value
+          predMask = pred bitAtValue
+          word1 = word .&. predMask
+          word2 = xor word word1
+       in (Bits64 word1, Bits64 word2)
 
 foldr :: (Int -> a -> a) -> a -> Bits64 -> a
 foldr step acc (Bits64 word) =
@@ -136,9 +136,10 @@ foldr step acc (Bits64 word) =
   where
     loop i =
       if i < 64
-        then if testBit word i
-          then step i (loop (succ i))
-          else loop (succ i)
+        then
+          if testBit word i
+            then step i (loop (succ i))
+            else loop (succ i)
         else acc
 
 foldl' :: (a -> Int -> a) -> a -> Bits64 -> a
@@ -156,9 +157,10 @@ foldlM step acc (Bits64 word) =
   where
     loop i !acc =
       if i < 64
-        then if testBit word i
-          then step acc i >>= loop (succ i)
-          else loop (succ i) acc
+        then
+          if testBit word i
+            then step acc i >>= loop (succ i)
+            else loop (succ i) acc
         else return acc
 
 forM_ :: Monad m => (Int -> m ()) -> Bits64 -> m ()
@@ -167,9 +169,10 @@ forM_ fn (Bits64 word) =
   where
     loop i =
       if i < 64
-        then if testBit word i
-          then fn i >> loop (succ i)
-          else loop (succ i)
+        then
+          if testBit word i
+            then fn i >> loop (succ i)
+            else loop (succ i)
         else return ()
 
 unfoldr :: Bits64 -> Unfoldr Int

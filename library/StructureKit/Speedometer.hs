@@ -1,25 +1,23 @@
 module StructureKit.Speedometer
-(
-  Speedometer,
-  empty,
-  register,
-  sample,
-)
+  ( Speedometer,
+    empty,
+    register,
+    sample,
+  )
 where
 
-import StructureKit.Prelude hiding (lookup, insert, empty)
 import qualified StructureKit.IntCountMap as IntCountMap
+import StructureKit.Prelude hiding (empty, insert, lookup)
 
-
-data Speedometer =
-  Speedometer
-    IntCountMap.IntCountMap
-    {-^ Count by timestamp. -}
-    Int
-    {-^ Aggregate count.
-        For fast calculation of speed. -}
-    Int
-    {-^ Memory period. -}
+data Speedometer
+  = Speedometer
+      IntCountMap.IntCountMap
+      -- ^ Count by timestamp.
+      Int
+      -- ^ Aggregate count.
+      --        For fast calculation of speed.
+      Int
+      -- ^ Memory period.
 
 empty :: Int -> Speedometer
 empty = Speedometer IntCountMap.empty 0

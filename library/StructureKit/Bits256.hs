@@ -1,17 +1,15 @@
 module StructureKit.Bits256
-(
-  Bits256,
-  foldr,
-)
+  ( Bits256,
+    foldr,
+  )
 where
 
-import StructureKit.Prelude hiding (empty, null, member, lookup, adjust, insert, split, foldr, foldl', foldlM, forM_, unfoldr, toList)
 import StructureKit.Bits64 (Bits64)
 import qualified StructureKit.Bits64 as Bits64
+import StructureKit.Prelude hiding (adjust, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, split, toList, unfoldr)
 
-
-data Bits256 =
-  Bits256 Bits64 Bits64 Bits64 Bits64
+data Bits256
+  = Bits256 Bits64 Bits64 Bits64 Bits64
 
 instance Semigroup Bits256 where
   Bits256 l1 l2 l3 l4 <> Bits256 r1 r2 r3 r4 =
@@ -23,10 +21,15 @@ instance Monoid Bits256 where
 
 foldr :: (Int -> a -> a) -> a -> Bits256 -> a
 foldr step acc (Bits256 a b c d) =
-  Bits64.foldr step
-    (Bits64.foldr step
-      (Bits64.foldr step
-        (Bits64.foldr step acc d)
-        c)
-      b)
+  Bits64.foldr
+    step
+    ( Bits64.foldr
+        step
+        ( Bits64.foldr
+            step
+            (Bits64.foldr step acc d)
+            c
+        )
+        b
+    )
     a

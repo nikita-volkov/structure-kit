@@ -1,15 +1,13 @@
 module StructureKit.ByteArrayCache
-(
-  ByteArrayCache,
-)
+  ( ByteArrayCache,
+  )
 where
 
-import StructureKit.Prelude
-import qualified StructureKit.ByteArrayMap as ByteArrayMap
 import qualified StructureKit.ByteArrayCacheEntry as ByteArrayCacheEntry
+import qualified StructureKit.ByteArrayMap as ByteArrayMap
+import StructureKit.Prelude
 
-
-data ByteArrayCache a =
-  ByteArrayCache
-    (Deque ByteString)
-    (ByteArrayMap.ByteArrayMap (ByteArrayCacheEntry.ByteArrayCacheEntry a))
+data ByteArrayCache a
+  = ByteArrayCache
+      (Deque ByteString)
+      (ByteArrayMap.ByteArrayMap (ByteArrayCacheEntry.ByteArrayCacheEntry a))

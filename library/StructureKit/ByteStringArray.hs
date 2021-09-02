@@ -1,31 +1,26 @@
 module StructureKit.ByteStringArray
-(
-  ByteStringArray,
-  getByteStringMonolith,
-  foldr,
-)
+  ( ByteStringArray,
+    getByteStringMonolith,
+    foldr,
+  )
 where
 
-import StructureKit.Prelude hiding (lookup, insert, empty, foldr)
-import qualified Data.Vector.Unboxed as UVec
 import qualified Data.ByteString as ByteString
+import qualified Data.Vector.Unboxed as UVec
+import StructureKit.Prelude hiding (empty, foldr, insert, lookup)
 
-
-{-|
-Efficient representation of a vector of byte arrays.
-
-Implemented as a view on a single byte array,
-which knows where to split it into pieces.
--}
-data ByteStringArray =
-  ByteStringArray {
-    boundaryVec :: UVec.Vector Int,
+-- |
+-- Efficient representation of a vector of byte arrays.
+--
+-- Implemented as a view on a single byte array,
+-- which knows where to split it into pieces.
+data ByteStringArray = ByteStringArray
+  { boundaryVec :: UVec.Vector Int,
     byteString :: ByteString
   }
 
-{-|
-Get the underlying monolith vector.
--}
+-- |
+-- Get the underlying monolith vector.
 getByteStringMonolith :: ByteStringArray -> ByteString
 getByteStringMonolith = byteString
 

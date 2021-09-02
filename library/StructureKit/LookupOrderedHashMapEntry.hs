@@ -1,23 +1,20 @@
 module StructureKit.LookupOrderedHashMapEntry
-(
-  LookupOrderedHashMapEntry,
-  missing,
-  present,
-  insert,
-  inc,
-  dec,
-  entryKey,
-  select,
-)
+  ( LookupOrderedHashMapEntry,
+    missing,
+    present,
+    insert,
+    inc,
+    dec,
+    entryKey,
+    select,
+  )
 where
 
-import StructureKit.Prelude hiding (lookup, insert, empty)
+import StructureKit.Prelude hiding (empty, insert, lookup)
 
-
-data LookupOrderedHashMapEntry k v =
-  MissingLookupOrderedHashMapEntry Int k
-  |
-  PresentLookupOrderedHashMapEntry Int k v
+data LookupOrderedHashMapEntry k v
+  = MissingLookupOrderedHashMapEntry Int k
+  | PresentLookupOrderedHashMapEntry Int k v
 
 missing :: k -> LookupOrderedHashMapEntry k v
 missing =
@@ -39,27 +36,25 @@ inc :: LookupOrderedHashMapEntry k v -> (Maybe v, LookupOrderedHashMapEntry k v)
 inc =
   \case
     PresentLookupOrderedHashMapEntry count key value ->
-      (Just value,
-        PresentLookupOrderedHashMapEntry (succ count) key value)
+      ( Just value,
+        PresentLookupOrderedHashMapEntry (succ count) key value
+      )
     MissingLookupOrderedHashMapEntry count key ->
-      (Nothing,
-        MissingLookupOrderedHashMapEntry (succ count) key)
+      ( Nothing,
+        MissingLookupOrderedHashMapEntry (succ count) key
+      )
 
 dec :: LookupOrderedHashMapEntry k v -> (Maybe v, Maybe (LookupOrderedHashMapEntry k v))
 dec =
   \case
     PresentLookupOrderedHashMapEntry count entryKey value ->
       if count == 0
-        then
-          (Just value, Nothing)
-        else
-          (Just value, Just (PresentLookupOrderedHashMapEntry (pred count) entryKey value))
+        then (Just value, Nothing)
+        else (Just value, Just (PresentLookupOrderedHashMapEntry (pred count) entryKey value))
     MissingLookupOrderedHashMapEntry count entryKey ->
       if count == 0
-        then
-          (Nothing, Nothing)
-        else
-          (Nothing, Just (MissingLookupOrderedHashMapEntry (pred count) entryKey))
+        then (Nothing, Nothing)
+        else (Nothing, Just (MissingLookupOrderedHashMapEntry (pred count) entryKey))
 
 entryKey :: LookupOrderedHashMapEntry k v -> k
 entryKey =

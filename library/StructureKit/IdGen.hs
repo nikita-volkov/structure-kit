@@ -1,20 +1,18 @@
 module StructureKit.IdGen
-(
-  IdGen,
-  empty,
-  release,
-  fetch,
-)
+  ( IdGen,
+    empty,
+    release,
+    fetch,
+  )
 where
 
-import StructureKit.Prelude hiding (empty)
 import qualified Deque.Strict as Deque
+import StructureKit.Prelude hiding (empty)
 
-
-data IdGen =
-  IdGen
-    (Deque Int)
-    Int
+data IdGen
+  = IdGen
+      (Deque Int)
+      Int
 
 instance Semigroup IdGen where
   IdGen lDeque lCounter <> IdGen rDeque rCounter =

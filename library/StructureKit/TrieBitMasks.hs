@@ -1,8 +1,6 @@
-module StructureKit.TrieBitMasks
-where
+module StructureKit.TrieBitMasks where
 
 import StructureKit.Prelude
-
 
 level1 :: Int -> Int
 level1 a = a .&. 0b111111

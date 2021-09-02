@@ -1,28 +1,26 @@
 module StructureKit.LruHashCache
-(
-  LruHashCache,
-  empty,
-  lookup,
-  insert,
-)
+  ( LruHashCache,
+    empty,
+    lookup,
+    insert,
+  )
 where
 
-import StructureKit.Prelude hiding (lookup, insert, empty)
+import StructureKit.Prelude hiding (empty, insert, lookup)
 import qualified StructureKit.TouchOrderedHashMap as TouchOrderedHashMap
 
-
-data LruHashCache k v =
-  LruHashCache
-    Int
-    {-^ Slots occupied. -}
-    Int
-    {-^ Slots available. -}
-    (TouchOrderedHashMap.TouchOrderedHashMap k v)
+data LruHashCache k v
+  = LruHashCache
+      Int
+      -- ^ Slots occupied.
+      Int
+      -- ^ Slots available.
+      (TouchOrderedHashMap.TouchOrderedHashMap k v)
 
 empty ::
-  {-| Maximum amount of entries to store at one moment.
-      After it\'s reached an oldest entry will
-      be discarded on each insert. -}
+  -- | Maximum amount of entries to store at one moment.
+  --      After it\'s reached an oldest entry will
+  --      be discarded on each insert.
   Int ->
   LruHashCache k v
 empty avail =

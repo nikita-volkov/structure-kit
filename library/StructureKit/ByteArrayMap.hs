@@ -1,26 +1,23 @@
 module StructureKit.ByteArrayMap
-(
-  ByteArrayMap,
-  here,
-  mapAt,
-  consumeLongestPrefix,
-)
+  ( ByteArrayMap,
+    here,
+    mapAt,
+    consumeLongestPrefix,
+  )
 where
 
-import StructureKit.Prelude
-import qualified StructureKit.By8Bits as By8Bits
 import qualified Data.ByteString as ByteString
+import qualified StructureKit.By8Bits as By8Bits
+import StructureKit.Prelude
 
-
-{-|
-Map indexed by a sequence of bytes. Be it ByteArray or ByteString.
--}
-data ByteArrayMap a =
-  ByteArrayMap
-    (Maybe a)
-    {-^ Possible value at zero prefix. -}
-    (By8Bits.By8Bits (ByteArrayMap a))
-    {-^ Next trees indexed by first byte of the suffix. -}
+-- |
+-- Map indexed by a sequence of bytes. Be it ByteArray or ByteString.
+data ByteArrayMap a
+  = ByteArrayMap
+      (Maybe a)
+      -- ^ Possible value at zero prefix.
+      (By8Bits.By8Bits (ByteArrayMap a))
+      -- ^ Next trees indexed by first byte of the suffix.
 
 mapAt :: (a -> a) -> ByteString -> ByteArrayMap a -> ByteArrayMap a
 mapAt =
@@ -30,10 +27,9 @@ here :: ByteArrayMap a -> Maybe a
 here =
   error "TODO"
 
-{-|
-Consume as many bytes as possible until the tree ends,
-returning the unconsumed bytes.
--}
+-- |
+-- Consume as many bytes as possible until the tree ends,
+-- returning the unconsumed bytes.
 consumeLongestPrefix :: ByteString -> ByteArrayMap a -> (ByteString, ByteArrayMap a)
 consumeLongestPrefix key (ByteArrayMap posValue byteMap) =
   ByteString.uncons key & \case

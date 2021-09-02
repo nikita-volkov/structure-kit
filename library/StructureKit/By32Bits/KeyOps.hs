@@ -1,8 +1,6 @@
-module StructureKit.By32Bits.KeyOps
-where
+module StructureKit.By32Bits.KeyOps where
 
 import StructureKit.Prelude
-
 
 toIndexOfLevel1 a = a .&. 0b111111
 
