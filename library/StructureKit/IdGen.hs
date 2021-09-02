@@ -25,10 +25,10 @@ empty :: IdGen
 empty = IdGen mempty 1
 
 release :: Int -> IdGen -> IdGen
-release key (IdGen returned counter) = IdGen (Deque.snoc key returned) counter
+release key (IdGen released counter) = IdGen (Deque.snoc key released) counter
 
 fetch :: IdGen -> (Int, IdGen)
-fetch (IdGen returned counter) =
-  case Deque.uncons returned of
+fetch (IdGen released counter) =
+  case Deque.uncons released of
     Just (id, newReturned) -> (id, IdGen newReturned counter)
-    Nothing -> (counter, IdGen returned (succ counter))
+    Nothing -> (counter, IdGen released (succ counter))
