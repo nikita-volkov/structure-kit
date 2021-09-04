@@ -1,5 +1,6 @@
 module StructureKit.By6Bits
-  ( By6Bits,
+  ( -- *
+    By6Bits,
     empty,
     singleton,
     lookup,
@@ -8,11 +9,24 @@ module StructureKit.By6Bits
     revise,
     foldrWithKey,
     toList,
+
+    -- * Selection API
+    select,
+
+    -- ** Present
+    Present,
+    read,
+    remove,
+    overwrite,
+
+    -- ** Missing
+    Missing,
+    write,
   )
 where
 
 import qualified StructureKit.Bits64 as Bits64
-import StructureKit.Prelude hiding (empty, insert, lookup, singleton, toList)
+import StructureKit.Prelude hiding (empty, insert, lookup, read, remove, singleton, toList, write)
 import qualified StructureKit.Prelude as Prelude
 import qualified StructureKit.Util.SmallArray as SmallArray
 
@@ -130,3 +144,53 @@ foldrWithKey step end (By6Bits bits array) =
 toList :: By6Bits a -> [(Int, a)]
 toList =
   foldrWithKey (\k v -> (:) (k, v)) []
+
+-- * Selection API
+
+select :: Int -> By6Bits a -> Either (Missing a) (Present a)
+select key (By6Bits keys array) =
+  case Bits64.select key keys of
+    Bits64.FoundSelection popCountBefore keysWithoutIt ->
+      Right $ Present keys keysWithoutIt popCountBefore array
+    Bits64.UnfoundSelection popCountBefore keysWithIt ->
+      Left $ Missing keysWithIt popCountBefore array
+
+-- **
+
+data Present a
+  = Present
+      Bits64.Bits64
+      -- ^ Original key bitmap.
+      ~(Bits64.Bits64)
+      -- ^ Key bitmap without this key.
+      Int
+      -- ^ Found index in the array.
+      (SmallArray a)
+      -- ^ Array of entries.
+
+read :: Present a -> a
+read (Present _ _ idx arr) =
+  indexSmallArray arr idx
+
+remove :: Present a -> By6Bits a
+remove (Present _ keysWithoutIt popCountBefore array) =
+  By6Bits keysWithoutIt (SmallArray.unset popCountBefore array)
+
+overwrite :: a -> Present a -> By6Bits a
+overwrite val (Present keys _ popCountBefore array) =
+  By6Bits keys (SmallArray.set popCountBefore val array)
+
+-- **
+
+data Missing a
+  = Missing
+      ~(Bits64.Bits64)
+      -- ^ Key bitmap with this key.
+      Int
+      -- ^ Found index in the array.
+      (SmallArray a)
+      -- ^ Array of entries.
+
+write :: a -> Missing a -> By6Bits a
+write val (Missing keysWithIt popCountBefore array) =
+  By6Bits keysWithIt (SmallArray.insert popCountBefore val array)
