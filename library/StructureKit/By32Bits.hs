@@ -7,6 +7,7 @@ module StructureKit.By32Bits
     lookup,
     adjust,
     mapAt,
+    null,
 
     -- * Selection API
     select,
@@ -28,7 +29,7 @@ import StructureKit.By6Bits (By6Bits)
 import qualified StructureKit.By6Bits as By6Bits
 import StructureKit.By8Bits (By8Bits)
 import qualified StructureKit.By8Bits as By8Bits
-import StructureKit.Prelude hiding (adjust, empty, lookup, read, remove, write)
+import StructureKit.Prelude hiding (adjust, empty, lookup, null, read, remove, write)
 
 newtype By32Bits a
   = By32Bits (By6Bits (By6Bits (By6Bits (By6Bits (By8Bits a)))))
@@ -75,6 +76,9 @@ adjust cont key =
 mapAt :: Int -> (a -> a) -> By32Bits a -> By32Bits a
 mapAt =
   flip adjust
+
+null :: By32Bits a -> Bool
+null (By32Bits tree1) = By6Bits.null tree1
 
 -- * Selection API
 
