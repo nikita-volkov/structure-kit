@@ -1,15 +1,29 @@
 module StructureKit.By8Bits
-  ( By8Bits,
+  ( -- *
+    By8Bits,
     empty,
     lookup,
     insert,
     adjust,
     foldrWithKey,
+
+    -- * Selection API
+    select,
+
+    -- ** Present
+    Present,
+    read,
+    remove,
+    overwrite,
+
+    -- ** Missing
+    Missing,
+    write,
   )
 where
 
 import qualified StructureKit.By6Bits as By6Bits
-import StructureKit.Prelude hiding (empty, insert, lookup)
+import StructureKit.Prelude hiding (empty, insert, lookup, read, remove, write)
 
 -- |
 -- Map indexed with 8 bits.
@@ -80,50 +94,70 @@ select key (By8Bits a b c d) =
     then
       if key < 64
         then case By6Bits.select key a of
-          Right present -> Right $ APresent present b c d
-          Left missing -> Left $ AMissing missing b c d
+          Right present ->
+            Right $
+              Present
+                (By6Bits.read present)
+                (By8Bits (By6Bits.remove present) b c d)
+                (\val -> By8Bits (By6Bits.overwrite val present) b c d)
+          Left missing ->
+            Left $
+              Missing
+                (\val -> By8Bits (By6Bits.write val missing) b c d)
         else case By6Bits.select (key - 64) b of
-          Right present -> Right $ BPresent a present c d
-          Left missing -> Left $ BMissing a missing c d
+          Right present ->
+            Right $
+              Present
+                (By6Bits.read present)
+                (By8Bits a (By6Bits.remove present) c d)
+                (\val -> By8Bits a (By6Bits.overwrite val present) c d)
+          Left missing ->
+            Left $
+              Missing
+                (\val -> By8Bits a (By6Bits.write val missing) c d)
     else
       if key < 192
         then case By6Bits.select (key - 128) c of
-          Right present -> Right $ CPresent a b present d
-          Left missing -> Left $ CMissing a b missing d
+          Right present ->
+            Right $
+              Present
+                (By6Bits.read present)
+                (By8Bits a b (By6Bits.remove present) d)
+                (\val -> By8Bits a b (By6Bits.overwrite val present) d)
+          Left missing ->
+            Left $
+              Missing
+                (\val -> By8Bits a b (By6Bits.write val missing) d)
         else case By6Bits.select (key - 192) d of
-          Right present -> Right $ DPresent a b c present
-          Left missing -> Left $ DMissing a b c missing
+          Right present ->
+            Right $
+              Present
+                (By6Bits.read present)
+                (By8Bits a b c (By6Bits.remove present))
+                (\val -> By8Bits a b c (By6Bits.overwrite val present))
+          Left missing ->
+            Left $
+              Missing
+                (\val -> By8Bits a b c (By6Bits.write val missing))
 
 -- **
 
 data Present a
-  = APresent (By6Bits.Present a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
-  | BPresent (By6Bits.By6Bits a) (By6Bits.Present a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
-  | CPresent (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.Present a) (By6Bits.By6Bits a)
-  | DPresent (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.Present a)
+  = Present ~a ~(By8Bits a) (a -> By8Bits a)
 
 read :: Present a -> a
-read = \case
-  APresent present b c d ->
-    By6Bits.read present
+read (Present x _ _) = x
 
 remove :: Present a -> By8Bits a
-remove = \case
-  APresent present b c d ->
-    By8Bits (By6Bits.remove present) b c d
+remove (Present _ x _) = x
 
 overwrite :: a -> Present a -> By8Bits a
-overwrite =
-  error "TODO"
+overwrite val (Present _ _ x) = x val
 
 -- **
 
-data Missing a
-  = AMissing (By6Bits.Missing a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
-  | BMissing (By6Bits.By6Bits a) (By6Bits.Missing a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
-  | CMissing (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.Missing a) (By6Bits.By6Bits a)
-  | DMissing (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.Missing a)
+newtype Missing a
+  = Missing (a -> By8Bits a)
 
 write :: a -> Missing a -> By8Bits a
-write =
-  error "TODO"
+write val (Missing x) = x val
