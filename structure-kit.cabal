@@ -21,6 +21,8 @@ library
   default-language: Haskell2010
   ghc-options:
     -funbox-strict-fields
+    -Werror
+    -fwarn-incomplete-patterns
   exposed-modules:
     StructureKit.Bits256
     StructureKit.Bits64
