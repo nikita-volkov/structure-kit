@@ -1,6 +1,6 @@
 module StructureKit.Util.SmallArray where
 
-import StructureKit.Prelude
+import StructureKit.Prelude hiding (null, snoc)
 
 -- | A workaround for the weird forcing of 'undefined' values int 'newSmallArray'
 {-# INLINE newEmptySmallArray #-}
@@ -120,6 +120,17 @@ cons a array =
    in runSmallArray $ do
         newMa <- newSmallArray newSize a
         copySmallArray newMa 1 array 0 size
+        return newMa
+
+{-# INLINE snoc #-}
+snoc :: a -> SmallArray a -> SmallArray a
+snoc a array =
+  {-# SCC "snoc" #-}
+  let size = sizeofSmallArray array
+      newSize = succ size
+   in runSmallArray $ do
+        newMa <- newSmallArray newSize a
+        copySmallArray newMa 0 array 0 size
         return newMa
 
 {-# INLINE orderedPair #-}
@@ -268,3 +279,6 @@ foldrInRange start indexAfter step acc array =
 inRangeUnfoldr :: Int -> Int -> SmallArray a -> Unfoldr a
 inRangeUnfoldr startIndex afterIndex array =
   Unfoldr (\step acc -> foldrInRange startIndex afterIndex step acc array)
+
+null :: SmallArray a -> Bool
+null = (== 0) . sizeofSmallArray
