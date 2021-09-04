@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-overflowed-literals #-}
 -- |
 -- Set of 6-bit values represented with a 64-bit word.
 module StructureKit.Bits64
@@ -18,10 +19,16 @@ module StructureKit.Bits64
     forM_,
     unfoldr,
     toList,
+
+    -- *
+    Selection,
+    select,
+    read,
+    remove,
   )
 where
 
-import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, singleton, split, toList, unfoldr)
+import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, read, remove, select, singleton, split, toList, unfoldr, write)
 
 newtype Bits64
   = Bits64 Int64
@@ -182,3 +189,39 @@ unfoldr set =
 toList :: Bits64 -> [Int]
 toList =
   foldr (:) []
+
+-- *
+
+data Selection
+  = Selection
+      ~Int
+      -- ^ Popcount before.
+      ~Int64
+      -- ^ Bitmap without it.
+
+select :: Int -> Bits64 -> Maybe Selection
+select idx (Bits64 word) =
+  if idx == 0
+    then
+      if word .&. 1 /= 0
+        then
+          let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110
+           in Just (Selection 0 wordWithoutIt)
+        else Nothing
+    else
+      let bitAtIdx = bit idx
+          isPopulated = bitAtIdx .&. word /= 0
+       in if isPopulated
+            then
+              let popCountBefore = popCount (word .&. pred bitAtIdx)
+                  wordWithoutIt = xor word bitAtIdx
+               in Just (Selection popCountBefore wordWithoutIt)
+            else Nothing
+
+-- |
+-- Get its position amongst populated.
+read :: Selection -> Int
+read (Selection popCountBefore _) = popCountBefore
+
+remove :: Selection -> Bits64
+remove (Selection _ wordWithoutIt) = Bits64 wordWithoutIt
