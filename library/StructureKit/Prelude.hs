@@ -3,6 +3,7 @@ module StructureKit.Prelude
     mapCoercible,
     mapCoercible2,
     traverseCoercible,
+    showBin,
   )
 where
 
@@ -104,3 +105,6 @@ mapCoercible2 mapper =
 traverseCoercible :: (Coercible a b, Functor f) => (a -> f a) -> b -> f b
 traverseCoercible f =
   fmap coerce . f . coerce
+
+showBin :: (Integral a, Show a) => a -> String
+showBin a = showIntAtBase 2 intToDigit a ""
