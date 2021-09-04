@@ -80,23 +80,23 @@ mapAt =
 
 select :: Int -> By32Bits a -> Either (Missing a) (Present a)
 select key (By32Bits tree1) =
-  case By6Bits.select (KeyOps.toIndexOfLevel1 key) tree1 of
+  case By6Bits.select key1 tree1 of
     Right present1 ->
       let remove1 = By32Bits $ By6Bits.remove present1
           overwrite1 val = By32Bits $ By6Bits.overwrite val present1
-       in case By6Bits.select (KeyOps.toIndexOfLevel2 key) (By6Bits.read present1) of
+       in case By6Bits.select key2 (By6Bits.read present1) of
             Right present2 ->
               let remove2 = levelRemove remove1 overwrite1 present2
                   overwrite2 = levelOverwrite overwrite1 present2
-               in case By6Bits.select (KeyOps.toIndexOfLevel3 key) (By6Bits.read present2) of
+               in case By6Bits.select key3 (By6Bits.read present2) of
                     Right present3 ->
                       let remove3 = levelRemove remove2 overwrite2 present3
                           overwrite3 = levelOverwrite overwrite2 present3
-                       in case By6Bits.select (KeyOps.toIndexOfLevel4 key) (By6Bits.read present3) of
+                       in case By6Bits.select key4 (By6Bits.read present3) of
                             Right present4 ->
                               let remove4 = levelRemove remove3 overwrite3 present4
                                   overwrite4 = levelOverwrite overwrite3 present4
-                               in case By8Bits.select (KeyOps.toIndexOfLevel5 key) (By6Bits.read present4) of
+                               in case By8Bits.select key5 (By6Bits.read present4) of
                                     Right present5 ->
                                       Right $
                                         Present
@@ -111,7 +111,44 @@ select key (By32Bits tree1) =
                                       Left $
                                         Missing
                                           (\val -> overwrite4 $ By8Bits.write val missing5)
+                            Left missing4 ->
+                              Left $
+                                Missing
+                                  ( \val ->
+                                      missing4
+                                        & By6Bits.write (By8Bits.singleton key5 val)
+                                        & overwrite3
+                                  )
+                    Left missing3 ->
+                      Left $
+                        Missing
+                          ( \val ->
+                              let tree4 =
+                                    By6Bits.singleton key4 $ By8Bits.singleton key5 val
+                               in missing3 & By6Bits.write tree4 & overwrite2
+                          )
+            Left missing2 ->
+              Left $
+                Missing
+                  ( \val ->
+                      let tree3 =
+                            By6Bits.singleton key3 $ By6Bits.singleton key4 $ By8Bits.singleton key5 val
+                       in missing2 & By6Bits.write tree3 & overwrite1
+                  )
+    Left missing1 ->
+      Left $
+        Missing
+          ( \val ->
+              let tree2 =
+                    By6Bits.singleton key2 $ By6Bits.singleton key3 $ By6Bits.singleton key4 $ By8Bits.singleton key5 val
+               in missing1 & By6Bits.write tree2 & By32Bits
+          )
   where
+    key1 = KeyOps.toIndexOfLevel1 key
+    key2 = KeyOps.toIndexOfLevel2 key
+    key3 = KeyOps.toIndexOfLevel3 key
+    key4 = KeyOps.toIndexOfLevel4 key
+    key5 = KeyOps.toIndexOfLevel5 key
     levelRemove removeFromParent overwriteInParent present =
       By6Bits.remove present & \tree ->
         if By6Bits.null tree
