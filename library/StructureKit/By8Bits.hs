@@ -2,6 +2,7 @@ module StructureKit.By8Bits
   ( -- *
     By8Bits,
     empty,
+    singleton,
     lookup,
     insert,
     adjust,
@@ -24,7 +25,7 @@ module StructureKit.By8Bits
 where
 
 import qualified StructureKit.By6Bits as By6Bits
-import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, write)
+import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, singleton, write)
 
 -- |
 -- Map indexed with 8 bits.
@@ -34,6 +35,18 @@ data By8Bits a
 empty :: By8Bits a
 empty =
   By8Bits By6Bits.empty By6Bits.empty By6Bits.empty By6Bits.empty
+
+singleton :: Int -> a -> By8Bits a
+singleton key val =
+  if key < 128
+    then
+      if key < 64
+        then By8Bits (By6Bits.singleton key val) By6Bits.empty By6Bits.empty By6Bits.empty
+        else By8Bits By6Bits.empty (By6Bits.singleton (key - 64) val) By6Bits.empty By6Bits.empty
+    else
+      if key < 192
+        then By8Bits By6Bits.empty By6Bits.empty (By6Bits.singleton (key - 128) val) By6Bits.empty
+        else By8Bits By6Bits.empty By6Bits.empty By6Bits.empty (By6Bits.singleton (key - 192) val)
 
 lookup :: Int -> By8Bits a -> Maybe a
 lookup key (By8Bits a b c d) =
