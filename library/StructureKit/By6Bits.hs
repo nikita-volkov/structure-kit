@@ -9,6 +9,7 @@ module StructureKit.By6Bits
     revise,
     foldrWithKey,
     toList,
+    null,
 
     -- * Selection API
     select,
@@ -26,7 +27,7 @@ module StructureKit.By6Bits
 where
 
 import qualified StructureKit.Bits64 as Bits64
-import StructureKit.Prelude hiding (empty, insert, lookup, read, remove, singleton, toList, write)
+import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, singleton, toList, write)
 import qualified StructureKit.Prelude as Prelude
 import qualified StructureKit.Util.SmallArray as SmallArray
 
@@ -144,6 +145,9 @@ foldrWithKey step end (By6Bits bits array) =
 toList :: By6Bits a -> [(Int, a)]
 toList =
   foldrWithKey (\k v -> (:) (k, v)) []
+
+null :: By6Bits a -> Bool
+null (By6Bits keys _) = Bits64.null keys
 
 -- * Selection API
 

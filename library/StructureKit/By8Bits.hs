@@ -6,6 +6,7 @@ module StructureKit.By8Bits
     insert,
     adjust,
     foldrWithKey,
+    null,
 
     -- * Selection API
     select,
@@ -23,7 +24,7 @@ module StructureKit.By8Bits
 where
 
 import qualified StructureKit.By6Bits as By6Bits
-import StructureKit.Prelude hiding (empty, insert, lookup, read, remove, write)
+import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, write)
 
 -- |
 -- Map indexed with 8 bits.
@@ -85,6 +86,10 @@ foldrWithKey step end (By8Bits part1 part2 part3 part4) =
   where
     offsetStep offset key =
       step (key + offset)
+
+null :: By8Bits a -> Bool
+null (By8Bits a b c d) =
+  By6Bits.null a && By6Bits.null b && By6Bits.null c && By6Bits.null d
 
 -- * Selection API
 
