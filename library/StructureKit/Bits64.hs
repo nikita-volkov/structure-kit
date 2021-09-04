@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-overflowed-literals #-}
+
 -- |
 -- Set of 6-bit values represented with a 64-bit word.
 module StructureKit.Bits64
@@ -21,10 +22,8 @@ module StructureKit.Bits64
     toList,
 
     -- *
-    Selection,
     select,
-    read,
-    remove,
+    Selection (..),
   )
 where
 
@@ -193,35 +192,31 @@ toList =
 -- *
 
 data Selection
-  = Selection
+  = FoundSelection
       ~Int
       -- ^ Popcount before.
-      ~Int64
-      -- ^ Bitmap without it.
+      ~Bits64
+      -- ^ Bitmap without this bit.
+  | UnfoundSelection
+      ~Int
+      -- ^ Popcount before.
+      ~Bits64
+      -- ^ Bitmap with this bit.
 
-select :: Int -> Bits64 -> Maybe Selection
+-- |
+-- A single function that provides control over virtually all functionality.
+select :: Int -> Bits64 -> Selection
 select idx (Bits64 word) =
   if idx == 0
     then
-      if word .&. 1 /= 0
-        then
-          let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110
-           in Just (Selection 0 wordWithoutIt)
-        else Nothing
+      let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110
+       in if word == wordWithoutIt
+            then UnfoundSelection 0 (Bits64 (word .|. 1))
+            else FoundSelection 0 (Bits64 wordWithoutIt)
     else
       let bitAtIdx = bit idx
-          isPopulated = bitAtIdx .&. word /= 0
-       in if isPopulated
-            then
-              let popCountBefore = popCount (word .&. pred bitAtIdx)
-                  wordWithoutIt = xor word bitAtIdx
-               in Just (Selection popCountBefore wordWithoutIt)
-            else Nothing
-
--- |
--- Get its position amongst populated.
-read :: Selection -> Int
-read (Selection popCountBefore _) = popCountBefore
-
-remove :: Selection -> Bits64
-remove (Selection _ wordWithoutIt) = Bits64 wordWithoutIt
+          wordWithoutIt = xor word bitAtIdx
+          popCountBefore = popCount (word .&. pred bitAtIdx)
+       in if word == wordWithoutIt
+            then UnfoundSelection popCountBefore (Bits64 (word .|. bitAtIdx))
+            else FoundSelection popCountBefore (Bits64 wordWithoutIt)
