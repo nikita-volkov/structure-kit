@@ -1,16 +1,30 @@
 module StructureKit.TouchOrderedHashMap
-  ( TouchOrderedHashMap,
+  ( -- *
+    TouchOrderedHashMap,
     empty,
     lookup,
     insert,
     revise,
     evict,
+
+    -- * Selection API
+    select,
+
+    -- ** Present
+    Present,
+    read,
+    remove,
+    overwrite,
+
+    -- ** Missing
+    Missing,
+    write,
   )
 where
 
 import qualified Deque.Strict as Deque
 import qualified StructureKit.Hamt as Hamt
-import StructureKit.Prelude hiding (empty, insert, lookup)
+import StructureKit.Prelude hiding (empty, insert, lookup, read, write)
 
 data TouchOrderedHashMap k v
   = TouchOrderedHashMap
@@ -173,3 +187,31 @@ reviseHamtFinalizing ::
 reviseHamtFinalizing key miss update trie =
   reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
+
+-- * Selection API
+
+select :: k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
+select key (TouchOrderedHashMap deque hamt) =
+  error "TODO"
+
+-- **
+
+data Present k v
+  = Present ~v ~(TouchOrderedHashMap k v) (v -> TouchOrderedHashMap k v)
+
+read :: Present k v -> v
+read (Present x _ _) = x
+
+remove :: Present k v -> TouchOrderedHashMap k v
+remove (Present _ x _) = x
+
+overwrite :: v -> Present k v -> TouchOrderedHashMap k v
+overwrite val (Present _ _ x) = x val
+
+-- **
+
+newtype Missing k v
+  = Missing (v -> TouchOrderedHashMap k v)
+
+write :: v -> Missing k v -> TouchOrderedHashMap k v
+write val (Missing x) = x val
