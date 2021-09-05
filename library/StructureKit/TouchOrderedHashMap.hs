@@ -31,14 +31,14 @@ data TouchOrderedHashMap k v
       (Deque k)
       (Hamt.Hamt (Entry k v))
 
-data Entry k v
-  = Entry
-      Int
-      -- ^ Count of records in deque.
-      k
-      -- ^ Key.
-      (Maybe v)
-      -- ^ Value if the record is not deleted.
+data Entry k v = Entry
+  { -- | Count of records in deque.
+    entryCount :: Int,
+    -- | Key.
+    entryKey :: k,
+    -- | Value if the record is not deleted.
+    entryValue :: Maybe v
+  }
 
 empty :: TouchOrderedHashMap k v
 empty =
@@ -155,11 +155,6 @@ evict (TouchOrderedHashMap deque trie) =
                   )
         Nothing ->
           (Nothing, TouchOrderedHashMap deque trie)
-
-entryKey :: Entry k v -> k
-entryKey =
-  \case
-    Entry _ entryKey _ -> entryKey
 
 selectEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
 selectEntry key entry =
