@@ -185,28 +185,24 @@ reviseHamtFinalizing key miss update trie =
 
 -- * Selection API
 
-select :: k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
+select :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
 select key (TouchOrderedHashMap deque hamt) =
-  error "TODO"
+  case Hamt.select (hash key) ((key ==) . entryKey) hamt of
+    Right hamtPresent ->
+      error "TODO"
+    Left _ ->
+      error "TODO"
 
 -- **
 
-data Present k v
-  = Present ~v ~(TouchOrderedHashMap k v) (v -> TouchOrderedHashMap k v)
-
-read :: Present k v -> v
-read (Present x _ _) = x
-
-remove :: Present k v -> TouchOrderedHashMap k v
-remove (Present _ x _) = x
-
-overwrite :: v -> Present k v -> TouchOrderedHashMap k v
-overwrite val (Present _ _ x) = x val
+data Present k v = Present
+  { read :: ~(v, TouchOrderedHashMap k v),
+    remove :: ~(TouchOrderedHashMap k v),
+    overwrite :: v -> TouchOrderedHashMap k v
+  }
 
 -- **
 
-newtype Missing k v
-  = Missing (v -> TouchOrderedHashMap k v)
-
-write :: v -> Missing k v -> TouchOrderedHashMap k v
-write val (Missing x) = x val
+newtype Missing k v = Missing
+  { write :: v -> TouchOrderedHashMap k v
+  }
