@@ -44,10 +44,10 @@ by6Bits =
     new =
       [ testProperty "Inserted entry is accessible" $ do
           map <- genMap
-          key <- arbitrary
+          key <- chooseInt (0, 63)
           val <- arbitrary
           let map' = insert key val map
-          return $
+          return . counterexamples [show map, show map', show key] $
             Just val === lookup key map'
       ]
       where
@@ -67,8 +67,14 @@ bits64 =
       x <- genBits64
       key <- chooseInt (0, 63)
       let x' = insert key x
-      return $
-        lookup key x'
+      return . counterexample (show x) $
+        lookup key x',
+    testProperty "Removed entry is inaccessible" $ do
+      x <- genBits64
+      key <- chooseInt (0, 63)
+      let x' = delete key x
+      return . counterexample (show x) . counterexample (show x') . counterexample (show key) $
+        not $ lookup key x'
   ]
   where
     genBits64 =
@@ -77,6 +83,10 @@ bits64 =
       case Bits64.locate key x of
         Bits64.FoundLocation _ _ -> x
         Bits64.UnfoundLocation _ x -> x
+    delete key x =
+      case Bits64.locate key x of
+        Bits64.FoundLocation _ x -> x
+        Bits64.UnfoundLocation _ _ -> x
     lookup key x =
       Bits64.locate key x & \case
         Bits64.FoundLocation _ _ -> True
@@ -165,3 +175,6 @@ lruHashCache =
                in next lhc evictions'
         end lhc evictions =
           (evictions, lhc)
+
+counterexamples =
+  foldr (.) id . fmap counterexample
