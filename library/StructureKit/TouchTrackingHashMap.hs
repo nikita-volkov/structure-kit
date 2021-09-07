@@ -46,27 +46,12 @@ empty =
   TouchTrackingHashMap mempty Hamt.empty
 
 lookup :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> (Maybe v, TouchTrackingHashMap k v)
-lookup key (TouchTrackingHashMap touches entries) =
-  case Hamt.locate (hash key) ((==) key . entryKey) entries of
-    Right existingEntry ->
-      let Entry count _ val = Hamt.read existingEntry
-          newEntry = Entry (succ count) key val
-          newEntries = Hamt.overwrite newEntry existingEntry
-          newTouches = Deque.snoc key touches
-          newTthm = compact newTouches newEntries
-       in (Just val, newTthm)
-    Left missingEntry ->
-      (Nothing, TouchTrackingHashMap touches entries)
+lookup k tthm =
+  locate k tthm & either (const (Nothing, tthm)) (liftA2 (,) (Just . read) touch)
 
 insert :: (Hashable k, Eq k) => k -> v -> TouchTrackingHashMap k v -> (Maybe v, TouchTrackingHashMap k v)
-insert key value (TouchTrackingHashMap touches entries) =
-  case Hamt.locate (hash key) ((==) key . entryKey) entries of
-    Right existingEntry ->
-      let Entry count _ val = Hamt.read existingEntry
-          newEntry = Entry (succ count) key val
-       in error "TODO"
-    Left missingEntry ->
-      error "TODO"
+insert key value tthm =
+  locate key tthm & either (write value >>> (Nothing,)) (liftA2 (,) (Just . read) (overwrite value))
 
 -- |
 -- Evict one entry from the map.
