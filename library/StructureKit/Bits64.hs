@@ -205,6 +205,7 @@ data Selection
 
 -- |
 -- A single function that provides control over virtually all functionality.
+{-# INLINE select #-}
 select :: Int -> Bits64 -> Selection
 select idx (Bits64 word) =
   if idx == 0
