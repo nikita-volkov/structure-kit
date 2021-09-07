@@ -58,7 +58,7 @@ locate :: (Hashable k, Eq k) => k -> LruHashCache k v -> Either (Missing k v) (E
 locate k (LruHashCache occupied capacity tthm) =
   case TouchTrackingHashMap.locate k tthm of
     Right loc -> Right (Existing occupied capacity loc)
-    _ -> error "TODO"
+    Left loc -> Left (Missing occupied capacity loc)
 
 -- **
 
