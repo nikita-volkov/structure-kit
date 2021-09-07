@@ -43,9 +43,9 @@ findMapping hash cont (Hamt map) =
 findAndReplace :: Int -> (a -> Maybe a) -> Hamt a -> (Maybe a, Hamt a)
 findAndReplace hash narrow hamt =
   case locate hash (isJust . narrow) hamt of
-    Right present ->
-      case narrow (read present) of
-        Just newA -> (Just (read present), overwrite newA present)
+    Right existing ->
+      case narrow (read existing) of
+        Just newA -> (Just (read existing), overwrite newA existing)
         Nothing -> error "Oops"
     Left missing ->
       (Nothing, hamt)
@@ -55,14 +55,14 @@ findAndReplace hash narrow hamt =
 revise :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
 revise hash narrow onMissing onPresent hamt =
   case locate hash (isJust . narrow) hamt of
-    Right present ->
-      case narrow (read present) of
+    Right existing ->
+      case narrow (read existing) of
         Just b ->
           onPresent b <&> \case
             Just newA ->
-              overwrite newA present & Just
+              overwrite newA existing & Just
             Nothing ->
-              remove present & guarded (not . null)
+              remove existing & guarded (not . null)
         Nothing ->
           error "Oops"
     Left missing ->
@@ -75,8 +75,8 @@ revise hash narrow onMissing onPresent hamt =
 delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash narrow hamt =
   case locate hash (isJust . narrow) hamt of
-    Right present ->
-      (narrow (read present), guarded (not . null) (remove present))
+    Right existing ->
+      (narrow (read existing), guarded (not . null) (remove existing))
     Left missing ->
       (Nothing, Just hamt)
 

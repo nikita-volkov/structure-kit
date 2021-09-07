@@ -153,13 +153,13 @@ locate key (By32Bits tree1) =
     key3 = KeyOps.toIndexOfLevel3 key
     key4 = KeyOps.toIndexOfLevel4 key
     key5 = KeyOps.toIndexOfLevel5 key
-    levelRemove removeFromParent overwriteInParent present =
-      By6Bits.remove present & \tree ->
+    levelRemove removeFromParent overwriteInParent existing =
+      By6Bits.remove existing & \tree ->
         if By6Bits.null tree
           then removeFromParent
           else overwriteInParent tree
-    levelOverwrite overwriteInParent present val =
-      overwriteInParent $ By6Bits.overwrite val present
+    levelOverwrite overwriteInParent existing val =
+      overwriteInParent $ By6Bits.overwrite val existing
 
 -- **
 
