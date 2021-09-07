@@ -88,23 +88,23 @@ null (Hamt map) = By32Bits.null map
 locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
 locate hash predicate (Hamt map) =
   case By32Bits.locate hash map of
-    Right mapPresent ->
-      let array = By32Bits.read mapPresent
+    Right mapExisting ->
+      let array = By32Bits.read mapExisting
        in case SmallArray.findWithIndex predicate array of
             Just (idx, val) ->
               let without =
                     let newArray = SmallArray.unset idx array
                      in if SmallArray.null newArray
-                          then Hamt $ By32Bits.remove mapPresent
-                          else Hamt $ By32Bits.overwrite newArray mapPresent
+                          then Hamt $ By32Bits.remove mapExisting
+                          else Hamt $ By32Bits.overwrite newArray mapExisting
                   overwrite val =
                     let newArray = SmallArray.set idx val array
-                     in Hamt $ By32Bits.overwrite newArray mapPresent
+                     in Hamt $ By32Bits.overwrite newArray mapExisting
                in Right $ Existing val without overwrite
             Nothing ->
               let write val =
                     let newArray = SmallArray.snoc val array
-                     in Hamt $ By32Bits.overwrite newArray mapPresent
+                     in Hamt $ By32Bits.overwrite newArray mapExisting
                in Left $ Missing write
     Left mapMissing ->
       let write val =

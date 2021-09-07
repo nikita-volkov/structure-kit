@@ -188,7 +188,7 @@ reviseHamtFinalizing key miss update trie =
 locate :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Existing k v)
 locate key (TouchOrderedHashMap deque hamt) =
   case Hamt.locate (hash key) ((key ==) . entryKey) hamt of
-    Right hamtPresent ->
+    Right hamtExisting ->
       error "TODO"
     Left _ ->
       error "TODO"
