@@ -45,9 +45,10 @@ empty =
 
 -- |
 -- Evict one entry from the map.
+{-# INLINE evict #-}
 evict :: (Hashable k, Eq k) => TouchTrackingHashMap k v -> (Maybe (k, v), TouchTrackingHashMap k v)
 evict (TouchTrackingHashMap touches entries) =
-  error "TODO"
+  recurseEvicting touches entries
 
 -- * Location API
 
@@ -81,7 +82,7 @@ touch (Existing count key val touches existingEntry) =
   let newEntry = Entry (succ count) key val
       newEntries = Hamt.overwrite newEntry existingEntry
       newTouches = Deque.snoc key touches
-   in compact newTouches newEntries
+   in recurseCompacting newTouches newEntries
 
 {-# INLINE overwrite #-}
 overwrite :: (Hashable k, Eq k) => v -> Existing k v -> TouchTrackingHashMap k v
@@ -89,7 +90,7 @@ overwrite newValue (Existing count key _ touches existingEntry) =
   let newEntry = Entry (succ count) key newValue
       newEntries = Hamt.overwrite newEntry existingEntry
       newTouches = Deque.snoc key touches
-      newTthm = compact newTouches newEntries
+      newTthm = recurseCompacting newTouches newEntries
    in newTthm
 
 -- **
@@ -113,9 +114,9 @@ write val (Missing key touches missingEntry) =
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
 -- and construct a map from those.
-{-# INLINE compact #-}
-compact :: (Hashable k, Eq k) => Deque k -> Hamt.Hamt (Entry k v) -> TouchTrackingHashMap k v
-compact !touches !entries =
+{-# NOINLINE recurseCompacting #-}
+recurseCompacting :: (Hashable k, Eq k) => Deque k -> Hamt.Hamt (Entry k v) -> TouchTrackingHashMap k v
+recurseCompacting !touches !entries =
   case Deque.uncons touches of
     Just (key, newTouches) ->
       case Hamt.locate (hash key) ((==) key . entryKey) entries of
@@ -127,8 +128,28 @@ compact !touches !entries =
                 else
                   let newEntry = Entry (pred count) key val
                       newEntries = Hamt.overwrite newEntry existingEntry
-                   in compact newTouches newEntries
+                   in recurseCompacting newTouches newEntries
         Left missingEntry ->
           error "Oops"
     Nothing ->
       TouchTrackingHashMap touches entries
+
+{-# NOINLINE recurseEvicting #-}
+recurseEvicting :: (Hashable k, Eq k) => Deque k -> Hamt.Hamt (Entry k v) -> (Maybe (k, v), TouchTrackingHashMap k v)
+recurseEvicting !touches !entries =
+  case Deque.uncons touches of
+    Just (key, newTouches) -> case Hamt.locate (hash key) ((==) key . entryKey) entries of
+      Right existingEntry ->
+        let Entry count _ val = Hamt.read existingEntry
+         in if count == 1
+              then
+                let newEntries = Hamt.remove existingEntry
+                 in (Just (key, val), recurseCompacting newTouches newEntries)
+              else
+                let newEntry = Entry (pred count) key val
+                    newEntries = Hamt.overwrite newEntry existingEntry
+                 in recurseEvicting newTouches newEntries
+      Left missingEntry ->
+        error "Oops"
+    Nothing ->
+      (Nothing, TouchTrackingHashMap touches entries)
