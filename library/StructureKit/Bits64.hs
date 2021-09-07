@@ -30,7 +30,7 @@ where
 import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, locate, lookup, member, null, read, remove, singleton, split, toList, unfoldr, write)
 
 newtype Bits64
-  = Bits64 Int64
+  = Bits64 Word64
   deriving (Eq)
 
 instance Semigroup Bits64 where
