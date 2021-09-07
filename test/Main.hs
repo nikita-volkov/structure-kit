@@ -146,7 +146,7 @@ lruHashCache =
       let lhc = fromInserts size inserts
           inexistentKey = size + 1
           eviction = LruHashCache.insert inexistentKey val lhc & fst
-      return $ Just (inexistentKey, val) === eviction,
+      return $ isJust eviction,
     testProperty "Evicted entry cannot be looked up" $ do
       size <- chooseInt (0, 99)
       initialEntries <- replicateM size $ arbitrary @(Word16, Word16)
@@ -174,7 +174,7 @@ lruHashCache =
                     Nothing -> evictions
                in next lhc evictions'
         end lhc evictions =
-          (evictions, lhc)
+          (reverse evictions, lhc)
 
 counterexamples =
   foldr (.) id . fmap counterexample
