@@ -38,6 +38,9 @@ data By6Bits a
       {-# UNPACK #-} !Bits64.Bits64
       {-# UNPACK #-} !(SmallArray a)
 
+instance Show a => Show (By6Bits a) where
+  show = show . toList
+
 empty :: By6Bits a
 empty =
   By6Bits Bits64.empty Prelude.empty
