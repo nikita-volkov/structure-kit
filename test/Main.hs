@@ -11,27 +11,24 @@ import Test.Tasty.Runners
 import Prelude hiding (assert)
 
 main =
-  defaultMain $
-    testGroup
-      "All tests"
-      [ testGroup
-          "By6Bits"
-          [ testProperty
-              "Inserted value can be looked up"
-              do
-                insertionList <- listOf $ do
-                  k <- chooseInt (0, 63)
-                  v <- arbitrary @Word8
-                  return (k, v)
-                return $
-                  let nubbedInsertionList =
-                        nubBy (on (==) fst) insertionList
-                      map =
-                        foldl' (\map (k, v) -> snd (By6Bits.insert k v map)) By6Bits.empty nubbedInsertionList
-                      lookupList =
-                        fmap (\(k, _) -> (k, By6Bits.lookup k map)) nubbedInsertionList
-                      expectedLookupList =
-                        fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
-                   in lookupList === expectedLookupList
-          ]
-      ]
+  defaultMain . testGroup "All tests" $
+    [ testGroup "By6Bits" by6Bits
+    ]
+
+by6Bits =
+  [ testProperty "Inserted value can be looked up" $ do
+      insertionList <- listOf $ do
+        k <- chooseInt (0, 63)
+        v <- arbitrary @Word8
+        return (k, v)
+      return $
+        let nubbedInsertionList =
+              nubBy (on (==) fst) insertionList
+            map =
+              foldl' (\map (k, v) -> snd (By6Bits.insert k v map)) By6Bits.empty nubbedInsertionList
+            lookupList =
+              fmap (\(k, _) -> (k, By6Bits.lookup k map)) nubbedInsertionList
+            expectedLookupList =
+              fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
+         in lookupList === expectedLookupList
+  ]
