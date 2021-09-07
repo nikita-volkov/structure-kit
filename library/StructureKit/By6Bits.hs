@@ -11,7 +11,7 @@ module StructureKit.By6Bits
     toList,
     null,
 
-    -- * Selection API
+    -- * Location API
     select,
 
     -- ** Present
@@ -149,14 +149,14 @@ toList =
 null :: By6Bits a -> Bool
 null (By6Bits keys _) = Bits64.null keys
 
--- * Selection API
+-- * Location API
 
 select :: Int -> By6Bits a -> Either (Missing a) (Present a)
 select key (By6Bits keys array) =
   case Bits64.select key keys of
-    Bits64.FoundSelection popCountBefore keysWithoutIt ->
+    Bits64.FoundLocation popCountBefore keysWithoutIt ->
       Right $ Present keys keysWithoutIt popCountBefore array
-    Bits64.UnfoundSelection popCountBefore keysWithIt ->
+    Bits64.UnfoundLocation popCountBefore keysWithIt ->
       Left $ Missing keysWithIt popCountBefore array
 
 -- **

@@ -9,7 +9,7 @@ module StructureKit.By8Bits
     foldrWithKey,
     null,
 
-    -- * Selection API
+    -- * Location API
     select,
 
     -- ** Present
@@ -104,7 +104,7 @@ null :: By8Bits a -> Bool
 null (By8Bits a b c d) =
   By6Bits.null a && By6Bits.null b && By6Bits.null c && By6Bits.null d
 
--- * Selection API
+-- * Location API
 
 select :: Int -> By8Bits a -> Either (Missing a) (Present a)
 select key (By8Bits a b c d) =

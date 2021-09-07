@@ -8,7 +8,7 @@ module StructureKit.Hamt
     delete,
     null,
 
-    -- * Selection API
+    -- * Location API
     select,
 
     -- ** Present
@@ -83,7 +83,7 @@ delete hash narrow hamt =
 null :: Hamt a -> Bool
 null (Hamt map) = By32Bits.null map
 
--- * Selection API
+-- * Location API
 
 select :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Present a)
 select hash predicate (Hamt map) =

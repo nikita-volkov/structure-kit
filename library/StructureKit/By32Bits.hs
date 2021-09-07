@@ -9,7 +9,7 @@ module StructureKit.By32Bits
     mapAt,
     null,
 
-    -- * Selection API
+    -- * Location API
     select,
 
     -- ** Present
@@ -80,7 +80,7 @@ mapAt =
 null :: By32Bits a -> Bool
 null (By32Bits tree1) = By6Bits.null tree1
 
--- * Selection API
+-- * Location API
 
 select :: Int -> By32Bits a -> Either (Missing a) (Present a)
 select key (By32Bits tree1) =

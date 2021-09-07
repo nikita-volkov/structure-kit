@@ -7,7 +7,7 @@ module StructureKit.TouchOrderedHashMap
     revise,
     evict,
 
-    -- * Selection API
+    -- * Location API
     select,
 
     -- ** Present
@@ -183,7 +183,7 @@ reviseHamtFinalizing key miss update trie =
   reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
 
--- * Selection API
+-- * Location API
 
 select :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
 select key (TouchOrderedHashMap deque hamt) =
