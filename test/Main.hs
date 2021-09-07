@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Data.List as List
+import qualified StructureKit.By32Bits as By32Bits
 import qualified StructureKit.By6Bits as By6Bits
 import qualified StructureKit.LruHashCache as LruHashCache
 import qualified Test.QuickCheck as QuickCheck
@@ -14,6 +15,7 @@ import Prelude hiding (assert)
 main =
   defaultMain . testGroup "All tests" $
     [ testGroup "By6Bits" by6Bits,
+      testGroup "By32Bits" by32Bits,
       testGroup "LruHashCache" lruHashCache
     ]
 
@@ -34,6 +36,27 @@ by6Bits =
               fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
          in lookupList === expectedLookupList
   ]
+
+by32Bits =
+  [ testProperty "Inserted entry is accessible" $ do
+      map <- genMap
+      key <- arbitrary
+      val <- arbitrary
+      let map' = insert key val map
+      return $
+        Just val === lookup key map'
+  ]
+  where
+    genMap = do
+      size <- chooseInt (0, 999)
+      inserts <- replicateM size (arbitrary @(Int, Word16))
+      return $ foldr (uncurry insert) By32Bits.empty inserts
+    insert key val map =
+      By32Bits.locate key map
+        & either (By32Bits.write val) (By32Bits.overwrite val)
+    lookup key map =
+      By32Bits.locate key map
+        & either (const Nothing) (Just . By32Bits.read)
 
 lruHashCache =
   [ testProperty "Freshly inserted entry must be possible to lookup" $ do
