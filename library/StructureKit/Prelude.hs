@@ -5,6 +5,7 @@ module StructureKit.Prelude
     mapCoercible2,
     traverseCoercible,
     showBin,
+    showBinFinite,
   )
 where
 
@@ -112,3 +113,11 @@ traverseCoercible f =
 
 showBin :: (Integral a, Show a) => a -> String
 showBin a = showIntAtBase 2 intToDigit a ""
+
+showBinFinite :: (Integral a, Show a, FiniteBits a) => a -> String
+showBinFinite a =
+  let str = showBin a
+      len = length str
+      rem = finiteBitSize a - len
+      pad = replicate rem '0'
+   in pad <> str

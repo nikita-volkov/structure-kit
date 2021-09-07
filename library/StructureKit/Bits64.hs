@@ -30,7 +30,7 @@ where
 import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, locate, lookup, member, null, read, remove, singleton, split, toList, unfoldr, write)
 
 newtype Bits64
-  = Bits64 Int64
+  = Bits64 Word64
   deriving (Eq)
 
 instance Semigroup Bits64 where
@@ -38,6 +38,9 @@ instance Semigroup Bits64 where
 
 instance Monoid Bits64 where
   mempty = Bits64 0
+
+instance Show Bits64 where
+  show (Bits64 x) = showBinFinite x
 
 empty :: Bits64
 empty =
@@ -216,8 +219,9 @@ locate idx (Bits64 word) =
             else FoundLocation 0 (Bits64 wordWithoutIt)
     else
       let bitAtIdx = bit idx
-          wordWithoutIt = xor word bitAtIdx
+          wordWithIt = word .|. bitAtIdx
+          wordWithoutIt = word .&. complement bitAtIdx
           popCountBefore = popCount (word .&. pred bitAtIdx)
-       in if word == wordWithoutIt
-            then UnfoundLocation popCountBefore (Bits64 (word .|. bitAtIdx))
-            else FoundLocation popCountBefore (Bits64 wordWithoutIt)
+       in if word == wordWithIt
+            then FoundLocation popCountBefore (Bits64 wordWithoutIt)
+            else UnfoundLocation popCountBefore (Bits64 wordWithIt)
