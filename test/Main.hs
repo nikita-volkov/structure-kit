@@ -68,7 +68,12 @@ bits64 =
       key <- chooseInt (0, 63)
       let x' = insert key x
       return $
-        lookup key x'
+        lookup key x',
+    testProperty "Removed entry is inaccessible" $ do
+      x <- genBits64
+      key <- chooseInt (0, 63)
+      let x' = delete key x
+      return $ not $ lookup key x'
   ]
   where
     genBits64 =
@@ -77,6 +82,10 @@ bits64 =
       case Bits64.locate key x of
         Bits64.FoundLocation _ _ -> x
         Bits64.UnfoundLocation _ x -> x
+    delete key x =
+      case Bits64.locate key x of
+        Bits64.FoundLocation _ x -> x
+        Bits64.UnfoundLocation _ _ -> x
     lookup key x =
       Bits64.locate key x & \case
         Bits64.FoundLocation _ _ -> True
