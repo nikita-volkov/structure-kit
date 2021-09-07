@@ -5,6 +5,18 @@ module StructureKit.TouchTrackingHashMap
     lookup,
     insert,
     evict,
+
+    -- * Location API
+    locate,
+
+    -- ** Existing
+    Existing,
+    read,
+    overwrite,
+
+    -- ** Missing
+    Missing,
+    write,
   )
 where
 
@@ -60,6 +72,60 @@ insert key value (TouchTrackingHashMap touches entries) =
 evict :: (Hashable k, Eq k) => TouchTrackingHashMap k v -> (Maybe (k, v), TouchTrackingHashMap k v)
 evict (TouchTrackingHashMap touches entries) =
   error "TODO"
+
+-- * Location API
+
+{-# INLINE locate #-}
+locate :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Either (Missing k v) (Existing k v)
+locate key (TouchTrackingHashMap touches entries) =
+  case Hamt.locate (hash key) ((==) key . entryKey) entries of
+    Right existingEntry ->
+      Right $ Existing touches existingEntry
+    Left missingEntry ->
+      Left $ Missing key touches missingEntry
+
+-- **
+
+data Existing k v
+  = Existing
+      {-# UNPACK #-} !(Deque.Deque k)
+      {-# UNPACK #-} !(Hamt.Existing (Entry k v))
+
+{-# INLINE read #-}
+read :: (Hashable k, Eq k) => Existing k v -> (v, TouchTrackingHashMap k v)
+read (Existing touches existingEntry) =
+  let Entry count key val = Hamt.read existingEntry
+      newEntry = Entry (succ count) key val
+      newEntries = Hamt.overwrite newEntry existingEntry
+      newTouches = Deque.snoc key touches
+      newTthm = compact newTouches newEntries
+   in (val, newTthm)
+
+{-# INLINE overwrite #-}
+overwrite :: (Hashable k, Eq k) => v -> Existing k v -> TouchTrackingHashMap k v
+overwrite newValue (Existing touches existingEntry) =
+  let Entry count key _ = Hamt.read existingEntry
+      newEntry = Entry (succ count) key newValue
+      newEntries = Hamt.overwrite newEntry existingEntry
+      newTouches = Deque.snoc key touches
+      newTthm = compact newTouches newEntries
+   in newTthm
+
+-- **
+
+data Missing k v
+  = Missing
+      !k
+      {-# UNPACK #-} !(Deque.Deque k)
+      {-# UNPACK #-} !(Hamt.Missing (Entry k v))
+
+{-# INLINE write #-}
+write :: v -> Missing k v -> TouchTrackingHashMap k v
+write val (Missing key touches missingEntry) =
+  let entry = Entry 1 key val
+      newEntries = Hamt.write entry missingEntry
+      newTouches = Deque.snoc key touches
+   in TouchTrackingHashMap newTouches newEntries
 
 -- * Helpers
 
