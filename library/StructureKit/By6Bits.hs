@@ -12,7 +12,7 @@ module StructureKit.By6Bits
     null,
 
     -- * Location API
-    select,
+    locate,
 
     -- ** Present
     Present,
@@ -151,9 +151,9 @@ null (By6Bits keys _) = Bits64.null keys
 
 -- * Location API
 
-select :: Int -> By6Bits a -> Either (Missing a) (Present a)
-select key (By6Bits keys array) =
-  case Bits64.select key keys of
+locate :: Int -> By6Bits a -> Either (Missing a) (Present a)
+locate key (By6Bits keys array) =
+  case Bits64.locate key keys of
     Bits64.FoundLocation popCountBefore keysWithoutIt ->
       Right $ Present keys keysWithoutIt popCountBefore array
     Bits64.UnfoundLocation popCountBefore keysWithIt ->

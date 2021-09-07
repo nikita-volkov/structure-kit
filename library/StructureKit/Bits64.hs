@@ -22,12 +22,12 @@ module StructureKit.Bits64
     toList,
 
     -- *
-    select,
+    locate,
     Location (..),
   )
 where
 
-import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, read, remove, select, singleton, split, toList, unfoldr, write)
+import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, read, remove, locate, singleton, split, toList, unfoldr, write)
 
 newtype Bits64
   = Bits64 Int64
@@ -205,9 +205,9 @@ data Location
 
 -- |
 -- A single function that provides control over virtually all functionality.
-{-# INLINE select #-}
-select :: Int -> Bits64 -> Location
-select idx (Bits64 word) =
+{-# INLINE locate #-}
+locate :: Int -> Bits64 -> Location
+locate idx (Bits64 word) =
   if idx == 0
     then
       let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110

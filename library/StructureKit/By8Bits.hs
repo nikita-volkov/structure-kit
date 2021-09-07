@@ -10,7 +10,7 @@ module StructureKit.By8Bits
     null,
 
     -- * Location API
-    select,
+    locate,
 
     -- ** Present
     Present,
@@ -106,12 +106,12 @@ null (By8Bits a b c d) =
 
 -- * Location API
 
-select :: Int -> By8Bits a -> Either (Missing a) (Present a)
-select key (By8Bits a b c d) =
+locate :: Int -> By8Bits a -> Either (Missing a) (Present a)
+locate key (By8Bits a b c d) =
   if key < 128
     then
       if key < 64
-        then case By6Bits.select key a of
+        then case By6Bits.locate key a of
           Right present ->
             Right $
               Present
@@ -122,7 +122,7 @@ select key (By8Bits a b c d) =
             Left $
               Missing
                 (\val -> By8Bits (By6Bits.write val missing) b c d)
-        else case By6Bits.select (key - 64) b of
+        else case By6Bits.locate (key - 64) b of
           Right present ->
             Right $
               Present
@@ -135,7 +135,7 @@ select key (By8Bits a b c d) =
                 (\val -> By8Bits a (By6Bits.write val missing) c d)
     else
       if key < 192
-        then case By6Bits.select (key - 128) c of
+        then case By6Bits.locate (key - 128) c of
           Right present ->
             Right $
               Present
@@ -146,7 +146,7 @@ select key (By8Bits a b c d) =
             Left $
               Missing
                 (\val -> By8Bits a b (By6Bits.write val missing) d)
-        else case By6Bits.select (key - 192) d of
+        else case By6Bits.locate (key - 192) d of
           Right present ->
             Right $
               Present

@@ -9,7 +9,7 @@ module StructureKit.Hamt
     null,
 
     -- * Location API
-    select,
+    locate,
 
     -- ** Present
     Present,
@@ -42,7 +42,7 @@ findMapping hash cont (Hamt map) =
 
 findAndReplace :: Int -> (a -> Maybe a) -> Hamt a -> (Maybe a, Hamt a)
 findAndReplace hash narrow hamt =
-  case select hash (isJust . narrow) hamt of
+  case locate hash (isJust . narrow) hamt of
     Right present ->
       case narrow (read present) of
         Just newA -> (Just (read present), overwrite newA present)
@@ -54,7 +54,7 @@ findAndReplace hash narrow hamt =
 -- Deprecated.
 revise :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
 revise hash narrow onMissing onPresent hamt =
-  case select hash (isJust . narrow) hamt of
+  case locate hash (isJust . narrow) hamt of
     Right present ->
       case narrow (read present) of
         Just b ->
@@ -74,7 +74,7 @@ revise hash narrow onMissing onPresent hamt =
 -- Deprecated.
 delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash narrow hamt =
-  case select hash (isJust . narrow) hamt of
+  case locate hash (isJust . narrow) hamt of
     Right present ->
       (narrow (read present), guarded (not . null) (remove present))
     Left missing ->
@@ -85,9 +85,9 @@ null (Hamt map) = By32Bits.null map
 
 -- * Location API
 
-select :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Present a)
-select hash predicate (Hamt map) =
-  case By32Bits.select hash map of
+locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Present a)
+locate hash predicate (Hamt map) =
+  case By32Bits.locate hash map of
     Right mapPresent ->
       let array = By32Bits.read mapPresent
        in case SmallArray.findWithIndex predicate array of

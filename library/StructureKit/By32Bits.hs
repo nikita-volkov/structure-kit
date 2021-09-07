@@ -10,7 +10,7 @@ module StructureKit.By32Bits
     null,
 
     -- * Location API
-    select,
+    locate,
 
     -- ** Present
     Present,
@@ -82,25 +82,25 @@ null (By32Bits tree1) = By6Bits.null tree1
 
 -- * Location API
 
-select :: Int -> By32Bits a -> Either (Missing a) (Present a)
-select key (By32Bits tree1) =
-  case By6Bits.select key1 tree1 of
+locate :: Int -> By32Bits a -> Either (Missing a) (Present a)
+locate key (By32Bits tree1) =
+  case By6Bits.locate key1 tree1 of
     Right present1 ->
       let remove1 = By32Bits $ By6Bits.remove present1
           overwrite1 val = By32Bits $ By6Bits.overwrite val present1
-       in case By6Bits.select key2 (By6Bits.read present1) of
+       in case By6Bits.locate key2 (By6Bits.read present1) of
             Right present2 ->
               let remove2 = levelRemove remove1 overwrite1 present2
                   overwrite2 = levelOverwrite overwrite1 present2
-               in case By6Bits.select key3 (By6Bits.read present2) of
+               in case By6Bits.locate key3 (By6Bits.read present2) of
                     Right present3 ->
                       let remove3 = levelRemove remove2 overwrite2 present3
                           overwrite3 = levelOverwrite overwrite2 present3
-                       in case By6Bits.select key4 (By6Bits.read present3) of
+                       in case By6Bits.locate key4 (By6Bits.read present3) of
                             Right present4 ->
                               let remove4 = levelRemove remove3 overwrite3 present4
                                   overwrite4 = levelOverwrite overwrite3 present4
-                               in case By8Bits.select key5 (By6Bits.read present4) of
+                               in case By8Bits.locate key5 (By6Bits.read present4) of
                                     Right present5 ->
                                       Right $
                                         Present

@@ -8,7 +8,7 @@ module StructureKit.TouchOrderedHashMap
     evict,
 
     -- * Location API
-    select,
+    locate,
 
     -- ** Present
     Present,
@@ -156,8 +156,8 @@ evict (TouchOrderedHashMap deque trie) =
         Nothing ->
           (Nothing, TouchOrderedHashMap deque trie)
 
-selectEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
-selectEntry key entry =
+locateEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
+locateEntry key entry =
   if entryKey entry == key
     then Just entry
     else Nothing
@@ -170,7 +170,7 @@ reviseHamt ::
   Hamt.Hamt (Entry k v) ->
   f (Maybe (Hamt.Hamt (Entry k v)))
 reviseHamt key =
-  Hamt.revise (hash key) (selectEntry key)
+  Hamt.revise (hash key) (locateEntry key)
 
 reviseHamtFinalizing ::
   (Hashable k, Eq k) =>
@@ -185,9 +185,9 @@ reviseHamtFinalizing key miss update trie =
 
 -- * Location API
 
-select :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
-select key (TouchOrderedHashMap deque hamt) =
-  case Hamt.select (hash key) ((key ==) . entryKey) hamt of
+locate :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
+locate key (TouchOrderedHashMap deque hamt) =
+  case Hamt.locate (hash key) ((key ==) . entryKey) hamt of
     Right hamtPresent ->
       error "TODO"
     Left _ ->
