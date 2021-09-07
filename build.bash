@@ -44,6 +44,8 @@ ormolu --mode inplace -c \
 -o -XUnboxedTuples \
 $(find . -name '*.hs')
 
-stack build --fast --test \
---ghc-options "-Werror -fwarn-incomplete-patterns -O2" \
---ta "--quickcheck-replay 0 --quickcheck-tests 99 -j1"
+stack \
+build \
+--ghc-options "-O2" \
+--bench \
+--ba "-s"

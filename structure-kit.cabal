@@ -78,3 +78,19 @@ test-suite test
     tasty >=0.12 && <2,
     tasty-hunit >=0.9 && <0.11,
     tasty-quickcheck >=0.9 && <0.11
+
+benchmark bench
+  type: exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is: Main.hs
+  other-modules:
+    Main.ExtrasFor.LruHashCache
+    Main.ExtrasFor.QcGen
+  ghc-options: -O2 -threaded "-with-rtsopts=-N"
+  default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
+  default-language: Haskell2010
+  build-depends:
+    gauge >=0.2.5 && <0.3,
+    structure-kit,
+    rerebase >=1.13.0.1 && <2,
+    QuickCheck >=2.14.2 && <3
