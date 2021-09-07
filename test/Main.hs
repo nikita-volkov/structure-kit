@@ -44,10 +44,10 @@ by6Bits =
     new =
       [ testProperty "Inserted entry is accessible" $ do
           map <- genMap
-          key <- arbitrary
+          key <- chooseInt (0, 63)
           val <- arbitrary
           let map' = insert key val map
-          return $
+          return . counterexamples [show map, show map', show key] $
             Just val === lookup key map'
       ]
       where
@@ -175,3 +175,6 @@ lruHashCache =
                in next lhc evictions'
         end lhc evictions =
           (evictions, lhc)
+
+counterexamples =
+  foldr (.) id . fmap counterexample
