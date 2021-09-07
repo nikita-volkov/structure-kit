@@ -15,8 +15,8 @@ import StructureKit.Prelude hiding (empty, lookup)
 -- Registry of values that automatically generates keys.
 data IdRegistry a
   = IdRegistry
-      IdGen.IdGen
-      (IntMap a)
+      {-# UNPACK #-} !IdGen.IdGen
+      {-# UNPACK #-} !(IntMap a)
   deriving (Functor, Foldable, Traversable)
 
 -- |
