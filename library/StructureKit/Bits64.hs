@@ -219,8 +219,9 @@ locate idx (Bits64 word) =
             else FoundLocation 0 (Bits64 wordWithoutIt)
     else
       let bitAtIdx = bit idx
-          wordWithoutIt = xor word bitAtIdx
+          wordWithIt = word .|. bitAtIdx
+          wordWithoutIt = word .&. complement bitAtIdx
           popCountBefore = popCount (word .&. pred bitAtIdx)
-       in if word == wordWithoutIt
-            then UnfoundLocation popCountBefore (Bits64 (word .|. bitAtIdx))
-            else FoundLocation popCountBefore (Bits64 wordWithoutIt)
+       in if word == wordWithIt
+            then FoundLocation popCountBefore (Bits64 wordWithoutIt)
+            else UnfoundLocation popCountBefore (Bits64 wordWithIt)
