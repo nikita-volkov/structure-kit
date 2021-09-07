@@ -16,7 +16,7 @@ import StructureKit.Prelude hiding (empty, lookup)
 data IdRegistry a
   = IdRegistry
       {-# UNPACK #-} !IdGen.IdGen
-      {-# UNPACK #-} !(IntMap a)
+      !(IntMap a)
   deriving (Functor, Foldable, Traversable)
 
 -- |

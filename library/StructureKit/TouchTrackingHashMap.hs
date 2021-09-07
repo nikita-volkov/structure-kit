@@ -99,7 +99,7 @@ data Missing k v
   = Missing
       !k
       {-# UNPACK #-} !(Deque.Deque k)
-      {-# UNPACK #-} !(Hamt.Missing (Entry k v))
+      !(Hamt.Missing (Entry k v))
 
 {-# INLINE write #-}
 write :: v -> Missing k v -> TouchTrackingHashMap k v
