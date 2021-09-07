@@ -34,7 +34,9 @@ import qualified StructureKit.Util.SmallArray as SmallArray
 -- |
 -- Map indexed with 6 bits.
 data By6Bits a
-  = By6Bits Bits64.Bits64 (SmallArray a)
+  = By6Bits
+      {-# UNPACK #-} !Bits64.Bits64
+      {-# UNPACK #-} !(SmallArray a)
 
 empty :: By6Bits a
 empty =
