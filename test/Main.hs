@@ -20,22 +20,45 @@ main =
     ]
 
 by6Bits =
-  [ testProperty "Inserted value can be looked up" $ do
-      insertionList <- listOf $ do
-        k <- chooseInt (0, 63)
-        v <- arbitrary @Word8
-        return (k, v)
-      return $
-        let nubbedInsertionList =
-              nubBy (on (==) fst) insertionList
-            map =
-              foldl' (\map (k, v) -> snd (By6Bits.insert k v map)) By6Bits.empty nubbedInsertionList
-            lookupList =
-              fmap (\(k, _) -> (k, By6Bits.lookup k map)) nubbedInsertionList
-            expectedLookupList =
-              fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
-         in lookupList === expectedLookupList
-  ]
+  [testGroup "old" old, testGroup "new" new]
+  where
+    old =
+      [ testProperty "Inserted value can be looked up" $ do
+          insertionList <- listOf $ do
+            k <- chooseInt (0, 63)
+            v <- arbitrary @Word8
+            return (k, v)
+          return $
+            let nubbedInsertionList =
+                  nubBy (on (==) fst) insertionList
+                map =
+                  foldl' (\map (k, v) -> snd (By6Bits.insert k v map)) By6Bits.empty nubbedInsertionList
+                lookupList =
+                  fmap (\(k, _) -> (k, By6Bits.lookup k map)) nubbedInsertionList
+                expectedLookupList =
+                  fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
+             in lookupList === expectedLookupList
+      ]
+    new =
+      [ testProperty "Inserted entry is accessible" $ do
+          map <- genMap
+          key <- arbitrary
+          val <- arbitrary
+          let map' = insert key val map
+          return $
+            Just val === lookup key map'
+      ]
+      where
+        genMap = do
+          size <- chooseInt (0, 63)
+          inserts <- replicateM size ((,) <$> chooseInt (0, 63) <*> arbitrary @Word16)
+          return $ foldr (uncurry insert) By6Bits.empty inserts
+        insert key val map =
+          By6Bits.locate key map
+            & either (By6Bits.write val) (By6Bits.overwrite val)
+        lookup key map =
+          By6Bits.locate key map
+            & either (const Nothing) (Just . By6Bits.read)
 
 by32Bits =
   [ testProperty "Inserted entry is accessible" $ do
