@@ -45,4 +45,4 @@ ormolu --mode inplace -c \
 $(find . -name '*.hs')
 
 stack build --fast --test \
---ta "--quickcheck-replay 0 --quickcheck-tests 2 --quickcheck-verbose -j1 -p \"By32Bits\""
+--ta "--quickcheck-replay 0 --quickcheck-tests 1 -j1 -p \"By6Bits.new\""
