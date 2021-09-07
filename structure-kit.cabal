@@ -44,6 +44,7 @@ library
     StructureKit.LruHashCache
     StructureKit.Speedometer
     StructureKit.TouchOrderedHashMap
+    StructureKit.TouchTrackingHashMap
   other-modules:
     StructureKit.By32Bits.KeyOps
     StructureKit.ByteArrayCacheEntry
