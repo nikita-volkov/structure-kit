@@ -45,4 +45,5 @@ ormolu --mode inplace -c \
 $(find . -name '*.hs')
 
 stack build --fast --test \
+--ghc-options "-Werror -fwarn-incomplete-patterns" \
 --ta "--quickcheck-replay 0 --quickcheck-tests 99 -j1"
