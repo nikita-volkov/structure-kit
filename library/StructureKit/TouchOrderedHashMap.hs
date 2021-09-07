@@ -12,6 +12,7 @@ module StructureKit.TouchOrderedHashMap
 
     -- ** Existing
     Existing,
+    touch,
     read,
     remove,
     overwrite,
@@ -24,7 +25,7 @@ where
 
 import qualified Deque.Strict as Deque
 import qualified StructureKit.Hamt as Hamt
-import StructureKit.Prelude hiding (empty, insert, lookup, read, write)
+import StructureKit.Prelude hiding (empty, insert, lookup, read, touch, write)
 
 data TouchOrderedHashMap k v
   = TouchOrderedHashMap
@@ -195,14 +196,29 @@ locate key (TouchOrderedHashMap deque hamt) =
 
 -- **
 
-data Existing k v = Existing
-  { read :: (v, TouchOrderedHashMap k v),
-    remove :: TouchOrderedHashMap k v,
-    overwrite :: v -> TouchOrderedHashMap k v
-  }
+data Existing k v
+  = Existing
+
+touch :: Existing k v -> TouchOrderedHashMap k v
+touch =
+  error "TODO"
+
+read :: Existing k v -> (v, TouchOrderedHashMap k v)
+read =
+  error "TODO"
+
+remove :: Existing k v -> TouchOrderedHashMap k v
+remove =
+  error "TODO"
+
+overwrite :: v -> Existing k v -> TouchOrderedHashMap k v
+overwrite val =
+  error "TODO"
 
 -- **
 
-newtype Missing k v = Missing
-  { write :: v -> TouchOrderedHashMap k v
-  }
+data Missing k v
+
+write :: v -> Missing k v -> TouchOrderedHashMap k v
+write val =
+  error "TODO"
