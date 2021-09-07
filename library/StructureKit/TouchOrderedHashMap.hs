@@ -10,8 +10,8 @@ module StructureKit.TouchOrderedHashMap
     -- * Location API
     locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -185,7 +185,7 @@ reviseHamtFinalizing key miss update trie =
 
 -- * Location API
 
-locate :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
+locate :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Existing k v)
 locate key (TouchOrderedHashMap deque hamt) =
   case Hamt.locate (hash key) ((key ==) . entryKey) hamt of
     Right hamtPresent ->
@@ -195,7 +195,7 @@ locate key (TouchOrderedHashMap deque hamt) =
 
 -- **
 
-data Present k v = Present
+data Existing k v = Existing
   { read :: (v, TouchOrderedHashMap k v),
     remove :: TouchOrderedHashMap k v,
     overwrite :: v -> TouchOrderedHashMap k v

@@ -12,8 +12,8 @@ module StructureKit.By32Bits
     -- * Location API
     locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -82,7 +82,7 @@ null (By32Bits tree1) = By6Bits.null tree1
 
 -- * Location API
 
-locate :: Int -> By32Bits a -> Either (Missing a) (Present a)
+locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
 locate key (By32Bits tree1) =
   case By6Bits.locate key1 tree1 of
     Right present1 ->
@@ -103,7 +103,7 @@ locate key (By32Bits tree1) =
                                in case By8Bits.locate key5 (By6Bits.read present4) of
                                     Right present5 ->
                                       Right $
-                                        Present
+                                        Existing
                                           (By8Bits.read present5)
                                           ( let tree5 = By8Bits.remove present5
                                              in if By8Bits.null tree5
@@ -163,17 +163,17 @@ locate key (By32Bits tree1) =
 
 -- **
 
-data Present a
-  = Present a (By32Bits a) (a -> By32Bits a)
+data Existing a
+  = Existing a (By32Bits a) (a -> By32Bits a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> By32Bits a
-remove (Present _ x _) = x
+remove :: Existing a -> By32Bits a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> By32Bits a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> By32Bits a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 

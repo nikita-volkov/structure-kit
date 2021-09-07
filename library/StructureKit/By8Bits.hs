@@ -12,8 +12,8 @@ module StructureKit.By8Bits
     -- * Location API
     locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -106,7 +106,7 @@ null (By8Bits a b c d) =
 
 -- * Location API
 
-locate :: Int -> By8Bits a -> Either (Missing a) (Present a)
+locate :: Int -> By8Bits a -> Either (Missing a) (Existing a)
 locate key (By8Bits a b c d) =
   if key < 128
     then
@@ -114,7 +114,7 @@ locate key (By8Bits a b c d) =
         then case By6Bits.locate key a of
           Right present ->
             Right $
-              Present
+              Existing
                 (By6Bits.read present)
                 (By8Bits (By6Bits.remove present) b c d)
                 (\val -> By8Bits (By6Bits.overwrite val present) b c d)
@@ -125,7 +125,7 @@ locate key (By8Bits a b c d) =
         else case By6Bits.locate (key - 64) b of
           Right present ->
             Right $
-              Present
+              Existing
                 (By6Bits.read present)
                 (By8Bits a (By6Bits.remove present) c d)
                 (\val -> By8Bits a (By6Bits.overwrite val present) c d)
@@ -138,7 +138,7 @@ locate key (By8Bits a b c d) =
         then case By6Bits.locate (key - 128) c of
           Right present ->
             Right $
-              Present
+              Existing
                 (By6Bits.read present)
                 (By8Bits a b (By6Bits.remove present) d)
                 (\val -> By8Bits a b (By6Bits.overwrite val present) d)
@@ -149,7 +149,7 @@ locate key (By8Bits a b c d) =
         else case By6Bits.locate (key - 192) d of
           Right present ->
             Right $
-              Present
+              Existing
                 (By6Bits.read present)
                 (By8Bits a b c (By6Bits.remove present))
                 (\val -> By8Bits a b c (By6Bits.overwrite val present))
@@ -160,17 +160,17 @@ locate key (By8Bits a b c d) =
 
 -- **
 
-data Present a
-  = Present a (By8Bits a) (a -> By8Bits a)
+data Existing a
+  = Existing a (By8Bits a) (a -> By8Bits a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> By8Bits a
-remove (Present _ x _) = x
+remove :: Existing a -> By8Bits a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> By8Bits a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> By8Bits a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 

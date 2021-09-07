@@ -11,8 +11,8 @@ module StructureKit.Hamt
     -- * Location API
     locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -85,7 +85,7 @@ null (Hamt map) = By32Bits.null map
 
 -- * Location API
 
-locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Present a)
+locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
 locate hash predicate (Hamt map) =
   case By32Bits.locate hash map of
     Right mapPresent ->
@@ -100,7 +100,7 @@ locate hash predicate (Hamt map) =
                   overwrite val =
                     let newArray = SmallArray.set idx val array
                      in Hamt $ By32Bits.overwrite newArray mapPresent
-               in Right $ Present val without overwrite
+               in Right $ Existing val without overwrite
             Nothing ->
               let write val =
                     let newArray = SmallArray.snoc val array
@@ -114,17 +114,17 @@ locate hash predicate (Hamt map) =
 
 -- **
 
-data Present a
-  = Present a (Hamt a) (a -> Hamt a)
+data Existing a
+  = Existing a (Hamt a) (a -> Hamt a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> Hamt a
-remove (Present _ x _) = x
+remove :: Existing a -> Hamt a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> Hamt a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> Hamt a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 
