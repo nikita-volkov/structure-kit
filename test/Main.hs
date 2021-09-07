@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Data.List as List
+import qualified StructureKit.Bits64 as Bits64
 import qualified StructureKit.By32Bits as By32Bits
 import qualified StructureKit.By6Bits as By6Bits
 import qualified StructureKit.LruHashCache as LruHashCache
@@ -14,7 +15,8 @@ import Prelude hiding (assert)
 
 main =
   defaultMain . testGroup "All tests" $
-    [ testGroup "By6Bits" by6Bits,
+    [ testGroup "Bits64" bits64,
+      testGroup "By6Bits" by6Bits,
       testGroup "By32Bits" by32Bits,
       testGroup "LruHashCache" lruHashCache
     ]
@@ -59,6 +61,26 @@ by6Bits =
         lookup key map =
           By6Bits.locate key map
             & either (const Nothing) (Just . By6Bits.read)
+
+bits64 =
+  [ testProperty "Inserted entry is accessible" $ do
+      x <- genBits64
+      key <- chooseInt (0, 63)
+      let x' = insert key x
+      return $
+        lookup key x'
+  ]
+  where
+    genBits64 =
+      unsafeCoerce @Word64 @Bits64.Bits64 <$> arbitrary
+    insert key x =
+      case Bits64.locate key x of
+        Bits64.FoundLocation _ _ -> x
+        Bits64.UnfoundLocation _ x -> x
+    lookup key x =
+      Bits64.locate key x & \case
+        Bits64.FoundLocation _ _ -> True
+        _ -> False
 
 by32Bits =
   [ testProperty "Inserted entry is accessible" $ do
