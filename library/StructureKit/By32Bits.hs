@@ -33,6 +33,7 @@ import StructureKit.Prelude hiding (adjust, empty, lookup, null, read, remove, w
 
 newtype By32Bits a
   = By32Bits (By6Bits (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+  deriving (NFData, Functor)
 
 empty :: By32Bits a
 empty =

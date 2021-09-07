@@ -29,6 +29,7 @@ import qualified StructureKit.Util.SmallArray as SmallArray
 
 newtype Hamt a
   = Hamt (By32Bits.By32Bits (SmallArray a))
+  deriving (Functor, NFData)
 
 empty :: Hamt a
 empty =

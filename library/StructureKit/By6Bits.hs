@@ -38,8 +38,13 @@ data By6Bits a
       {-# UNPACK #-} !Bits64.Bits64
       {-# UNPACK #-} !(SmallArray a)
 
+deriving instance Functor By6Bits
+
 instance Show a => Show (By6Bits a) where
   show = show . toList
+
+instance NFData a => NFData (By6Bits a) where
+  rnf (By6Bits a b) = rwhnf (seq a (rnf b))
 
 empty :: By6Bits a
 empty =

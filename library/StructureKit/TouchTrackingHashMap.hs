@@ -29,6 +29,10 @@ data TouchTrackingHashMap k v
       -- ^ Queue of touches to keys.
       {-# UNPACK #-} !(Hamt.Hamt (Entry k v))
       -- ^ Specialised hash map of entries.
+  deriving (Functor)
+
+instance (NFData k, NFData v) => NFData (TouchTrackingHashMap k v) where
+  rnf (TouchTrackingHashMap touches entries) = touches `deepseq` entries `deepseq` ()
 
 data Entry k v = Entry
   { -- | Count of records in deque.
@@ -38,6 +42,10 @@ data Entry k v = Entry
     -- | Value.
     entryValue :: v
   }
+  deriving (Functor)
+
+instance (NFData k, NFData v) => NFData (Entry k v) where
+  rnf (Entry count key val) = count `seq` key `deepseq` val `deepseq` ()
 
 empty :: TouchTrackingHashMap k v
 empty =

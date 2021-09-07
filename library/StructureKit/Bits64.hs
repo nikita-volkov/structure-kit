@@ -31,7 +31,7 @@ import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr
 
 newtype Bits64
   = Bits64 Word64
-  deriving (Eq)
+  deriving (Eq, NFData)
 
 instance Semigroup Bits64 where
   Bits64 l <> Bits64 r = Bits64 (l .|. r)

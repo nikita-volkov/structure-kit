@@ -30,6 +30,10 @@ data LruHashCache k v
       {-# UNPACK #-} !Int
       -- ^ Slots available.
       {-# UNPACK #-} !(TouchTrackingHashMap.TouchTrackingHashMap k v)
+  deriving (Functor)
+
+instance (NFData k, NFData v) => NFData (LruHashCache k v) where
+  rnf (LruHashCache occ cap map) = occ `seq` cap `seq` map `deepseq` ()
 
 empty ::
   -- | Maximum amount of entries to store at one moment.
