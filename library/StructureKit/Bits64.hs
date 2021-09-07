@@ -39,6 +39,9 @@ instance Semigroup Bits64 where
 instance Monoid Bits64 where
   mempty = Bits64 0
 
+instance Show Bits64 where
+  show (Bits64 x) = showBinFinite x
+
 empty :: Bits64
 empty =
   Bits64 0
