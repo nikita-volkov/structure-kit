@@ -44,4 +44,5 @@ ormolu --mode inplace -c \
 -o -XUnboxedTuples \
 $(find . -name '*.hs')
 
-stack build --fast --test
+stack build --fast --test \
+--ta "--quickcheck-tests 999 --quickcheck-verbose -j1"

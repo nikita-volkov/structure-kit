@@ -2,6 +2,7 @@ module Main where
 
 import qualified Data.List as List
 import qualified StructureKit.By6Bits as By6Bits
+import qualified StructureKit.LruHashCache as LruHashCache
 import qualified Test.QuickCheck as QuickCheck
 import Test.QuickCheck.Instances
 import Test.Tasty
@@ -12,7 +13,8 @@ import Prelude hiding (assert)
 
 main =
   defaultMain . testGroup "All tests" $
-    [ testGroup "By6Bits" by6Bits
+    [ testGroup "By6Bits" by6Bits,
+      testGroup "LruHashCache" lruHashCache
     ]
 
 by6Bits =
@@ -32,3 +34,66 @@ by6Bits =
               fmap (\(k, v) -> (k, Just v)) nubbedInsertionList
          in lookupList === expectedLookupList
   ]
+
+lruHashCache =
+  [ testProperty "Freshly inserted entry must be possible to lookup" $ do
+      initialSize <- chooseInt (0, 999)
+      cap <- chooseInt (1, 999)
+      inserts <- replicateM initialSize (arbitrary @(Word16, Word16))
+      let lhc = fromInserts cap inserts
+      key <- arbitrary
+      val <- arbitrary
+      let lhc' = LruHashCache.insert key val lhc & snd
+          lookupRes = LruHashCache.lookup key lhc' & fst
+      return $
+        Just val === lookupRes,
+    testProperty "Records get evicted in the order of last lookup" $ do
+      size <- chooseInt (0, 999)
+      initialEntries <- forM [1 .. size] $ \k -> (k,) <$> arbitrary @Word8
+      otherEntries <- forM [1001 .. (1000 + size)] $ \k -> (k,) <$> arbitrary
+      keysToLookup <- shuffle (fmap fst initialEntries)
+      let initialLhc =
+            fromInserts size initialEntries
+          lhcAfterLookups =
+            foldl' (\lhc k -> snd (LruHashCache.lookup k lhc)) initialLhc keysToLookup
+          evictions =
+            lhcAfterLookups & insertMany otherEntries & fst & fmap fst
+      return $
+        keysToLookup === evictions,
+    testProperty "Inserting new entry after cap is reached produces evicted entry" $ do
+      size <- chooseInt (0, 99)
+      let keys = enumFromTo 1 size
+      inserts <- forM keys $ \k -> (k,) <$> arbitrary @Word8
+      val <- arbitrary
+      let lhc = fromInserts size inserts
+          inexistentKey = size + 1
+          eviction = LruHashCache.insert inexistentKey val lhc & fst
+      return $ Just (inexistentKey, val) === eviction,
+    testProperty "Evicted entry cannot be looked up" $ do
+      size <- chooseInt (0, 99)
+      initialEntries <- replicateM size $ arbitrary @(Word16, Word16)
+      let lhc = fromInserts size initialEntries
+      key <- arbitrary
+      val <- arbitrary
+      case LruHashCache.insert key val lhc of
+        (eviction, lhc) -> case eviction of
+          Nothing -> discard
+          Just (key, val) ->
+            let lookupRes = fst $ LruHashCache.lookup key lhc
+             in return $ Nothing === lookupRes
+  ]
+  where
+    fromInserts cap list =
+      LruHashCache.empty cap & insertMany list & snd
+    insertMany =
+      \inserts lhc -> foldr step end inserts lhc []
+      where
+        step (k, v) next !lhc !evictions =
+          case LruHashCache.insert k v lhc of
+            (eviction, lhc) ->
+              let evictions' = case eviction of
+                    Just eviction -> eviction : evictions
+                    Nothing -> evictions
+               in next lhc evictions'
+        end lhc evictions =
+          (evictions, lhc)
