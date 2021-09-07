@@ -73,7 +73,7 @@ data Existing k v
       {-# UNPACK #-} !(Hamt.Existing (Entry k v))
 
 {-# INLINE read #-}
-read :: (Hashable k, Eq k) => Existing k v -> v
+read :: Existing k v -> v
 read (Existing _ _ val _ _) = val
 
 {-# INLINE touch #-}
