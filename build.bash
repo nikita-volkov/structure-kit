@@ -45,4 +45,4 @@ ormolu --mode inplace -c \
 $(find . -name '*.hs')
 
 stack build --fast --test \
---ta "--quickcheck-replay 0 --quickcheck-tests 99 -j1 -p \"/Bits64/&&/Removed entry is inaccessible/\""
+--ta "--quickcheck-replay 0 --quickcheck-tests 99 -j1"
