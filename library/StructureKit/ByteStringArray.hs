@@ -28,7 +28,6 @@ foldr :: (ByteString -> a -> a) -> a -> ByteStringArray -> a
 foldr step start (ByteStringArray boundaryVec monolith) =
   UVec.foldr boundaryVecStep boundaryVecFinalize boundaryVec monolith start
   where
-    length = ByteString.length monolith
     boundaryVecStep boundary next remainder acc =
       ByteString.splitAt boundary remainder & \(chunk, newRemainder) ->
         next newRemainder (step chunk acc)

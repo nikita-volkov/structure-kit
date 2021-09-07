@@ -23,8 +23,6 @@ module StructureKit.Hamt
   )
 where
 
-import Data.Primitive.SmallArray (SmallArray)
-import qualified Data.Primitive.SmallArray as SmallArray
 import qualified StructureKit.By32Bits as By32Bits
 import StructureKit.Prelude hiding (delete, empty, null, read, remove, write)
 import qualified StructureKit.Util.SmallArray as SmallArray
