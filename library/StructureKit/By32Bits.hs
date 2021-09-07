@@ -9,11 +9,11 @@ module StructureKit.By32Bits
     mapAt,
     null,
 
-    -- * Selection API
-    select,
+    -- * Location API
+    locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -80,30 +80,30 @@ mapAt =
 null :: By32Bits a -> Bool
 null (By32Bits tree1) = By6Bits.null tree1
 
--- * Selection API
+-- * Location API
 
-select :: Int -> By32Bits a -> Either (Missing a) (Present a)
-select key (By32Bits tree1) =
-  case By6Bits.select key1 tree1 of
+locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
+locate key (By32Bits tree1) =
+  case By6Bits.locate key1 tree1 of
     Right present1 ->
       let remove1 = By32Bits $ By6Bits.remove present1
           overwrite1 val = By32Bits $ By6Bits.overwrite val present1
-       in case By6Bits.select key2 (By6Bits.read present1) of
+       in case By6Bits.locate key2 (By6Bits.read present1) of
             Right present2 ->
               let remove2 = levelRemove remove1 overwrite1 present2
                   overwrite2 = levelOverwrite overwrite1 present2
-               in case By6Bits.select key3 (By6Bits.read present2) of
+               in case By6Bits.locate key3 (By6Bits.read present2) of
                     Right present3 ->
                       let remove3 = levelRemove remove2 overwrite2 present3
                           overwrite3 = levelOverwrite overwrite2 present3
-                       in case By6Bits.select key4 (By6Bits.read present3) of
+                       in case By6Bits.locate key4 (By6Bits.read present3) of
                             Right present4 ->
                               let remove4 = levelRemove remove3 overwrite3 present4
                                   overwrite4 = levelOverwrite overwrite3 present4
-                               in case By8Bits.select key5 (By6Bits.read present4) of
+                               in case By8Bits.locate key5 (By6Bits.read present4) of
                                     Right present5 ->
                                       Right $
-                                        Present
+                                        Existing
                                           (By8Bits.read present5)
                                           ( let tree5 = By8Bits.remove present5
                                              in if By8Bits.null tree5
@@ -153,27 +153,27 @@ select key (By32Bits tree1) =
     key3 = KeyOps.toIndexOfLevel3 key
     key4 = KeyOps.toIndexOfLevel4 key
     key5 = KeyOps.toIndexOfLevel5 key
-    levelRemove removeFromParent overwriteInParent present =
-      By6Bits.remove present & \tree ->
+    levelRemove removeFromParent overwriteInParent existing =
+      By6Bits.remove existing & \tree ->
         if By6Bits.null tree
           then removeFromParent
           else overwriteInParent tree
-    levelOverwrite overwriteInParent present val =
-      overwriteInParent $ By6Bits.overwrite val present
+    levelOverwrite overwriteInParent existing val =
+      overwriteInParent $ By6Bits.overwrite val existing
 
 -- **
 
-data Present a
-  = Present a (By32Bits a) (a -> By32Bits a)
+data Existing a
+  = Existing a (By32Bits a) (a -> By32Bits a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> By32Bits a
-remove (Present _ x _) = x
+remove :: Existing a -> By32Bits a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> By32Bits a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> By32Bits a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 

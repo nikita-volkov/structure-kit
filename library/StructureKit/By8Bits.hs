@@ -9,11 +9,11 @@ module StructureKit.By8Bits
     foldrWithKey,
     null,
 
-    -- * Selection API
-    select,
+    -- * Location API
+    locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -104,55 +104,55 @@ null :: By8Bits a -> Bool
 null (By8Bits a b c d) =
   By6Bits.null a && By6Bits.null b && By6Bits.null c && By6Bits.null d
 
--- * Selection API
+-- * Location API
 
-select :: Int -> By8Bits a -> Either (Missing a) (Present a)
-select key (By8Bits a b c d) =
+locate :: Int -> By8Bits a -> Either (Missing a) (Existing a)
+locate key (By8Bits a b c d) =
   if key < 128
     then
       if key < 64
-        then case By6Bits.select key a of
-          Right present ->
+        then case By6Bits.locate key a of
+          Right existing ->
             Right $
-              Present
-                (By6Bits.read present)
-                (By8Bits (By6Bits.remove present) b c d)
-                (\val -> By8Bits (By6Bits.overwrite val present) b c d)
+              Existing
+                (By6Bits.read existing)
+                (By8Bits (By6Bits.remove existing) b c d)
+                (\val -> By8Bits (By6Bits.overwrite val existing) b c d)
           Left missing ->
             Left $
               Missing
                 (\val -> By8Bits (By6Bits.write val missing) b c d)
-        else case By6Bits.select (key - 64) b of
-          Right present ->
+        else case By6Bits.locate (key - 64) b of
+          Right existing ->
             Right $
-              Present
-                (By6Bits.read present)
-                (By8Bits a (By6Bits.remove present) c d)
-                (\val -> By8Bits a (By6Bits.overwrite val present) c d)
+              Existing
+                (By6Bits.read existing)
+                (By8Bits a (By6Bits.remove existing) c d)
+                (\val -> By8Bits a (By6Bits.overwrite val existing) c d)
           Left missing ->
             Left $
               Missing
                 (\val -> By8Bits a (By6Bits.write val missing) c d)
     else
       if key < 192
-        then case By6Bits.select (key - 128) c of
-          Right present ->
+        then case By6Bits.locate (key - 128) c of
+          Right existing ->
             Right $
-              Present
-                (By6Bits.read present)
-                (By8Bits a b (By6Bits.remove present) d)
-                (\val -> By8Bits a b (By6Bits.overwrite val present) d)
+              Existing
+                (By6Bits.read existing)
+                (By8Bits a b (By6Bits.remove existing) d)
+                (\val -> By8Bits a b (By6Bits.overwrite val existing) d)
           Left missing ->
             Left $
               Missing
                 (\val -> By8Bits a b (By6Bits.write val missing) d)
-        else case By6Bits.select (key - 192) d of
-          Right present ->
+        else case By6Bits.locate (key - 192) d of
+          Right existing ->
             Right $
-              Present
-                (By6Bits.read present)
-                (By8Bits a b c (By6Bits.remove present))
-                (\val -> By8Bits a b c (By6Bits.overwrite val present))
+              Existing
+                (By6Bits.read existing)
+                (By8Bits a b c (By6Bits.remove existing))
+                (\val -> By8Bits a b c (By6Bits.overwrite val existing))
           Left missing ->
             Left $
               Missing
@@ -160,17 +160,17 @@ select key (By8Bits a b c d) =
 
 -- **
 
-data Present a
-  = Present a (By8Bits a) (a -> By8Bits a)
+data Existing a
+  = Existing a (By8Bits a) (a -> By8Bits a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> By8Bits a
-remove (Present _ x _) = x
+remove :: Existing a -> By8Bits a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> By8Bits a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> By8Bits a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 

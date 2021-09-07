@@ -8,11 +8,11 @@ module StructureKit.Hamt
     delete,
     null,
 
-    -- * Selection API
-    select,
+    -- * Location API
+    locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -42,10 +42,10 @@ findMapping hash cont (Hamt map) =
 
 findAndReplace :: Int -> (a -> Maybe a) -> Hamt a -> (Maybe a, Hamt a)
 findAndReplace hash narrow hamt =
-  case select hash (isJust . narrow) hamt of
-    Right present ->
-      case narrow (read present) of
-        Just newA -> (Just (read present), overwrite newA present)
+  case locate hash (isJust . narrow) hamt of
+    Right existing ->
+      case narrow (read existing) of
+        Just newA -> (Just (read existing), overwrite newA existing)
         Nothing -> error "Oops"
     Left missing ->
       (Nothing, hamt)
@@ -54,15 +54,15 @@ findAndReplace hash narrow hamt =
 -- Deprecated.
 revise :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
 revise hash narrow onMissing onPresent hamt =
-  case select hash (isJust . narrow) hamt of
-    Right present ->
-      case narrow (read present) of
+  case locate hash (isJust . narrow) hamt of
+    Right existing ->
+      case narrow (read existing) of
         Just b ->
           onPresent b <&> \case
             Just newA ->
-              overwrite newA present & Just
+              overwrite newA existing & Just
             Nothing ->
-              remove present & guarded (not . null)
+              remove existing & guarded (not . null)
         Nothing ->
           error "Oops"
     Left missing ->
@@ -74,37 +74,37 @@ revise hash narrow onMissing onPresent hamt =
 -- Deprecated.
 delete :: Int -> (a -> Maybe b) -> Hamt a -> (Maybe b, Maybe (Hamt a))
 delete hash narrow hamt =
-  case select hash (isJust . narrow) hamt of
-    Right present ->
-      (narrow (read present), guarded (not . null) (remove present))
+  case locate hash (isJust . narrow) hamt of
+    Right existing ->
+      (narrow (read existing), guarded (not . null) (remove existing))
     Left missing ->
       (Nothing, Just hamt)
 
 null :: Hamt a -> Bool
 null (Hamt map) = By32Bits.null map
 
--- * Selection API
+-- * Location API
 
-select :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Present a)
-select hash predicate (Hamt map) =
-  case By32Bits.select hash map of
-    Right mapPresent ->
-      let array = By32Bits.read mapPresent
+locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
+locate hash predicate (Hamt map) =
+  case By32Bits.locate hash map of
+    Right mapExisting ->
+      let array = By32Bits.read mapExisting
        in case SmallArray.findWithIndex predicate array of
             Just (idx, val) ->
               let without =
                     let newArray = SmallArray.unset idx array
                      in if SmallArray.null newArray
-                          then Hamt $ By32Bits.remove mapPresent
-                          else Hamt $ By32Bits.overwrite newArray mapPresent
+                          then Hamt $ By32Bits.remove mapExisting
+                          else Hamt $ By32Bits.overwrite newArray mapExisting
                   overwrite val =
                     let newArray = SmallArray.set idx val array
-                     in Hamt $ By32Bits.overwrite newArray mapPresent
-               in Right $ Present val without overwrite
+                     in Hamt $ By32Bits.overwrite newArray mapExisting
+               in Right $ Existing val without overwrite
             Nothing ->
               let write val =
                     let newArray = SmallArray.snoc val array
-                     in Hamt $ By32Bits.overwrite newArray mapPresent
+                     in Hamt $ By32Bits.overwrite newArray mapExisting
                in Left $ Missing write
     Left mapMissing ->
       let write val =
@@ -114,17 +114,17 @@ select hash predicate (Hamt map) =
 
 -- **
 
-data Present a
-  = Present a (Hamt a) (a -> Hamt a)
+data Existing a
+  = Existing a (Hamt a) (a -> Hamt a)
 
-read :: Present a -> a
-read (Present x _ _) = x
+read :: Existing a -> a
+read (Existing x _ _) = x
 
-remove :: Present a -> Hamt a
-remove (Present _ x _) = x
+remove :: Existing a -> Hamt a
+remove (Existing _ x _) = x
 
-overwrite :: a -> Present a -> Hamt a
-overwrite val (Present _ _ x) = x val
+overwrite :: a -> Existing a -> Hamt a
+overwrite val (Existing _ _ x) = x val
 
 -- **
 

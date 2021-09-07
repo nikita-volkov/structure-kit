@@ -22,12 +22,12 @@ module StructureKit.Bits64
     toList,
 
     -- *
-    select,
-    Selection (..),
+    locate,
+    Location (..),
   )
 where
 
-import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, read, remove, select, singleton, split, toList, unfoldr, write)
+import StructureKit.Prelude hiding (adjust, delete, empty, foldl', foldlM, foldr, forM_, insert, locate, lookup, member, null, read, remove, singleton, split, toList, unfoldr, write)
 
 newtype Bits64
   = Bits64 Int64
@@ -191,13 +191,13 @@ toList =
 
 -- *
 
-data Selection
-  = FoundSelection
+data Location
+  = FoundLocation
       Int
       -- ^ Popcount before.
       Bits64
       -- ^ Bitmap without this bit.
-  | UnfoundSelection
+  | UnfoundLocation
       Int
       -- ^ Popcount before.
       Bits64
@@ -205,19 +205,19 @@ data Selection
 
 -- |
 -- A single function that provides control over virtually all functionality.
-{-# INLINE select #-}
-select :: Int -> Bits64 -> Selection
-select idx (Bits64 word) =
+{-# INLINE locate #-}
+locate :: Int -> Bits64 -> Location
+locate idx (Bits64 word) =
   if idx == 0
     then
       let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110
        in if word == wordWithoutIt
-            then UnfoundSelection 0 (Bits64 (word .|. 1))
-            else FoundSelection 0 (Bits64 wordWithoutIt)
+            then UnfoundLocation 0 (Bits64 (word .|. 1))
+            else FoundLocation 0 (Bits64 wordWithoutIt)
     else
       let bitAtIdx = bit idx
           wordWithoutIt = xor word bitAtIdx
           popCountBefore = popCount (word .&. pred bitAtIdx)
        in if word == wordWithoutIt
-            then UnfoundSelection popCountBefore (Bits64 (word .|. bitAtIdx))
-            else FoundSelection popCountBefore (Bits64 wordWithoutIt)
+            then UnfoundLocation popCountBefore (Bits64 (word .|. bitAtIdx))
+            else FoundLocation popCountBefore (Bits64 wordWithoutIt)

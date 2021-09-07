@@ -11,11 +11,11 @@ module StructureKit.By6Bits
     toList,
     null,
 
-    -- * Selection API
-    select,
+    -- * Location API
+    locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -151,20 +151,20 @@ toList =
 null :: By6Bits a -> Bool
 null (By6Bits keys _) = Bits64.null keys
 
--- * Selection API
+-- * Location API
 
-select :: Int -> By6Bits a -> Either (Missing a) (Present a)
-select key (By6Bits keys array) =
-  case Bits64.select key keys of
-    Bits64.FoundSelection popCountBefore keysWithoutIt ->
-      Right $ Present keys keysWithoutIt popCountBefore array
-    Bits64.UnfoundSelection popCountBefore keysWithIt ->
+locate :: Int -> By6Bits a -> Either (Missing a) (Existing a)
+locate key (By6Bits keys array) =
+  case Bits64.locate key keys of
+    Bits64.FoundLocation popCountBefore keysWithoutIt ->
+      Right $ Existing keys keysWithoutIt popCountBefore array
+    Bits64.UnfoundLocation popCountBefore keysWithIt ->
       Left $ Missing keysWithIt popCountBefore array
 
 -- **
 
-data Present a
-  = Present
+data Existing a
+  = Existing
       {-# UNPACK #-} !Bits64.Bits64
       -- ^ Original key bitmap.
       Bits64.Bits64
@@ -174,16 +174,16 @@ data Present a
       {-# UNPACK #-} !(SmallArray a)
       -- ^ Array of entries.
 
-read :: Present a -> a
-read (Present _ _ idx arr) =
+read :: Existing a -> a
+read (Existing _ _ idx arr) =
   indexSmallArray arr idx
 
-remove :: Present a -> By6Bits a
-remove (Present _ keysWithoutIt popCountBefore array) =
+remove :: Existing a -> By6Bits a
+remove (Existing _ keysWithoutIt popCountBefore array) =
   By6Bits keysWithoutIt (SmallArray.unset popCountBefore array)
 
-overwrite :: a -> Present a -> By6Bits a
-overwrite val (Present keys _ popCountBefore array) =
+overwrite :: a -> Existing a -> By6Bits a
+overwrite val (Existing keys _ popCountBefore array) =
   By6Bits keys (SmallArray.set popCountBefore val array)
 
 -- **

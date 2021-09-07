@@ -7,11 +7,11 @@ module StructureKit.TouchOrderedHashMap
     revise,
     evict,
 
-    -- * Selection API
-    select,
+    -- * Location API
+    locate,
 
-    -- ** Present
-    Present,
+    -- ** Existing
+    Existing,
     read,
     remove,
     overwrite,
@@ -156,8 +156,8 @@ evict (TouchOrderedHashMap deque trie) =
         Nothing ->
           (Nothing, TouchOrderedHashMap deque trie)
 
-selectEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
-selectEntry key entry =
+locateEntry :: Eq k => k -> Entry k v -> Maybe (Entry k v)
+locateEntry key entry =
   if entryKey entry == key
     then Just entry
     else Nothing
@@ -170,7 +170,7 @@ reviseHamt ::
   Hamt.Hamt (Entry k v) ->
   f (Maybe (Hamt.Hamt (Entry k v)))
 reviseHamt key =
-  Hamt.revise (hash key) (selectEntry key)
+  Hamt.revise (hash key) (locateEntry key)
 
 reviseHamtFinalizing ::
   (Hashable k, Eq k) =>
@@ -183,19 +183,19 @@ reviseHamtFinalizing key miss update trie =
   reviseHamt key miss update trie
     & \(cont, trieMaybe) -> cont (fromMaybe Hamt.empty trieMaybe)
 
--- * Selection API
+-- * Location API
 
-select :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Present k v)
-select key (TouchOrderedHashMap deque hamt) =
-  case Hamt.select (hash key) ((key ==) . entryKey) hamt of
-    Right hamtPresent ->
+locate :: (Hashable k, Eq k) => k -> TouchOrderedHashMap k v -> Either (Missing k v) (Existing k v)
+locate key (TouchOrderedHashMap deque hamt) =
+  case Hamt.locate (hash key) ((key ==) . entryKey) hamt of
+    Right hamtExisting ->
       error "TODO"
     Left _ ->
       error "TODO"
 
 -- **
 
-data Present k v = Present
+data Existing k v = Existing
   { read :: (v, TouchOrderedHashMap k v),
     remove :: TouchOrderedHashMap k v,
     overwrite :: v -> TouchOrderedHashMap k v
