@@ -12,6 +12,7 @@ module StructureKit.TouchTrackingHashMap
     -- ** Existing
     Existing,
     read,
+    touch,
     overwrite,
 
     -- ** Missing
@@ -80,7 +81,8 @@ locate :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Either (Missing
 locate key (TouchTrackingHashMap touches entries) =
   case Hamt.locate (hash key) ((==) key . entryKey) entries of
     Right existingEntry ->
-      Right $ Existing touches existingEntry
+      let Entry count key val = Hamt.read existingEntry
+       in Right $ Existing count key val touches existingEntry
     Left missingEntry ->
       Left $ Missing key touches missingEntry
 
@@ -88,24 +90,28 @@ locate key (TouchTrackingHashMap touches entries) =
 
 data Existing k v
   = Existing
+      {-# UNPACK #-} !Int
+      !k
+      v
       {-# UNPACK #-} !(Deque.Deque k)
       {-# UNPACK #-} !(Hamt.Existing (Entry k v))
 
 {-# INLINE read #-}
-read :: (Hashable k, Eq k) => Existing k v -> (v, TouchTrackingHashMap k v)
-read (Existing touches existingEntry) =
-  let Entry count key val = Hamt.read existingEntry
-      newEntry = Entry (succ count) key val
+read :: (Hashable k, Eq k) => Existing k v -> v
+read (Existing _ _ val _ _) = val
+
+{-# INLINE touch #-}
+touch :: (Hashable k, Eq k) => Existing k v -> TouchTrackingHashMap k v
+touch (Existing count key val touches existingEntry) =
+  let newEntry = Entry (succ count) key val
       newEntries = Hamt.overwrite newEntry existingEntry
       newTouches = Deque.snoc key touches
-      newTthm = compact newTouches newEntries
-   in (val, newTthm)
+   in compact newTouches newEntries
 
 {-# INLINE overwrite #-}
 overwrite :: (Hashable k, Eq k) => v -> Existing k v -> TouchTrackingHashMap k v
-overwrite newValue (Existing touches existingEntry) =
-  let Entry count key _ = Hamt.read existingEntry
-      newEntry = Entry (succ count) key newValue
+overwrite newValue (Existing count key _ touches existingEntry) =
+  let newEntry = Entry (succ count) key newValue
       newEntries = Hamt.overwrite newEntry existingEntry
       newTouches = Deque.snoc key touches
       newTthm = compact newTouches newEntries
