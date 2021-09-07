@@ -45,4 +45,4 @@ ormolu --mode inplace -c \
 $(find . -name '*.hs')
 
 stack build --fast --test \
---ta "--quickcheck-tests 999 --quickcheck-verbose -j1"
+--ta "--quickcheck-tests 1 --quickcheck-verbose -j1 -p \"Inserting new entry after cap is reached produces evicted entry\" --quickcheck-replay 0"
