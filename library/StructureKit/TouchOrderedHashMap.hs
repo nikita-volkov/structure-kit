@@ -196,8 +196,8 @@ select key (TouchOrderedHashMap deque hamt) =
 -- **
 
 data Present k v = Present
-  { read :: ~(v, TouchOrderedHashMap k v),
-    remove :: ~(TouchOrderedHashMap k v),
+  { read :: (v, TouchOrderedHashMap k v),
+    remove :: TouchOrderedHashMap k v,
     overwrite :: v -> TouchOrderedHashMap k v
   }
 

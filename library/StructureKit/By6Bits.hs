@@ -163,13 +163,13 @@ select key (By6Bits keys array) =
 
 data Present a
   = Present
-      Bits64.Bits64
+      {-# UNPACK #-} !Bits64.Bits64
       -- ^ Original key bitmap.
-      ~(Bits64.Bits64)
+      Bits64.Bits64
       -- ^ Key bitmap without this key.
-      Int
+      {-# UNPACK #-} !Int
       -- ^ Found index in the array.
-      (SmallArray a)
+      {-# UNPACK #-} !(SmallArray a)
       -- ^ Array of entries.
 
 read :: Present a -> a
@@ -188,11 +188,11 @@ overwrite val (Present keys _ popCountBefore array) =
 
 data Missing a
   = Missing
-      ~(Bits64.Bits64)
+      Bits64.Bits64
       -- ^ Key bitmap with this key.
-      Int
+      {-# UNPACK #-} !Int
       -- ^ Found index in the array.
-      (SmallArray a)
+      {-# UNPACK #-} !(SmallArray a)
       -- ^ Array of entries.
 
 write :: a -> Missing a -> By6Bits a

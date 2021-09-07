@@ -193,14 +193,14 @@ toList =
 
 data Selection
   = FoundSelection
-      ~Int
+      Int
       -- ^ Popcount before.
-      ~Bits64
+      Bits64
       -- ^ Bitmap without this bit.
   | UnfoundSelection
-      ~Int
+      Int
       -- ^ Popcount before.
-      ~Bits64
+      Bits64
       -- ^ Bitmap with this bit.
 
 -- |

@@ -115,7 +115,7 @@ select hash predicate (Hamt map) =
 -- **
 
 data Present a
-  = Present ~a ~(Hamt a) (a -> Hamt a)
+  = Present a (Hamt a) (a -> Hamt a)
 
 read :: Present a -> a
 read (Present x _ _) = x

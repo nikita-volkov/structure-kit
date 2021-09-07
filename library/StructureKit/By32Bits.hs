@@ -164,7 +164,7 @@ select key (By32Bits tree1) =
 -- **
 
 data Present a
-  = Present ~a ~(By32Bits a) (a -> By32Bits a)
+  = Present a (By32Bits a) (a -> By32Bits a)
 
 read :: Present a -> a
 read (Present x _ _) = x

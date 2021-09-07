@@ -161,7 +161,7 @@ select key (By8Bits a b c d) =
 -- **
 
 data Present a
-  = Present ~a ~(By8Bits a) (a -> By8Bits a)
+  = Present a (By8Bits a) (a -> By8Bits a)
 
 read :: Present a -> a
 read (Present x _ _) = x
