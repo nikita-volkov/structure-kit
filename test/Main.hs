@@ -67,13 +67,14 @@ bits64 =
       x <- genBits64
       key <- chooseInt (0, 63)
       let x' = insert key x
-      return $
+      return . counterexample (show x) $
         lookup key x',
     testProperty "Removed entry is inaccessible" $ do
       x <- genBits64
       key <- chooseInt (0, 63)
       let x' = delete key x
-      return $ not $ lookup key x'
+      return . counterexample (show x) . counterexample (show x') . counterexample (show key) $
+        not $ lookup key x'
   ]
   where
     genBits64 =
