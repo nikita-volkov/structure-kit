@@ -328,6 +328,7 @@ null = (== 0) . sizeofSmallArray
 
 -- * Location API
 
+{-# INLINE locateByPredicate #-}
 locateByPredicate :: (a -> Bool) -> SmallArray a -> Maybe (Existing a)
 locateByPredicate pred arr =
   findWithIndexCont pred Nothing (\i a -> Just (Existing a i arr)) arr
