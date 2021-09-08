@@ -108,13 +108,13 @@ locate key (By6Bits keys arr) =
 
 data Existing a
   = Existing
-      !Word64
+      {-# UNPACK #-} !Word64
       -- ^ Singleton set pointing to the value.
-      !Word64
+      {-# UNPACK #-} !Word64
       -- ^ Old key set.
-      !Int
+      {-# UNPACK #-} !Int
       -- ^ Index in array.
-      !(SmallArray a)
+      {-# UNPACK #-} !(SmallArray a)
       -- ^ Array.
 
 read :: Existing a -> a

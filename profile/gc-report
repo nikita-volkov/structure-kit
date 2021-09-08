@@ -5,12 +5,12 @@
                4 MiB total memory in use (0 MB lost due to fragmentation)
 
                                      Tot time (elapsed)  Avg pause  Max pause
-  Gen  0       997 colls,     0 par    0.007s   0.010s     0.0000s    0.0004s
-  Gen  1         4 colls,     0 par    0.001s   0.002s     0.0004s    0.0007s
+  Gen  0       997 colls,     0 par    0.007s   0.010s     0.0000s    0.0005s
+  Gen  1         4 colls,     0 par    0.002s   0.003s     0.0007s    0.0014s
 
-  INIT    time    0.000s  (  0.005s elapsed)
-  MUT     time    0.635s  (  0.636s elapsed)
-  GC      time    0.008s  (  0.011s elapsed)
+  INIT    time    0.000s  (  0.004s elapsed)
+  MUT     time    0.633s  (  0.634s elapsed)
+  GC      time    0.009s  (  0.013s elapsed)
   RP      time    0.000s  (  0.000s elapsed)
   PROF    time    0.000s  (  0.000s elapsed)
   EXIT    time    0.000s  (  0.000s elapsed)
@@ -18,7 +18,7 @@
 
   %GC     time       0.0%  (0.0% elapsed)
 
-  Alloc rate    1,631,748,259 bytes per MUT second
+  Alloc rate    1,635,945,230 bytes per MUT second
 
-  Productivity  98.7% of total user, 97.5% of total elapsed
+  Productivity  98.5% of total user, 97.3% of total elapsed
 
