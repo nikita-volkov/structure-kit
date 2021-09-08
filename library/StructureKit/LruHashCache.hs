@@ -2,8 +2,6 @@ module StructureKit.LruHashCache
   ( -- *
     LruHashCache,
     empty,
-    lookup,
-    insert,
 
     -- * Location API
     locate,
@@ -17,6 +15,10 @@ module StructureKit.LruHashCache
     -- ** Missing
     Missing,
     write,
+
+    -- * Derivative operations
+    lookup,
+    insert,
   )
 where
 
@@ -43,20 +45,6 @@ empty ::
   LruHashCache k v
 empty capacity =
   LruHashCache 0 capacity TouchTrackingHashMap.empty
-
-lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> (Maybe v, LruHashCache k v)
-lookup k lhc =
-  locate k lhc
-    & either
-      (const (Nothing, lhc))
-      ((,) <$> Just . read <*> touch)
-
-insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
-insert k v lhc =
-  locate k lhc
-    & either
-      (write v)
-      ((,) Nothing <$> overwrite v)
 
 locate :: (Hashable k, Eq k) => k -> LruHashCache k v -> Either (Missing k v) (Existing k v)
 locate k (LruHashCache occupied capacity tthm) =
@@ -107,3 +95,19 @@ write val (Missing occupied capacity loc) =
         else
           let lru = LruHashCache (succ occupied) capacity tthm
            in (Nothing, lru)
+
+-- * Derivatives
+
+lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> (Maybe v, LruHashCache k v)
+lookup k lhc =
+  locate k lhc
+    & either
+      (const (Nothing, lhc))
+      ((,) <$> Just . read <*> touch)
+
+insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
+insert k v lhc =
+  locate k lhc
+    & either
+      (write v)
+      ((,) Nothing <$> overwrite v)
