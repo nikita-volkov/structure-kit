@@ -1,2 +1,2 @@
 #!/bin/bash
-./profile.bash
+./test.bash
