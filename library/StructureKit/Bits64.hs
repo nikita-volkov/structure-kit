@@ -12,6 +12,8 @@ module StructureKit.Bits64
     lookup,
     insert,
     delete,
+    justInsertOmg,
+    justDeleteOmg,
     revise,
     split,
     foldr,
@@ -90,6 +92,14 @@ delete value (Bits64 word) =
       newWord = xor word bitAtValue
       index = popCount (word .&. pred bitAtValue)
    in (index, Bits64 newWord)
+
+justInsertOmg :: Int -> Bits64 -> Bits64
+justInsertOmg value (Bits64 word) =
+  Bits64 (word .|. bit value)
+
+justDeleteOmg :: Int -> Bits64 -> Bits64
+justDeleteOmg value (Bits64 word) =
+  Bits64 (word .&. complement (bit value))
 
 revise :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revise value onMissing onPresent (Bits64 word) =
