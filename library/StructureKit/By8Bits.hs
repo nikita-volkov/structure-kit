@@ -5,7 +5,6 @@ module StructureKit.By8Bits
     singleton,
     lookup,
     insert,
-    adjust,
     foldrWithKey,
     null,
 
@@ -57,34 +56,16 @@ singleton key val =
         else By8Bits By6Bits.empty By6Bits.empty By6Bits.empty (By6Bits.singleton (key - 192) val)
 
 lookup :: Int -> By8Bits a -> Maybe a
-lookup key (By8Bits a b c d) =
-  By6Bits.lookup
-    (error "TODO")
-    if key < 128
-      then
-        if key < 64
-          then a
-          else b
-      else
-        if key < 192
-          then c
-          else d
+lookup key =
+  either (const Nothing) (Just . read) . locate key
 
 insert :: Int -> a -> By8Bits a -> (Maybe a, By8Bits a)
-insert key value (By8Bits a b c d) =
-  if key < 128
-    then
-      if key < 64
-        then By6Bits.insert key value a & second (\a -> By8Bits a b c d)
-        else By6Bits.insert (error "TODO") value b & second (\b -> By8Bits a b c d)
-    else
-      if key < 192
-        then By6Bits.insert (error "TODO") value c & second (\c -> By8Bits a b c d)
-        else By6Bits.insert (error "TODO") value d & second (\d -> By8Bits a b c d)
-
-adjust :: (a -> a) -> Int -> By8Bits a -> By8Bits a
-adjust =
-  error "TODO"
+insert key val map =
+  map
+    & locate key
+    & either
+      ((Nothing,) . write val)
+      (liftA2 (,) (Just . read) (overwrite val))
 
 foldrWithKey :: (Int -> a -> b -> b) -> b -> By8Bits a -> b
 foldrWithKey step end (By8Bits part1 part2 part3 part4) =
