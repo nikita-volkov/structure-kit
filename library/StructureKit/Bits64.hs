@@ -197,14 +197,14 @@ toList =
 
 data Location
   = FoundLocation
-      Int
+      !Int
       -- ^ Popcount before.
-      Bits64
+      !Bits64
       -- ^ Bitmap without this bit.
   | UnfoundLocation
-      Int
+      !Int
       -- ^ Popcount before.
-      Bits64
+      !Bits64
       -- ^ Bitmap with this bit.
 
 -- |
