@@ -176,7 +176,7 @@ data Existing a
   = Existing
       {-# UNPACK #-} !Bits64.Bits64
       -- ^ Original key bitmap.
-      Bits64.Bits64
+      {-# UNPACK #-} !Bits64.Bits64
       -- ^ Key bitmap without this key.
       {-# UNPACK #-} !Int
       -- ^ Found index in the array.
@@ -199,7 +199,7 @@ overwrite val (Existing keys _ popCountBefore array) =
 
 data Missing a
   = Missing
-      Bits64.Bits64
+      {-# UNPACK #-} !Bits64.Bits64
       -- ^ Key bitmap with this key.
       {-# UNPACK #-} !Int
       -- ^ Found index in the array.
