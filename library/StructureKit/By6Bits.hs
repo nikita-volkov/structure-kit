@@ -98,8 +98,8 @@ null (By6Bits keys _) = keys == 0
 locate :: Int -> By6Bits a -> Either (Missing a) (Existing a)
 locate key (By6Bits keys arr) =
   {-# SCC "locate" #-}
-  let keySingleton = bit key
-      idx = popCount (pred keySingleton .&. keys)
+  let !keySingleton = bit key
+      !idx = popCount (pred keySingleton .&. keys)
    in if keySingleton .&. keys == 0
         then Left $ Missing (keySingleton .|. keys) idx arr
         else Right $ Existing keySingleton keys idx arr
