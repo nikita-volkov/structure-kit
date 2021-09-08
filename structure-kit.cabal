@@ -22,10 +22,6 @@ library
   exposed-modules:
     StructureKit.Bits256
     StructureKit.Bits64
-    StructureKit.By12Bits
-    StructureKit.By18Bits
-    StructureKit.By24Bits
-    StructureKit.By30Bits
     StructureKit.By32Bits
     StructureKit.By6Bits
     StructureKit.By8Bits
@@ -40,7 +36,6 @@ library
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
     StructureKit.Speedometer
-    StructureKit.TouchOrderedHashMap
     StructureKit.TouchTrackingHashMap
   other-modules:
     StructureKit.By32Bits.KeyOps
