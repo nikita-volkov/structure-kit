@@ -51,6 +51,9 @@ $(find . -name '*.hs')
 time_allocation_report_file="profile/time-allocation-report"
 gc_report_file="profile/gc-report"
 
+# Docs on GHC profiling options:
+# https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html#compiler-options-for-profiling
+
 stack \
 --work-dir .profile.stack-work \
 build \
