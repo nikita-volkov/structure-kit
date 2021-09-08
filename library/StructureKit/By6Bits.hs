@@ -162,6 +162,7 @@ null (By6Bits keys _) = Bits64.null keys
 
 -- * Location API
 
+{-# INLINE locate #-}
 locate :: Int -> By6Bits a -> Either (Missing a) (Existing a)
 locate key (By6Bits keys array) =
   case Bits64.locate key keys of
