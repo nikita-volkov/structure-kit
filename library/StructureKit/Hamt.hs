@@ -87,6 +87,7 @@ null (Hamt map) = By32Bits.null map
 {-# INLINE locate #-}
 locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
 locate hash predicate (Hamt map) =
+  {-# SCC "locate" #-}
   case By32Bits.locate hash map of
     Right arrayExisting ->
       case By32Bits.read arrayExisting of

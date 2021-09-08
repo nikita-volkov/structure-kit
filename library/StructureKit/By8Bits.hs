@@ -118,6 +118,7 @@ null (By8Bits a b c d) =
 {-# INLINE locate #-}
 locate :: Int -> By8Bits a -> Either (Missing a) (Existing a)
 locate key (By8Bits a b c d) =
+  {-# SCC "locate" #-}
   if key < 128
     then
       if key < 64

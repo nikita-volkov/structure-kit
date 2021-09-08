@@ -212,6 +212,7 @@ data Location
 {-# INLINE locate #-}
 locate :: Int -> Bits64 -> Location
 locate idx (Bits64 word) =
+  {-# SCC "locate" #-}
   if idx == 0
     then
       let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110

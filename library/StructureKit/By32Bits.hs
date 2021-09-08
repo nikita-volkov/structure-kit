@@ -86,6 +86,7 @@ null (By32Bits tree1) = By6Bits.null tree1
 {-# INLINE locate #-}
 locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
 locate key (By32Bits tree1) =
+  {-# SCC "locate" #-}
   case By6Bits.locate key1 tree1 of
     Right existing1 -> case By6Bits.locate key2 (By6Bits.read existing1) of
       Right existing2 -> case By6Bits.locate key3 (By6Bits.read existing2) of

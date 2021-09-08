@@ -63,6 +63,7 @@ evict (TouchTrackingHashMap touches entries) =
 {-# INLINE locate #-}
 locate :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Either (Missing k v) (Existing k v)
 locate key (TouchTrackingHashMap touches entries) =
+  {-# SCC "locate" #-}
   case Hamt.locate (hash key) ((==) key . entryKey) entries of
     Right existingEntry ->
       let Entry count key val = Hamt.read existingEntry
