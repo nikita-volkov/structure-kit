@@ -57,9 +57,9 @@ locate k (LruHashCache occupied capacity tthm) =
 
 data Existing k v
   = Existing
-      Int
-      Int
-      (TouchTrackingHashMap.Existing k v)
+      !Int
+      !Int
+      !(TouchTrackingHashMap.Existing k v)
 
 read :: Existing k v -> v
 read (Existing _ _ loc) =
@@ -77,9 +77,9 @@ overwrite val (Existing occupied capacity loc) =
 
 data Missing k v
   = Missing
-      Int
-      Int
-      (TouchTrackingHashMap.Missing k v)
+      !Int
+      !Int
+      !(TouchTrackingHashMap.Missing k v)
 
 -- |
 -- Insert a new value.
