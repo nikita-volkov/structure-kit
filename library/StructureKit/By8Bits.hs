@@ -108,6 +108,7 @@ foldrWithKey step end (By8Bits part1 part2 part3 part4) =
     offsetStep offset key =
       step (key + offset)
 
+{-# INLINE null #-}
 null :: By8Bits a -> Bool
 null (By8Bits a b c d) =
   By6Bits.null a && By6Bits.null b && By6Bits.null c && By6Bits.null d
