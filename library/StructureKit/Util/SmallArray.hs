@@ -331,6 +331,7 @@ null = (== 0) . sizeofSmallArray
 {-# INLINE locateByPredicate #-}
 locateByPredicate :: (a -> Bool) -> SmallArray a -> Maybe (Existing a)
 locateByPredicate pred arr =
+  {-# SCC "locateByPredicate" #-}
   findWithIndexCont pred Nothing (\i a -> Just (Existing a i arr)) arr
 
 -- **
