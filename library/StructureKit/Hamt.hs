@@ -84,6 +84,7 @@ null (Hamt map) = By32Bits.null map
 
 -- * Location API
 
+{-# INLINE locate #-}
 locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
 locate hash predicate (Hamt map) =
   case By32Bits.locate hash map of
