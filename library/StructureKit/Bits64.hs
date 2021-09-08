@@ -46,6 +46,7 @@ empty :: Bits64
 empty =
   Bits64 0
 
+{-# INLINE null #-}
 null :: Bits64 -> Bool
 null (Bits64 word) =
   word == 0

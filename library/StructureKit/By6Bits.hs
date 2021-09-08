@@ -156,6 +156,7 @@ toList :: By6Bits a -> [(Int, a)]
 toList =
   foldrWithKey (\k v -> (:) (k, v)) []
 
+{-# INLINE null #-}
 null :: By6Bits a -> Bool
 null (By6Bits keys _) = Bits64.null keys
 
