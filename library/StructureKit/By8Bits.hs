@@ -30,7 +30,11 @@ import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, s
 -- |
 -- Map indexed with 8 bits.
 data By8Bits a
-  = By8Bits (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a) (By6Bits.By6Bits a)
+  = By8Bits
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
   deriving (Functor)
 
 instance NFData a => NFData (By8Bits a) where
