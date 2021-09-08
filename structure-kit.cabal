@@ -22,10 +22,6 @@ library
   exposed-modules:
     StructureKit.Bits256
     StructureKit.Bits64
-    StructureKit.By12Bits
-    StructureKit.By18Bits
-    StructureKit.By24Bits
-    StructureKit.By30Bits
     StructureKit.By32Bits
     StructureKit.By6Bits
     StructureKit.By8Bits
@@ -40,7 +36,6 @@ library
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
     StructureKit.Speedometer
-    StructureKit.TouchOrderedHashMap
     StructureKit.TouchTrackingHashMap
   other-modules:
     StructureKit.By32Bits.KeyOps
@@ -66,7 +61,7 @@ library
 
 library structure-kit-quickcheck-util
   hs-source-dirs: quickcheck-util
-  default-extensions: BangPatterns, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, DerivingVia, DuplicateRecordFields, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedLabels, OverloadedStrings, PatternGuards, PatternSynonyms, ParallelListComp, QuasiQuotes, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TemplateHaskell, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedTuples
+  default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
   default-language: Haskell2010
   exposed-modules:
     StructureKit.QuickCheckUtil.ExtrasFor.Gen
@@ -99,6 +94,18 @@ benchmark bench
   default-language: Haskell2010
   build-depends:
     gauge >=0.2.5 && <0.3,
+    structure-kit,
+    structure-kit-quickcheck-util,
+    rerebase >=1.13.0.1 && <2,
+    QuickCheck >=2.14.2 && <3
+
+test-suite profile
+  type: exitcode-stdio-1.0
+  hs-source-dirs: profile
+  main-is: Main.hs
+  default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
+  default-language: Haskell2010
+  build-depends:
     structure-kit,
     structure-kit-quickcheck-util,
     rerebase >=1.13.0.1 && <2,

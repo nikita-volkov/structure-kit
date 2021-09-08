@@ -1,6 +1,44 @@
-module StructureKit.Util.SmallArray where
+module StructureKit.Util.SmallArray
+  ( newEmptySmallArray,
+    singleton,
+    list,
+    unset,
+    set,
+    unsafeSetWithSize,
+    insert,
+    adjust,
+    unsafeAdjust,
+    unsafeAdjustWithSize,
+    unsafeIndexAndAdjust,
+    unsafeIndexAndAdjustWithSize,
+    unsafeAdjustF,
+    cons,
+    snoc,
+    orderedPair,
+    reviseSelected,
+    findAndReplace,
+    findReplacing,
+    findMapping,
+    find,
+    findWithIndex,
+    drop,
+    split,
+    foldrInRange,
+    inRangeUnfoldr,
+    null,
 
-import StructureKit.Prelude hiding (null, snoc)
+    -- * Location API
+    locateByPredicate,
+
+    -- ** Existing
+    Existing,
+    read,
+    remove,
+    overwrite,
+  )
+where
+
+import StructureKit.Prelude hiding (drop, find, insert, null, read, remove, singleton, snoc)
 
 -- | A workaround for the weird forcing of 'undefined' values int 'newSmallArray'
 {-# INLINE newEmptySmallArray #-}
@@ -244,17 +282,22 @@ find test array =
 
 {-# INLINE findWithIndex #-}
 findWithIndex :: (a -> Bool) -> SmallArray a -> Maybe (Int, a)
-findWithIndex test array =
-  {-# SCC "findWithIndex" #-}
+findWithIndex test =
+  findWithIndexCont test Nothing (\i a -> Just (i, a))
+
+{-# INLINE findWithIndexCont #-}
+findWithIndexCont :: (a -> Bool) -> b -> (Int -> a -> b) -> SmallArray a -> b
+findWithIndexCont test none some array =
+  {-# SCC "findWithIndexCont" #-}
   let !size = sizeofSmallArray array
       iterate !index =
         if index < size
           then
-            let !element = indexSmallArray array index
+            let element = indexSmallArray array index
              in if test element
-                  then Just (index, element)
+                  then some index element
                   else iterate (succ index)
-          else Nothing
+          else none
    in iterate 0
 
 drop :: Int -> SmallArray a -> SmallArray a
@@ -282,3 +325,31 @@ inRangeUnfoldr startIndex afterIndex array =
 
 null :: SmallArray a -> Bool
 null = (== 0) . sizeofSmallArray
+
+-- * Location API
+
+{-# INLINE locateByPredicate #-}
+locateByPredicate :: (a -> Bool) -> SmallArray a -> Maybe (Existing a)
+locateByPredicate pred arr =
+  {-# SCC "locateByPredicate" #-}
+  findWithIndexCont pred Nothing (\i a -> Just (Existing a i arr)) arr
+
+-- **
+
+data Existing a
+  = Existing
+      a
+      {-# UNPACK #-} !Int
+      !(SmallArray a)
+
+{-# INLINE read #-}
+read :: Existing a -> a
+read (Existing val _ _) = val
+
+{-# INLINE remove #-}
+remove :: Existing a -> SmallArray a
+remove (Existing _ i arr) = unset i arr
+
+{-# INLINE overwrite #-}
+overwrite :: a -> Existing a -> SmallArray a
+overwrite val (Existing _ i arr) = set i val arr

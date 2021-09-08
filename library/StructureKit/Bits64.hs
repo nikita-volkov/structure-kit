@@ -12,6 +12,8 @@ module StructureKit.Bits64
     lookup,
     insert,
     delete,
+    justInsertOmg,
+    justDeleteOmg,
     revise,
     split,
     foldr,
@@ -46,6 +48,7 @@ empty :: Bits64
 empty =
   Bits64 0
 
+{-# INLINE null #-}
 null :: Bits64 -> Bool
 null (Bits64 word) =
   word == 0
@@ -89,6 +92,14 @@ delete value (Bits64 word) =
       newWord = xor word bitAtValue
       index = popCount (word .&. pred bitAtValue)
    in (index, Bits64 newWord)
+
+justInsertOmg :: Int -> Bits64 -> Bits64
+justInsertOmg value (Bits64 word) =
+  Bits64 (word .|. bit value)
+
+justDeleteOmg :: Int -> Bits64 -> Bits64
+justDeleteOmg value (Bits64 word) =
+  Bits64 (word .&. complement (bit value))
 
 revise :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revise value onMissing onPresent (Bits64 word) =
@@ -196,14 +207,14 @@ toList =
 
 data Location
   = FoundLocation
-      Int
+      {-# UNPACK #-} !Int
       -- ^ Popcount before.
-      Bits64
+      {-# UNPACK #-} !Bits64
       -- ^ Bitmap without this bit.
   | UnfoundLocation
-      Int
+      {-# UNPACK #-} !Int
       -- ^ Popcount before.
-      Bits64
+      {-# UNPACK #-} !Bits64
       -- ^ Bitmap with this bit.
 
 -- |
@@ -211,6 +222,7 @@ data Location
 {-# INLINE locate #-}
 locate :: Int -> Bits64 -> Location
 locate idx (Bits64 word) =
+  {-# SCC "locate" #-}
   if idx == 0
     then
       let wordWithoutIt = word .&. 0b1111111111111111111111111111111111111111111111111111111111111110

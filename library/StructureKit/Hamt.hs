@@ -84,51 +84,64 @@ null (Hamt map) = By32Bits.null map
 
 -- * Location API
 
+{-# INLINE locate #-}
 locate :: Int -> (a -> Bool) -> Hamt a -> Either (Missing a) (Existing a)
 locate hash predicate (Hamt map) =
+  {-# SCC "locate" #-}
   case By32Bits.locate hash map of
-    Right mapExisting ->
-      let array = By32Bits.read mapExisting
-       in case SmallArray.findWithIndex predicate array of
-            Just (idx, val) ->
-              let without =
-                    let newArray = SmallArray.unset idx array
-                     in if SmallArray.null newArray
-                          then Hamt $ By32Bits.remove mapExisting
-                          else Hamt $ By32Bits.overwrite newArray mapExisting
-                  overwrite val =
-                    let newArray = SmallArray.set idx val array
-                     in Hamt $ By32Bits.overwrite newArray mapExisting
-               in Right $ Existing val without overwrite
+    Right arrayExisting ->
+      case By32Bits.read arrayExisting of
+        array ->
+          case SmallArray.locateByPredicate predicate array of
+            Just elementExisting ->
+              Right $ Existing arrayExisting elementExisting
             Nothing ->
-              let write val =
-                    let newArray = SmallArray.snoc val array
-                     in Hamt $ By32Bits.overwrite newArray mapExisting
-               in Left $ Missing write
-    Left mapMissing ->
-      let write val =
-            let newArray = SmallArray.singleton val
-             in Hamt $ By32Bits.write newArray mapMissing
-       in Left $ Missing write
+              Left $ ElementMissing arrayExisting array
+    Left arrayMissing ->
+      Left $ ArrayMissing arrayMissing
 
 -- **
 
 data Existing a
-  = Existing a (Hamt a) (a -> Hamt a)
+  = Existing
+      !(By32Bits.Existing (SmallArray a))
+      !(SmallArray.Existing a)
 
 read :: Existing a -> a
-read (Existing x _ _) = x
+read (Existing _ b) = SmallArray.read b
 
 remove :: Existing a -> Hamt a
-remove (Existing _ x _) = x
+remove (Existing a b) =
+  SmallArray.remove b & \b ->
+    if SmallArray.null b
+      then By32Bits.remove a & Hamt
+      else By32Bits.overwrite b a & Hamt
 
 overwrite :: a -> Existing a -> Hamt a
-overwrite val (Existing _ _ x) = x val
+overwrite val (Existing a b) =
+  val
+    & flip SmallArray.overwrite b
+    & flip By32Bits.overwrite a
+    & Hamt
 
 -- **
 
-newtype Missing a
-  = Missing (a -> Hamt a)
+data Missing a
+  = ArrayMissing
+      !(By32Bits.Missing (SmallArray a))
+  | ElementMissing
+      !(By32Bits.Existing (SmallArray a))
+      !(SmallArray a)
 
 write :: a -> Missing a -> Hamt a
-write val (Missing x) = x val
+write val = \case
+  ArrayMissing a ->
+    val
+      & SmallArray.singleton
+      & flip By32Bits.write a
+      & Hamt
+  ElementMissing a b ->
+    val
+      & flip SmallArray.cons b
+      & flip By32Bits.overwrite a
+      & Hamt

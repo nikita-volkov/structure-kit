@@ -5,8 +5,6 @@ module StructureKit.By6Bits
     singleton,
     lookup,
     insert,
-    adjust,
-    revise,
     foldrWithKey,
     toList,
     null,
@@ -26,7 +24,6 @@ module StructureKit.By6Bits
   )
 where
 
-import qualified StructureKit.Bits64 as Bits64
 import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, singleton, toList, write)
 import qualified StructureKit.Prelude as Prelude
 import qualified StructureKit.Util.SmallArray as SmallArray
@@ -35,7 +32,7 @@ import qualified StructureKit.Util.SmallArray as SmallArray
 -- Map indexed with 6 bits.
 data By6Bits a
   = By6Bits
-      {-# UNPACK #-} !Bits64.Bits64
+      {-# UNPACK #-} !Word64
       {-# UNPACK #-} !(SmallArray a)
 
 deriving instance Functor By6Bits
@@ -46,97 +43,31 @@ instance Show a => Show (By6Bits a) where
 instance NFData a => NFData (By6Bits a) where
   rnf (By6Bits a b) = rwhnf (seq a (rnf b))
 
+{-# INLINE empty #-}
 empty :: By6Bits a
 empty =
-  By6Bits Bits64.empty Prelude.empty
+  By6Bits 0 Prelude.empty
 
 -- |
 -- An array with a single element at the specified index.
+{-# INLINE singleton #-}
 singleton :: Int -> a -> By6Bits a
 singleton key a =
-  let bitSet = Bits64.singleton key
+  let keys = bit key
       array = runST (newSmallArray 1 a >>= unsafeFreezeSmallArray)
-   in By6Bits bitSet array
+   in By6Bits keys array
 
 lookup :: Int -> By6Bits a -> Maybe a
-lookup key (By6Bits bitSet array) =
-  Bits64.lookup key bitSet
-    & fmap (\index -> indexSmallArray array index)
+lookup key =
+  either (const Nothing) (Just . read) . locate key
 
 insert :: Int -> a -> By6Bits a -> (Maybe a, By6Bits a)
-insert key value (By6Bits bitSet array) =
-  Bits64.insert key bitSet & \case
-    (index, newBitSet) ->
-      if newBitSet == bitSet
-        then
-          ( Just (indexSmallArray array index),
-            By6Bits bitSet (SmallArray.set index value array)
-          )
-        else
-          ( Nothing,
-            By6Bits newBitSet (SmallArray.insert index value array)
-          )
-
-{-# INLINE adjust #-}
-adjust :: (a -> a) -> Int -> By6Bits a -> By6Bits a
-adjust fn key (By6Bits bitSet array) =
-  case Bits64.lookup key bitSet of
-    Just index ->
-      By6Bits
-        bitSet
-        (SmallArray.unsafeAdjust fn index array)
-    Nothing ->
-      By6Bits bitSet array
-
--- |
--- Very much like @alterF@ of the \"containers\" package
--- with two differences:
---
--- - For better performance @(Maybe a -> f (Maybe a))@ is replaced with
---   the following two continuations: @f (Maybe a)@ and @(a -> f (Maybe a))@.
--- - The result is packed in @Maybe@ to inform you whether the map
---   has become empty.
---   This is useful for working with tries, since it can be used as
---   a single to remove from a wrapping container.
-{-# INLINE revise #-}
-revise :: Functor f => Int -> f (Maybe a) -> (a -> f (Maybe a)) -> By6Bits a -> f (Maybe (By6Bits a))
-revise key onMissing onPresent (By6Bits bitSet array) =
-  Bits64.revise
-    key
-    ( \index ->
-        Compose
-          ( fmap
-              ( \case
-                  Just value ->
-                    (SmallArray.insert index value array, True)
-                  Nothing ->
-                    (array, False)
-              )
-              onMissing
-          )
-    )
-    ( \index ->
-        Compose
-          ( fmap
-              ( \case
-                  Just value ->
-                    (SmallArray.set index value array, True)
-                  Nothing ->
-                    (array, False)
-              )
-              ( onPresent
-                  (indexSmallArray array index)
-              )
-          )
-    )
-    bitSet
-    & getCompose
-    & fmap
-      ( \(array, bitSetMaybe) ->
-          fmap
-            (\bitSet -> By6Bits bitSet array)
-            bitSetMaybe
-      )
+insert key val map =
+  map
+    & locate key
+    & either
+      ((Nothing,) . write val)
+      (liftA2 (,) (Just . read) (overwrite val))
 
 {-# INLINE foldrWithKey #-}
 foldrWithKey :: (Int -> a -> b -> b) -> b -> By6Bits a -> b
@@ -146,65 +77,73 @@ foldrWithKey step end (By6Bits bits array) =
     loop key arrayIndex =
       if key < 64
         then
-          if Bits64.member key bits
+          if testBit bits key
             then case indexSmallArray array arrayIndex of
               element -> step key element (loop (succ key) (succ arrayIndex))
             else loop (succ key) arrayIndex
         else end
 
+{-# INLINE toList #-}
 toList :: By6Bits a -> [(Int, a)]
 toList =
   foldrWithKey (\k v -> (:) (k, v)) []
 
+{-# INLINE null #-}
 null :: By6Bits a -> Bool
-null (By6Bits keys _) = Bits64.null keys
+null (By6Bits keys _) = keys == 0
 
 -- * Location API
 
+{-# INLINE locate #-}
 locate :: Int -> By6Bits a -> Either (Missing a) (Existing a)
-locate key (By6Bits keys array) =
-  case Bits64.locate key keys of
-    Bits64.FoundLocation popCountBefore keysWithoutIt ->
-      Right $ Existing keys keysWithoutIt popCountBefore array
-    Bits64.UnfoundLocation popCountBefore keysWithIt ->
-      Left $ Missing keysWithIt popCountBefore array
+locate key (By6Bits keys arr) =
+  {-# SCC "locate" #-}
+  let !keySingleton = bit key
+      !idx = popCount (pred keySingleton .&. keys)
+   in if keySingleton .&. keys == 0
+        then Left $ Missing (keySingleton .|. keys) idx arr
+        else Right $ Existing keySingleton keys idx arr
 
 -- **
 
 data Existing a
   = Existing
-      {-# UNPACK #-} !Bits64.Bits64
-      -- ^ Original key bitmap.
-      Bits64.Bits64
-      -- ^ Key bitmap without this key.
+      {-# UNPACK #-} !Word64
+      -- ^ Singleton set pointing to the value.
+      {-# UNPACK #-} !Word64
+      -- ^ Old key set.
       {-# UNPACK #-} !Int
-      -- ^ Found index in the array.
+      -- ^ Index in array.
       {-# UNPACK #-} !(SmallArray a)
-      -- ^ Array of entries.
+      -- ^ Array.
 
+{-# INLINE read #-}
 read :: Existing a -> a
 read (Existing _ _ idx arr) =
   indexSmallArray arr idx
 
+{-# INLINE remove #-}
 remove :: Existing a -> By6Bits a
-remove (Existing _ keysWithoutIt popCountBefore array) =
-  By6Bits keysWithoutIt (SmallArray.unset popCountBefore array)
+remove (Existing keySingleton keys idx arr) =
+  By6Bits (keys .&. complement keySingleton) (SmallArray.unset idx arr)
 
+{-# INLINE overwrite #-}
 overwrite :: a -> Existing a -> By6Bits a
-overwrite val (Existing keys _ popCountBefore array) =
-  By6Bits keys (SmallArray.set popCountBefore val array)
+overwrite val (Existing _ keys idx array) =
+  By6Bits keys (SmallArray.set idx val array)
 
 -- **
 
 data Missing a
   = Missing
-      Bits64.Bits64
+      {-# UNPACK #-} !Word64
       -- ^ Key bitmap with this key.
       {-# UNPACK #-} !Int
       -- ^ Found index in the array.
       {-# UNPACK #-} !(SmallArray a)
       -- ^ Array of entries.
 
+{-# INLINE write #-}
 write :: a -> Missing a -> By6Bits a
-write val (Missing keysWithIt popCountBefore array) =
-  By6Bits keysWithIt (SmallArray.insert popCountBefore val array)
+write val (Missing keysWithIt idx array) =
+  By6Bits keysWithIt (SmallArray.insert idx val array)
