@@ -25,5 +25,7 @@ lruHashCache =
         (Nothing, _) -> error "Key not found"
         _ -> return ()
       return $
-        [ bench "lookup" $ nf (LruHashCache.lookup existingKey) lhc
+        [ bench "lookup" $ nf (LruHashCache.lookup existingKey) lhc,
+          bench "insert-missing" $ nf (LruHashCache.insert "something new" 7) lhc,
+          bench "insert-existing" $ nf (LruHashCache.insert existingKey 7) lhc
         ]
