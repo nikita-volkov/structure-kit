@@ -122,25 +122,25 @@ locate key (By8Bits a b c d) =
 
 data Existing a
   = AExisting
-      !(By6Bits.Existing a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Existing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | BExisting
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Existing a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Existing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | CExisting
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Existing a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Existing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | DExisting
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Existing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Existing a)
 
 read :: Existing a -> a
 read = \case
@@ -167,25 +167,25 @@ overwrite val = \case
 
 data Missing a
   = AMissing
-      !(By6Bits.Missing a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Missing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | BMissing
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Missing a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Missing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | CMissing
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Missing a)
-      !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Missing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
   | DMissing
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.By6Bits a)
-      !(By6Bits.Missing a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.By6Bits a)
+      {-# UNPACK #-} !(By6Bits.Missing a)
 
 write :: a -> Missing a -> By8Bits a
 write val = \case
