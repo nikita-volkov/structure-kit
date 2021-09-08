@@ -118,11 +118,15 @@ insertMany =
   \inserts lhc -> foldr step end inserts lhc []
   where
     step (k, v) next !lhc !evictions =
-      case insert k v lhc of
-        (eviction, lhc) ->
-          let evictions' = case eviction of
-                Just eviction -> eviction : evictions
-                Nothing -> evictions
-           in next lhc evictions'
+      case locate k lhc of
+        Left loc ->
+          case write v loc of
+            (eviction, lhc) ->
+              let evictions' = case eviction of
+                    Just eviction -> eviction : evictions
+                    Nothing -> evictions
+               in next lhc evictions'
+        Right loc ->
+          next (overwrite v loc) evictions
     end lhc evictions =
       (evictions, lhc)
