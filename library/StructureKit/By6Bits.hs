@@ -117,14 +117,17 @@ data Existing a
       {-# UNPACK #-} !(SmallArray a)
       -- ^ Array.
 
+{-# INLINE read #-}
 read :: Existing a -> a
 read (Existing _ _ idx arr) =
   indexSmallArray arr idx
 
+{-# INLINE remove #-}
 remove :: Existing a -> By6Bits a
 remove (Existing keySingleton keys idx arr) =
   By6Bits (keys .&. complement keySingleton) (SmallArray.unset idx arr)
 
+{-# INLINE overwrite #-}
 overwrite :: a -> Existing a -> By6Bits a
 overwrite val (Existing _ keys idx array) =
   By6Bits keys (SmallArray.set idx val array)
@@ -140,6 +143,7 @@ data Missing a
       {-# UNPACK #-} !(SmallArray a)
       -- ^ Array of entries.
 
+{-# INLINE write #-}
 write :: a -> Missing a -> By6Bits a
 write val (Missing keysWithIt idx array) =
   By6Bits keysWithIt (SmallArray.insert idx val array)
