@@ -135,7 +135,7 @@ lruHashCache =
           lhcAfterLookups =
             foldl' (\lhc k -> snd (LruHashCache.lookup k lhc)) initialLhc keysToLookup
           evictions =
-            lhcAfterLookups & insertMany otherEntries & fst & fmap fst
+            lhcAfterLookups & LruHashCache.insertMany otherEntries & fst & fmap fst & reverse
       return $
         keysToLookup === evictions,
     testProperty "Inserting new entry after cap is reached produces evicted entry" $ do
@@ -162,19 +162,7 @@ lruHashCache =
   ]
   where
     fromInserts cap list =
-      LruHashCache.empty cap & insertMany list & snd
-    insertMany =
-      \inserts lhc -> foldr step end inserts lhc []
-      where
-        step (k, v) next !lhc !evictions =
-          case LruHashCache.insert k v lhc of
-            (eviction, lhc) ->
-              let evictions' = case eviction of
-                    Just eviction -> eviction : evictions
-                    Nothing -> evictions
-               in next lhc evictions'
-        end lhc evictions =
-          (reverse evictions, lhc)
+      LruHashCache.empty cap & LruHashCache.insertMany list & snd
 
 counterexamples =
   foldr (.) id . fmap counterexample

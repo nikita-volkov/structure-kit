@@ -1,8 +1,6 @@
 module Main.ExtrasFor.QcGen where
 
 import qualified Data.Text as Text
-import qualified Main.ExtrasFor.LruHashCache as LruHashCacheExtras
-import qualified StructureKit.LruHashCache as LruHashCache
 import Test.QuickCheck.Gen
 import qualified Test.QuickCheck.Random as Random
 import Prelude hiding (choose, optional)

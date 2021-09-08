@@ -46,6 +46,7 @@ $(find . -name '*.hs')
 
 stack \
 build \
---ghc-options "-O2" \
+--fast \
 --bench \
---ba "-s"
+--no-run-benchmarks \
+--test

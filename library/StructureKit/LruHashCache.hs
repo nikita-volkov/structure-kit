@@ -19,6 +19,7 @@ module StructureKit.LruHashCache
     -- * Derivative operations
     lookup,
     insert,
+    insertMany,
   )
 where
 
@@ -111,3 +112,17 @@ insert k v lhc =
     & either
       (write v)
       ((,) Nothing <$> overwrite v)
+
+insertMany :: (Hashable k, Eq k) => [(k, v)] -> LruHashCache k v -> ([(k, v)], LruHashCache k v)
+insertMany =
+  \inserts lhc -> foldr step end inserts lhc []
+  where
+    step (k, v) next !lhc !evictions =
+      case insert k v lhc of
+        (eviction, lhc) ->
+          let evictions' = case eviction of
+                Just eviction -> eviction : evictions
+                Nothing -> evictions
+           in next lhc evictions'
+    end lhc evictions =
+      (evictions, lhc)

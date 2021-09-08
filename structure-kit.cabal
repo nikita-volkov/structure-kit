@@ -84,7 +84,6 @@ benchmark bench
   hs-source-dirs: bench
   main-is: Main.hs
   other-modules:
-    Main.ExtrasFor.LruHashCache
     Main.ExtrasFor.QcGen
   ghc-options: -O2 -threaded "-with-rtsopts=-N"
   default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
