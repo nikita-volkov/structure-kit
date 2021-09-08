@@ -85,6 +85,7 @@ null (By32Bits tree1) = By6Bits.null tree1
 
 locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
 locate key (By32Bits tree1) =
+  {-# SCC "locate" #-}
   case By6Bits.locate key1 tree1 of
     Right present1 ->
       let remove1 = By32Bits $ By6Bits.remove present1
