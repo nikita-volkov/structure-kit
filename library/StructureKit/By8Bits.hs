@@ -115,6 +115,7 @@ null (By8Bits a b c d) =
 
 -- * Location API
 
+{-# INLINE locate #-}
 locate :: Int -> By8Bits a -> Either (Missing a) (Existing a)
 locate key (By8Bits a b c d) =
   if key < 128
