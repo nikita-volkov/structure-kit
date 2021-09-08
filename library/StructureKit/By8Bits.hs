@@ -122,70 +122,92 @@ locate key (By8Bits a b c d) =
     then
       if key < 64
         then case By6Bits.locate key a of
-          Right existing ->
-            Right $
-              Existing
-                (By6Bits.read existing)
-                (By8Bits (By6Bits.remove existing) b c d)
-                (\val -> By8Bits (By6Bits.overwrite val existing) b c d)
-          Left missing ->
-            Left $
-              Missing
-                (\val -> By8Bits (By6Bits.write val missing) b c d)
+          Right x -> Right $ AExisting x b c d
+          Left x -> Left $ AMissing x b c d
         else case By6Bits.locate (key - 64) b of
-          Right existing ->
-            Right $
-              Existing
-                (By6Bits.read existing)
-                (By8Bits a (By6Bits.remove existing) c d)
-                (\val -> By8Bits a (By6Bits.overwrite val existing) c d)
-          Left missing ->
-            Left $
-              Missing
-                (\val -> By8Bits a (By6Bits.write val missing) c d)
+          Right x -> Right $ BExisting a x c d
+          Left x -> Left $ BMissing a x c d
     else
       if key < 192
         then case By6Bits.locate (key - 128) c of
-          Right existing ->
-            Right $
-              Existing
-                (By6Bits.read existing)
-                (By8Bits a b (By6Bits.remove existing) d)
-                (\val -> By8Bits a b (By6Bits.overwrite val existing) d)
-          Left missing ->
-            Left $
-              Missing
-                (\val -> By8Bits a b (By6Bits.write val missing) d)
+          Right x -> Right $ CExisting a b x d
+          Left x -> Left $ CMissing a b x d
         else case By6Bits.locate (key - 192) d of
-          Right existing ->
-            Right $
-              Existing
-                (By6Bits.read existing)
-                (By8Bits a b c (By6Bits.remove existing))
-                (\val -> By8Bits a b c (By6Bits.overwrite val existing))
-          Left missing ->
-            Left $
-              Missing
-                (\val -> By8Bits a b c (By6Bits.write val missing))
+          Right x -> Right $ DExisting a b c x
+          Left x -> Left $ DMissing a b c x
 
 -- **
 
 data Existing a
-  = Existing a (By8Bits a) (a -> By8Bits a)
+  = AExisting
+      !(By6Bits.Existing a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+  | BExisting
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Existing a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+  | CExisting
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Existing a)
+      !(By6Bits.By6Bits a)
+  | DExisting
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Existing a)
 
 read :: Existing a -> a
-read (Existing x _ _) = x
+read = \case
+  AExisting x _ _ _ -> By6Bits.read x
+  BExisting _ x _ _ -> By6Bits.read x
+  CExisting _ _ x _ -> By6Bits.read x
+  DExisting _ _ _ x -> By6Bits.read x
 
 remove :: Existing a -> By8Bits a
-remove (Existing _ x _) = x
+remove = \case
+  AExisting x b c d -> By8Bits (By6Bits.remove x) b c d
+  BExisting a x c d -> By8Bits a (By6Bits.remove x) c d
+  CExisting a b x d -> By8Bits a b (By6Bits.remove x) d
+  DExisting a b c x -> By8Bits a b c (By6Bits.remove x)
 
 overwrite :: a -> Existing a -> By8Bits a
-overwrite val (Existing _ _ x) = x val
+overwrite val = \case
+  AExisting x b c d -> By8Bits (By6Bits.overwrite val x) b c d
+  BExisting a x c d -> By8Bits a (By6Bits.overwrite val x) c d
+  CExisting a b x d -> By8Bits a b (By6Bits.overwrite val x) d
+  DExisting a b c x -> By8Bits a b c (By6Bits.overwrite val x)
 
 -- **
 
-newtype Missing a
-  = Missing (a -> By8Bits a)
+data Missing a
+  = AMissing
+      !(By6Bits.Missing a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+  | BMissing
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Missing a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+  | CMissing
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Missing a)
+      !(By6Bits.By6Bits a)
+  | DMissing
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.By6Bits a)
+      !(By6Bits.Missing a)
 
 write :: a -> Missing a -> By8Bits a
-write val (Missing x) = x val
+write val = \case
+  AMissing x b c d -> By8Bits (By6Bits.write val x) b c d
+  BMissing a x c d -> By8Bits a (By6Bits.write val x) c d
+  CMissing a b x d -> By8Bits a b (By6Bits.write val x) d
+  DMissing a b c x -> By8Bits a b c (By6Bits.write val x)
