@@ -85,114 +85,54 @@ null (By32Bits tree1) = By6Bits.null tree1
 
 locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
 locate key (By32Bits tree1) =
-  {-# SCC "locate/1" #-}
-  case By6Bits.locate key1 tree1 of
-    Right present1 ->
-      {-# SCC "locate/1/Right" #-}
-      let remove1 = By32Bits $ By6Bits.remove present1
-          overwrite1 val = By32Bits $ By6Bits.overwrite val present1
-       in case By6Bits.locate key2 (By6Bits.read present1) of
-            Right present2 ->
-              {-# SCC "locate/2/Right" #-}
-              let remove2 = levelRemove remove1 overwrite1 present2
-                  overwrite2 = levelOverwrite overwrite1 present2
-               in case By6Bits.locate key3 (By6Bits.read present2) of
-                    Right present3 ->
-                      {-# SCC "locate/3/Right" #-}
-                      let remove3 = levelRemove remove2 overwrite2 present3
-                          overwrite3 = levelOverwrite overwrite2 present3
-                       in case By6Bits.locate key4 (By6Bits.read present3) of
-                            Right present4 ->
-                              {-# SCC "locate/4/Right" #-}
-                              let remove4 = levelRemove remove3 overwrite3 present4
-                                  overwrite4 = levelOverwrite overwrite3 present4
-                               in case By8Bits.locate key5 (By6Bits.read present4) of
-                                    Right present5 ->
-                                      {-# SCC "locate/5/Right" #-}
-                                      Right $
-                                        Existing
-                                          (By8Bits.read present5)
-                                          ( let tree5 = By8Bits.remove present5
-                                             in if By8Bits.null tree5
-                                                  then remove4
-                                                  else overwrite4 tree5
-                                          )
-                                          (\val -> overwrite4 $ By8Bits.overwrite val present5)
-                                    Left missing5 ->
-                                      {-# SCC "locate/5/Left" #-}
-                                      Left $
-                                        Missing
-                                          (\val -> overwrite4 $ By8Bits.write val missing5)
-                            Left missing4 ->
-                              {-# SCC "locate/4/Left" #-}
-                              Left $
-                                Missing
-                                  ( \val ->
-                                      missing4
-                                        & By6Bits.write (By8Bits.singleton key5 val)
-                                        & overwrite3
-                                  )
-                    Left missing3 ->
-                      {-# SCC "locate/3/Left" #-}
-                      Left $
-                        Missing
-                          ( \val ->
-                              let tree4 =
-                                    By6Bits.singleton key4 $ By8Bits.singleton key5 val
-                               in missing3 & By6Bits.write tree4 & overwrite2
-                          )
-            Left missing2 ->
-              {-# SCC "locate/2/Left" #-}
-              Left $
-                Missing
-                  ( \val ->
-                      let tree3 =
-                            By6Bits.singleton key3 $ By6Bits.singleton key4 $ By8Bits.singleton key5 val
-                       in missing2 & By6Bits.write tree3 & overwrite1
-                  )
-    Left missing1 ->
-      {-# SCC "locate/1/Left" #-}
-      Left $
-        Missing
-          ( \val ->
-              let tree2 =
-                    By6Bits.singleton key2 $ By6Bits.singleton key3 $ By6Bits.singleton key4 $ By8Bits.singleton key5 val
-               in missing1 & By6Bits.write tree2 & By32Bits
-          )
-  where
-    !key1 = KeyOps.toIndexOfLevel1 key
-    !key2 = KeyOps.toIndexOfLevel2 key
-    !key3 = KeyOps.toIndexOfLevel3 key
-    !key4 = KeyOps.toIndexOfLevel4 key
-    !key5 = KeyOps.toIndexOfLevel5 key
-    levelRemove removeFromParent overwriteInParent existing =
-      {-# SCC "levelRemove" #-}
-      By6Bits.remove existing & \tree ->
-        if By6Bits.null tree
-          then removeFromParent
-          else overwriteInParent tree
-    levelOverwrite overwriteInParent existing val =
-      {-# SCC "levelOverwrite" #-}
-      overwriteInParent $ By6Bits.overwrite val existing
+  error "TODO"
 
 -- **
 
 data Existing a
-  = Existing a (By32Bits a) (a -> By32Bits a)
+  = Existing
+      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      !(By6Bits.Existing (By6Bits (By8Bits a)))
+      !(By6Bits.Existing (By8Bits a))
+      !(By8Bits.Existing a)
 
 read :: Existing a -> a
-read (Existing x _ _) = x
+read =
+  error "TODO"
 
 remove :: Existing a -> By32Bits a
-remove (Existing _ x _) = x
+remove =
+  error "TODO"
 
 overwrite :: a -> Existing a -> By32Bits a
-overwrite val (Existing _ _ x) = x val
+overwrite val =
+  error "TODO"
 
 -- **
 
-newtype Missing a
-  = Missing (a -> By32Bits a)
+data Missing a
+  = At1Missing
+      !(By6Bits.Missing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+  | At2Missing
+      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      !(By6Bits.Missing (By6Bits (By6Bits (By8Bits a))))
+  | At3Missing
+      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      !(By6Bits.Missing (By6Bits (By8Bits a)))
+  | At4Missing
+      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      !(By6Bits.Existing (By6Bits (By8Bits a)))
+      !(By6Bits.Missing (By8Bits a))
+  | At5Missing
+      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      !(By6Bits.Existing (By6Bits (By8Bits a)))
+      !(By6Bits.Existing (By8Bits a))
+      !(By8Bits.Missing a)
 
 write :: a -> Missing a -> By32Bits a
-write val (Missing x) = x val
+write val =
+  error "TODO"
