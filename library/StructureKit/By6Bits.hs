@@ -165,9 +165,9 @@ null (By6Bits keys _) = Bits64.null keys
 locate :: Int -> By6Bits a -> Either (Missing a) (Existing a)
 locate key (By6Bits keys array) =
   case Bits64.locate key keys of
-    Bits64.FoundLocation popCountBefore keysWithoutIt ->
+    Bits64.FoundLocation !popCountBefore !keysWithoutIt ->
       Right $ Existing keys keysWithoutIt popCountBefore array
-    Bits64.UnfoundLocation popCountBefore keysWithIt ->
+    Bits64.UnfoundLocation !popCountBefore !keysWithIt ->
       Left $ Missing keysWithIt popCountBefore array
 
 -- **
