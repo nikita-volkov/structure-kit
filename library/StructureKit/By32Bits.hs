@@ -85,25 +85,30 @@ null (By32Bits tree1) = By6Bits.null tree1
 
 locate :: Int -> By32Bits a -> Either (Missing a) (Existing a)
 locate key (By32Bits tree1) =
-  {-# SCC "locate" #-}
+  {-# SCC "locate/1" #-}
   case By6Bits.locate key1 tree1 of
     Right present1 ->
+      {-# SCC "locate/1/Right" #-}
       let remove1 = By32Bits $ By6Bits.remove present1
           overwrite1 val = By32Bits $ By6Bits.overwrite val present1
        in case By6Bits.locate key2 (By6Bits.read present1) of
             Right present2 ->
+              {-# SCC "locate/2/Right" #-}
               let remove2 = levelRemove remove1 overwrite1 present2
                   overwrite2 = levelOverwrite overwrite1 present2
                in case By6Bits.locate key3 (By6Bits.read present2) of
                     Right present3 ->
+                      {-# SCC "locate/3/Right" #-}
                       let remove3 = levelRemove remove2 overwrite2 present3
                           overwrite3 = levelOverwrite overwrite2 present3
                        in case By6Bits.locate key4 (By6Bits.read present3) of
                             Right present4 ->
+                              {-# SCC "locate/4/Right" #-}
                               let remove4 = levelRemove remove3 overwrite3 present4
                                   overwrite4 = levelOverwrite overwrite3 present4
                                in case By8Bits.locate key5 (By6Bits.read present4) of
                                     Right present5 ->
+                                      {-# SCC "locate/5/Right" #-}
                                       Right $
                                         Existing
                                           (By8Bits.read present5)
@@ -114,10 +119,12 @@ locate key (By32Bits tree1) =
                                           )
                                           (\val -> overwrite4 $ By8Bits.overwrite val present5)
                                     Left missing5 ->
+                                      {-# SCC "locate/5/Left" #-}
                                       Left $
                                         Missing
                                           (\val -> overwrite4 $ By8Bits.write val missing5)
                             Left missing4 ->
+                              {-# SCC "locate/4/Left" #-}
                               Left $
                                 Missing
                                   ( \val ->
@@ -126,6 +133,7 @@ locate key (By32Bits tree1) =
                                         & overwrite3
                                   )
                     Left missing3 ->
+                      {-# SCC "locate/3/Left" #-}
                       Left $
                         Missing
                           ( \val ->
@@ -134,6 +142,7 @@ locate key (By32Bits tree1) =
                                in missing3 & By6Bits.write tree4 & overwrite2
                           )
             Left missing2 ->
+              {-# SCC "locate/2/Left" #-}
               Left $
                 Missing
                   ( \val ->
@@ -142,6 +151,7 @@ locate key (By32Bits tree1) =
                        in missing2 & By6Bits.write tree3 & overwrite1
                   )
     Left missing1 ->
+      {-# SCC "locate/1/Left" #-}
       Left $
         Missing
           ( \val ->
