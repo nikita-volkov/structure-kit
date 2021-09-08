@@ -64,6 +64,16 @@ library
     transformers >=0.5 && <0.6,
     vector >=0.12 && <0.13
 
+library structure-kit-quickcheck-util
+  hs-source-dirs: quickcheck-util
+  default-extensions: BangPatterns, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, DerivingVia, DuplicateRecordFields, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedLabels, OverloadedStrings, PatternGuards, PatternSynonyms, ParallelListComp, QuasiQuotes, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TemplateHaskell, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedTuples
+  default-language: Haskell2010
+  exposed-modules:
+    StructureKit.QuickCheckUtil.ExtrasFor.Gen
+  build-depends:
+    QuickCheck >=2.14.2 && <3,
+    rerebase >=1.13.0.1 && <2
+
 test-suite test
   type: exitcode-stdio-1.0
   hs-source-dirs: test
@@ -71,10 +81,11 @@ test-suite test
   default-language: Haskell2010
   main-is: Main.hs
   build-depends:
-    QuickCheck >=2.8.1 && <3,
+    QuickCheck >=2.14.2 && <3,
     quickcheck-instances >=0.3.11 && <0.4,
     rerebase <2,
     structure-kit,
+    structure-kit-quickcheck-util,
     tasty >=0.12 && <2,
     tasty-hunit >=0.9 && <0.11,
     tasty-quickcheck >=0.9 && <0.11
@@ -83,13 +94,12 @@ benchmark bench
   type: exitcode-stdio-1.0
   hs-source-dirs: bench
   main-is: Main.hs
-  other-modules:
-    Main.ExtrasFor.QcGen
   ghc-options: -O2 -threaded "-with-rtsopts=-N"
   default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
   default-language: Haskell2010
   build-depends:
     gauge >=0.2.5 && <0.3,
     structure-kit,
+    structure-kit-quickcheck-util,
     rerebase >=1.13.0.1 && <2,
     QuickCheck >=2.14.2 && <3

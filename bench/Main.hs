@@ -1,8 +1,8 @@
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Gauge.Main
-import qualified Main.ExtrasFor.QcGen as GenExtras
 import qualified StructureKit.LruHashCache as LruHashCache
+import qualified StructureKit.QuickCheckUtil.ExtrasFor.Gen as GenExtras
 import qualified Test.QuickCheck.Gen as Gen
 import qualified Test.QuickCheck.Random as Random
 import Prelude

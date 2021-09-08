@@ -1,4 +1,4 @@
-module Main.ExtrasFor.QcGen where
+module StructureKit.QuickCheckUtil.ExtrasFor.Gen where
 
 import qualified Data.Text as Text
 import Test.QuickCheck.Gen
