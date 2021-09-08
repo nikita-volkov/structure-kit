@@ -160,11 +160,11 @@ locate key (By32Bits tree1) =
                in missing1 & By6Bits.write tree2 & By32Bits
           )
   where
-    key1 = KeyOps.toIndexOfLevel1 key
-    key2 = KeyOps.toIndexOfLevel2 key
-    key3 = KeyOps.toIndexOfLevel3 key
-    key4 = KeyOps.toIndexOfLevel4 key
-    key5 = KeyOps.toIndexOfLevel5 key
+    !key1 = KeyOps.toIndexOfLevel1 key
+    !key2 = KeyOps.toIndexOfLevel2 key
+    !key3 = KeyOps.toIndexOfLevel3 key
+    !key4 = KeyOps.toIndexOfLevel4 key
+    !key5 = KeyOps.toIndexOfLevel5 key
     levelRemove removeFromParent overwriteInParent existing =
       {-# SCC "levelRemove" #-}
       By6Bits.remove existing & \tree ->
