@@ -93,7 +93,7 @@ locate hash predicate (Hamt map) =
       case By32Bits.read arrayExisting of
         array ->
           case SmallArray.locateByPredicate predicate array of
-            Just !elementExisting ->
+            Just elementExisting ->
               Right $ Existing arrayExisting elementExisting
             Nothing ->
               Left $ ElementMissing arrayExisting array
