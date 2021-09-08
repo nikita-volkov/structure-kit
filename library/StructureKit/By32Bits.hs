@@ -107,10 +107,10 @@ locate key (By32Bits tree1) =
 
 data Existing a
   = Existing
-      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
-      !(By6Bits.Existing (By6Bits (By8Bits a)))
-      !(By6Bits.Existing (By8Bits a))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By8Bits a)))
+      {-# UNPACK #-} !(By6Bits.Existing (By8Bits a))
       !(By8Bits.Existing a)
 
 {-# INLINE read #-}
@@ -168,34 +168,34 @@ overwrite val (Existing a b c d e) =
 
 data Missing a
   = At1Missing
-      !(By6Bits.Missing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !Int
-      !Int
-      !Int
-      !Int
+      {-# UNPACK #-} !(By6Bits.Missing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
   | At2Missing
-      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !(By6Bits.Missing (By6Bits (By6Bits (By8Bits a))))
-      !Int
-      !Int
-      !Int
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !(By6Bits.Missing (By6Bits (By6Bits (By8Bits a))))
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
   | At3Missing
-      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
-      !(By6Bits.Missing (By6Bits (By8Bits a)))
-      !Int
-      !Int
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      {-# UNPACK #-} !(By6Bits.Missing (By6Bits (By8Bits a)))
+      {-# UNPACK #-} !Int
+      {-# UNPACK #-} !Int
   | At4Missing
-      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
-      !(By6Bits.Existing (By6Bits (By8Bits a)))
-      !(By6Bits.Missing (By8Bits a))
-      !Int
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By8Bits a)))
+      {-# UNPACK #-} !(By6Bits.Missing (By8Bits a))
+      {-# UNPACK #-} !Int
   | At5Missing
-      !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
-      !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
-      !(By6Bits.Existing (By6Bits (By8Bits a)))
-      !(By6Bits.Existing (By8Bits a))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By6Bits (By8Bits a)))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By6Bits (By8Bits a))))
+      {-# UNPACK #-} !(By6Bits.Existing (By6Bits (By8Bits a)))
+      {-# UNPACK #-} !(By6Bits.Existing (By8Bits a))
       !(By8Bits.Missing a)
 
 write :: a -> Missing a -> By32Bits a
