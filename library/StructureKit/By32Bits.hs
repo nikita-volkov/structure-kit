@@ -5,8 +5,6 @@ module StructureKit.By32Bits
     By32Bits,
     empty,
     lookup,
-    adjust,
-    mapAt,
     null,
 
     -- * Location API
@@ -42,41 +40,8 @@ empty =
 -- |
 -- Lookup only using the first 32 bits.
 lookup :: Int -> By32Bits a -> Maybe a
-lookup key (By32Bits tree) =
-  By6Bits.lookup (KeyOps.toIndexOfLevel1 key) tree
-    >>= By6Bits.lookup (KeyOps.toIndexOfLevel2 key)
-    >>= By6Bits.lookup (KeyOps.toIndexOfLevel3 key)
-    >>= By6Bits.lookup (KeyOps.toIndexOfLevel4 key)
-    >>= By8Bits.lookup (KeyOps.toIndexOfLevel5 key)
-
-adjust :: (a -> a) -> Int -> By32Bits a -> By32Bits a
-adjust cont key =
-  mapCoercible
-    ( flip
-        By6Bits.adjust
-        (KeyOps.toIndexOfLevel1 key)
-        ( flip
-            By6Bits.adjust
-            (KeyOps.toIndexOfLevel2 key)
-            ( flip
-                By6Bits.adjust
-                (KeyOps.toIndexOfLevel3 key)
-                ( flip
-                    By6Bits.adjust
-                    (KeyOps.toIndexOfLevel4 key)
-                    ( flip
-                        By8Bits.adjust
-                        (KeyOps.toIndexOfLevel5 key)
-                        cont
-                    )
-                )
-            )
-        )
-    )
-
-mapAt :: Int -> (a -> a) -> By32Bits a -> By32Bits a
-mapAt =
-  flip adjust
+lookup key =
+  either (const Nothing) (Just . read) . locate key
 
 null :: By32Bits a -> Bool
 null (By32Bits tree1) = By6Bits.null tree1
