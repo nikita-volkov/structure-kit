@@ -61,14 +61,17 @@ data Existing k v
       !Int
       !(TouchTrackingHashMap.Existing k v)
 
+{-# INLINE read #-}
 read :: Existing k v -> v
 read (Existing _ _ loc) =
   TouchTrackingHashMap.read loc
 
+{-# INLINE touch #-}
 touch :: (Hashable k, Eq k) => Existing k v -> LruHashCache k v
 touch (Existing occupied capacity loc) =
   LruHashCache occupied capacity (TouchTrackingHashMap.touch loc)
 
+{-# INLINE overwrite #-}
 overwrite :: (Hashable k, Eq k) => v -> Existing k v -> LruHashCache k v
 overwrite val (Existing occupied capacity loc) =
   LruHashCache occupied capacity (TouchTrackingHashMap.overwrite val loc)
@@ -85,6 +88,7 @@ data Missing k v
 -- Insert a new value.
 --
 -- Possibly returns an evicted value.
+{-# INLINE write #-}
 write :: (Hashable k, Eq k) => v -> Missing k v -> (Maybe (k, v), LruHashCache k v)
 write val (Missing occupied capacity loc) =
   let tthm = TouchTrackingHashMap.write val loc
@@ -99,6 +103,7 @@ write val (Missing occupied capacity loc) =
 
 -- * Derivatives
 
+{-# INLINE lookup #-}
 lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> (Maybe v, LruHashCache k v)
 lookup k lhc =
   locate k lhc
@@ -106,6 +111,7 @@ lookup k lhc =
       (const (Nothing, lhc))
       ((,) <$> Just . read <*> touch)
 
+{-# INLINE insert #-}
 insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
 insert k v lhc =
   locate k lhc
