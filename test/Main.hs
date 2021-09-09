@@ -115,13 +115,22 @@ by32Bits =
 
 lruHashCache =
   [ testProperty "toList produces the insertion list" $ do
-      size <- chooseInt (0, 999)
-      cap <- chooseInt (1, 999)
-      inserts <- replicateM size (arbitrary @(Word16, Word16))
+      inserts <- listOf (arbitrary @(Word16, Word16))
+      let nubbedInserts =
+            inserts
+              & reverse
+              & nubBy (on (==) fst)
+              & reverse
+          nubbedSize =
+            length nubbedInserts
+          maxCap =
+            succ nubbedSize * 2
+      cap <- chooseInt (1, maxCap)
       let recordsSupposedToBeEvicted =
-            if cap > size then 0 else size - cap
+            if cap > nubbedSize then 0 else nubbedSize - cap
           insertsSupposedToBePresent =
-            inserts & drop recordsSupposedToBeEvicted
+            nubbedInserts
+              & drop recordsSupposedToBeEvicted
           cache =
             LruHashCache.empty cap
               & LruHashCache.insertMany inserts
