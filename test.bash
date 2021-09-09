@@ -48,4 +48,5 @@ stack \
 --work-dir .test.stack-work \
 build \
 --fast \
---test
+--test \
+structure-kit:test

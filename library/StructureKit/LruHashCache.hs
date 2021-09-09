@@ -3,6 +3,11 @@ module StructureKit.LruHashCache
     LruHashCache,
     empty,
 
+    -- * Basic operations
+    lookup,
+    insert,
+    insertMany,
+
     -- * Location API
     locate,
 
@@ -15,11 +20,6 @@ module StructureKit.LruHashCache
     -- ** Missing
     Missing,
     write,
-
-    -- * Derivative operations
-    lookup,
-    insert,
-    insertMany,
 
     -- * Folding
     foldr,
@@ -51,6 +51,58 @@ empty ::
   LruHashCache k v
 empty capacity =
   LruHashCache 0 capacity TouchTrackingHashMap.empty
+
+-- * Basics
+
+{-# INLINE lookup #-}
+lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> Maybe (v, LruHashCache k v)
+lookup k (LruHashCache occ cap mem) =
+  case TouchTrackingHashMap.lookup k mem of
+    Just (v, mem) -> Just (v, LruHashCache occ cap mem)
+    Nothing -> Nothing
+
+{-# INLINE insert #-}
+insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
+insert k v (LruHashCache occ cap mem) =
+  case TouchTrackingHashMap.insert k v mem of
+    (replaced, mem) -> case replaced of
+      Just _ -> (Nothing, LruHashCache occ cap mem)
+      Nothing ->
+        if occ == cap
+          then case TouchTrackingHashMap.evict mem of
+            (eviction, mem) -> (eviction, LruHashCache cap cap mem)
+          else case succ occ of
+            occ -> (Nothing, LruHashCache occ cap mem)
+
+insertMany :: (Hashable k, Eq k) => [(k, v)] -> LruHashCache k v -> ([(k, v)], LruHashCache k v)
+insertMany inserts (LruHashCache occ cap mem) =
+  eliminateInsertsGrowingOcc occ mem inserts
+  where
+    eliminateInsertsGrowingOcc !occ !mem = \case
+      (k, v) : inserts ->
+        case TouchTrackingHashMap.insert k v mem of
+          (replaced, mem) -> case replaced of
+            Just _ -> eliminateInsertsGrowingOcc occ mem inserts
+            Nothing ->
+              if occ == cap
+                then evict [] mem inserts
+                else eliminateInsertsGrowingOcc (succ occ) mem inserts
+      _ -> ([], LruHashCache occ cap mem)
+    evict evictions mem inserts =
+      case TouchTrackingHashMap.evict mem of
+        (eviction, mem) ->
+          case maybe id (:) eviction evictions of
+            evictions -> eliminateInsertsCapped evictions mem inserts
+    eliminateInsertsCapped !evictions !mem = \case
+      (k, v) : inserts ->
+        case TouchTrackingHashMap.insert k v mem of
+          (replaced, mem) -> case replaced of
+            Just _ -> eliminateInsertsCapped evictions mem inserts
+            Nothing -> evict evictions mem inserts
+      _ ->
+        (evictions, LruHashCache cap cap mem)
+
+-- * Location API
 
 locate :: (Hashable k, Eq k) => k -> LruHashCache k v -> Either (Missing k v) (Existing k v)
 locate k (LruHashCache occupied capacity tthm) =
@@ -105,42 +157,6 @@ write val (Missing occupied capacity loc) =
         else
           let lru = LruHashCache (succ occupied) capacity tthm
            in (Nothing, lru)
-
--- * Derivatives
-
-{-# INLINE lookup #-}
-lookup :: (Hashable k, Eq k) => k -> LruHashCache k v -> (Maybe v, LruHashCache k v)
-lookup k lhc =
-  locate k lhc
-    & either
-      (const (Nothing, lhc))
-      ((,) <$> Just . read <*> touch)
-
-{-# INLINE insert #-}
-insert :: (Hashable k, Eq k) => k -> v -> LruHashCache k v -> (Maybe (k, v), LruHashCache k v)
-insert k v lhc =
-  locate k lhc
-    & either
-      (write v)
-      ((,) Nothing <$> overwrite v)
-
-insertMany :: (Hashable k, Eq k) => [(k, v)] -> LruHashCache k v -> ([(k, v)], LruHashCache k v)
-insertMany =
-  \inserts lhc -> List.foldr step end inserts lhc []
-  where
-    step (k, v) next !lhc !evictions =
-      case locate k lhc of
-        Left loc ->
-          case write v loc of
-            (eviction, lhc) ->
-              let evictions' = case eviction of
-                    Just eviction -> eviction : evictions
-                    Nothing -> evictions
-               in next lhc evictions'
-        Right loc ->
-          next (overwrite v loc) evictions
-    end lhc evictions =
-      (evictions, lhc)
 
 -- * Folding
 

@@ -137,9 +137,15 @@ lruHashCache =
               & snd
       return $ insertsSupposedToBePresent === LruHashCache.toList cache,
     testProperty "Running insertMany results in the same as running insert multiple times" $ do
-      size <- chooseInt (0, 999)
-      cap <- chooseInt (1, 999)
-      inserts <- replicateM size (arbitrary @(Word16, Word16))
+      inserts <- listOf (arbitrary @(Word16, Word16))
+      let nubbedInserts =
+            inserts
+              & reverse
+              & nubBy (on (==) fst)
+              & reverse
+          nubbedSize =
+            length nubbedInserts
+      cap <- chooseInt (1, nubbedSize)
       let initialCache = LruHashCache.empty cap
           usingMultipleInserts =
             foldl'
@@ -152,11 +158,11 @@ lruHashCache =
               )
               ([], initialCache)
               inserts
-              & second LruHashCache.toList
           usingInsertMany =
             LruHashCache.insertMany inserts initialCache
-              & second LruHashCache.toList
-      return $ usingMultipleInserts === usingInsertMany,
+      return . counterexample ("Size: " <> show nubbedSize <> "; Cap: " <> show cap) $
+        label "Entries equal" (on (===) (LruHashCache.toList . snd) usingMultipleInserts usingInsertMany)
+          .&&. label "Evictions equal" (fst usingMultipleInserts === fst usingInsertMany),
     testProperty "Freshly inserted entry must be possible to lookup" $ do
       initialSize <- chooseInt (0, 999)
       cap <- chooseInt (1, 999)
@@ -165,7 +171,7 @@ lruHashCache =
       key <- arbitrary
       val <- arbitrary
       let lhc' = LruHashCache.insert key val lhc & snd
-          lookupRes = LruHashCache.lookup key lhc' & fst
+          lookupRes = LruHashCache.lookup key lhc' & fmap fst
       return $
         Just val === lookupRes,
     testProperty "Records get evicted in the order of last lookup" $ do
@@ -176,7 +182,7 @@ lruHashCache =
       let initialLhc =
             fromInserts size initialEntries
           lhcAfterLookups =
-            foldl' (\lhc k -> snd (LruHashCache.lookup k lhc)) initialLhc keysToLookup
+            foldl' (\lhc k -> LruHashCache.lookup k lhc & maybe lhc snd) initialLhc keysToLookup
           evictions =
             lhcAfterLookups & LruHashCache.insertMany otherEntries & fst & fmap fst & reverse
       return $
@@ -200,7 +206,7 @@ lruHashCache =
         (eviction, lhc) -> case eviction of
           Nothing -> discard
           Just (key, val) ->
-            let lookupRes = fst $ LruHashCache.lookup key lhc
+            let lookupRes = LruHashCache.lookup key lhc & fmap fst
              in return $ Nothing === lookupRes
   ]
   where
