@@ -70,7 +70,7 @@ insert k v (LruHashCache occ cap mem) =
       Nothing ->
         if occ == cap
           then case TouchTrackingHashMap.evict mem of
-            (eviction, mem) -> (eviction, LruHashCache occ cap mem)
+            (eviction, mem) -> (eviction, LruHashCache cap cap mem)
           else (Nothing, LruHashCache occ cap mem)
 
 insertMany :: (Hashable k, Eq k) => [(k, v)] -> LruHashCache k v -> ([(k, v)], LruHashCache k v)
