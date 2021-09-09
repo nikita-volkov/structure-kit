@@ -2,6 +2,10 @@ module StructureKit.TouchTrackingHashMap
   ( -- *
     TouchTrackingHashMap,
     empty,
+
+    -- * Basic operations
+    lookup,
+    insert,
     evict,
 
     -- * Location API
@@ -48,6 +52,18 @@ instance (NFData v) => NFData (Entry v) where
 empty :: TouchTrackingHashMap k v
 empty =
   TouchTrackingHashMap mempty HashMap.empty
+
+-- * Basics
+
+{-# INLINE lookup #-}
+lookup :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Maybe (v, TouchTrackingHashMap k v)
+lookup k (TouchTrackingHashMap touches entries) =
+  error "TODO"
+
+{-# INLINE insert #-}
+insert :: (Hashable k, Eq k) => k -> v -> TouchTrackingHashMap k v -> (Maybe (k, v), TouchTrackingHashMap k v)
+insert k v (TouchTrackingHashMap touches entries) =
+  error "TODO"
 
 -- |
 -- Evict one entry from the map.

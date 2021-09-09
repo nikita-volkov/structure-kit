@@ -17,7 +17,7 @@ performLookups lhc existingKeys =
         & concat
         & fmap (`LruHashCache.lookup` lhc)
         & evaluate
-    print $ length $ filter (isJust . fst) $ res
+    print $ length $ filter isJust $ res
 
 {-# NOINLINE generate #-}
 generate =
