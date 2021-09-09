@@ -57,7 +57,7 @@ library
     primitive >=0.7.1 && <0.8,
     text >=1 && <2,
     transformers >=0.5 && <0.6,
-    vector >=0.12 && <0.13
+    vector >=0.12 && <0.13,
 
 library structure-kit-quickcheck-util
   hs-source-dirs: quickcheck-util
@@ -67,7 +67,7 @@ library structure-kit-quickcheck-util
     StructureKit.QuickCheckUtil.ExtrasFor.Gen
   build-depends:
     QuickCheck >=2.14.2 && <3,
-    rerebase >=1.13.0.1 && <2
+    rerebase >=1.13.0.1 && <2,
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -83,7 +83,7 @@ test-suite test
     structure-kit-quickcheck-util,
     tasty >=0.12 && <2,
     tasty-hunit >=0.9 && <0.11,
-    tasty-quickcheck >=0.9 && <0.11
+    tasty-quickcheck >=0.9 && <0.11,
 
 benchmark bench
   type: exitcode-stdio-1.0
@@ -97,7 +97,7 @@ benchmark bench
     structure-kit,
     structure-kit-quickcheck-util,
     rerebase >=1.13.0.1 && <2,
-    QuickCheck >=2.14.2 && <3
+    QuickCheck >=2.14.2 && <3,
 
 test-suite profile
   type: exitcode-stdio-1.0
@@ -109,4 +109,4 @@ test-suite profile
     structure-kit,
     structure-kit-quickcheck-util,
     rerebase >=1.13.0.1 && <2,
-    QuickCheck >=2.14.2 && <3
+    QuickCheck >=2.14.2 && <3,
