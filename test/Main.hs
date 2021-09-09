@@ -137,9 +137,15 @@ lruHashCache =
               & snd
       return $ insertsSupposedToBePresent === LruHashCache.toList cache,
     testProperty "Running insertMany results in the same as running insert multiple times" $ do
-      size <- chooseInt (0, 999)
-      cap <- chooseInt (1, 999)
-      inserts <- replicateM size (arbitrary @(Word16, Word16))
+      inserts <- listOf (arbitrary @(Word16, Word16))
+      let nubbedInserts =
+            inserts
+              & reverse
+              & nubBy (on (==) fst)
+              & reverse
+          nubbedSize =
+            length nubbedInserts
+      cap <- chooseInt (1, nubbedSize)
       let initialCache = LruHashCache.empty cap
           usingMultipleInserts =
             foldl'
@@ -154,7 +160,7 @@ lruHashCache =
               inserts
           usingInsertMany =
             LruHashCache.insertMany inserts initialCache
-      return . counterexample ("Size: " <> show size <> "; Cap: " <> show cap) $
+      return . counterexample ("Size: " <> show nubbedSize <> "; Cap: " <> show cap) $
         label "Entries equal" (on (===) (LruHashCache.toList . snd) usingMultipleInserts usingInsertMany)
           .&&. label "Evictions equal" (fst usingMultipleInserts === fst usingInsertMany),
     testProperty "Freshly inserted entry must be possible to lookup" $ do
