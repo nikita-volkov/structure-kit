@@ -62,12 +62,31 @@ empty =
 {-# INLINE lookup #-}
 lookup :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Maybe (v, TouchTrackingHashMap k v)
 lookup k (TouchTrackingHashMap touches entries) =
-  error "TODO"
+  case HashMap.lookup k entries of
+    Just (Entry count value) ->
+      let !newEntry = Entry (succ count) value
+          newEntries = HashMap.insert k newEntry entries
+          newTouches = Deque.snoc k touches
+          newTthm = recurseCompacting newTouches newEntries
+       in Just (value, newTthm)
+    Nothing -> Nothing
 
+-- |
+-- Insert value possibly replacing an old one, in which case the old one is returned.
 {-# INLINE insert #-}
-insert :: (Hashable k, Eq k) => k -> v -> TouchTrackingHashMap k v -> (Maybe (k, v), TouchTrackingHashMap k v)
+insert :: (Hashable k, Eq k) => k -> v -> TouchTrackingHashMap k v -> (Maybe v, TouchTrackingHashMap k v)
 insert k v (TouchTrackingHashMap touches entries) =
-  error "TODO"
+  case HashMap.alterF replaceEmitting k entries of
+    (replacedVal, newEntries) ->
+      let newTouches = Deque.snoc k touches
+          newTthm = case replacedVal of
+            Just _ -> recurseCompacting newTouches newEntries
+            Nothing -> TouchTrackingHashMap newTouches newEntries
+       in (replacedVal, newTthm)
+  where
+    replaceEmitting = \case
+      Just (Entry count oldVal) -> (Just oldVal, Just $! Entry (succ count) v)
+      Nothing -> (Nothing, Just $! Entry 1 v)
 
 -- |
 -- Evict one entry from the map.
