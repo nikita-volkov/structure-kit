@@ -20,10 +20,15 @@ module StructureKit.LruHashCache
     -- ** Missing
     Missing,
     write,
+
+    -- * Folding
+    foldr,
+    toList,
   )
 where
 
-import StructureKit.Prelude hiding (empty, insert, lookup, read, touch)
+import qualified Data.List as List
+import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch)
 import qualified StructureKit.TouchTrackingHashMap as TouchTrackingHashMap
 
 data LruHashCache k v
@@ -151,3 +156,19 @@ write val (Missing occupied capacity loc) =
         else
           let lru = LruHashCache (succ occupied) capacity tthm
            in (Nothing, lru)
+
+-- * Folding
+
+-- |
+-- Fold right in eviction order.
+{-# INLINE foldr #-}
+foldr :: (Hashable k, Eq k) => (k -> v -> s -> s) -> s -> LruHashCache k v -> s
+foldr step state (LruHashCache _ _ mem) =
+  TouchTrackingHashMap.foldr step state mem
+
+-- |
+-- Convert to list in eviction order.
+{-# INLINE toList #-}
+toList :: (Hashable k, Eq k) => LruHashCache k v -> [(k, v)]
+toList (LruHashCache _ _ mem) =
+  TouchTrackingHashMap.toList mem
