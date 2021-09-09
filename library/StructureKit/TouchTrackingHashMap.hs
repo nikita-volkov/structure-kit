@@ -87,7 +87,7 @@ read (Existing _ val _ _ _) = val
 {-# INLINE touch #-}
 touch :: (Hashable k, Eq k) => Existing k v -> TouchTrackingHashMap k v
 touch (Existing count val key touches entries) =
-  let newEntry = Entry (succ count) val
+  let !newEntry = Entry (succ count) val
       newEntries = HashMap.insert key newEntry entries
       newTouches = Deque.snoc key touches
    in recurseCompacting newTouches newEntries
@@ -95,7 +95,7 @@ touch (Existing count val key touches entries) =
 {-# INLINE overwrite #-}
 overwrite :: (Hashable k, Eq k) => v -> Existing k v -> TouchTrackingHashMap k v
 overwrite newValue (Existing count _ key touches entries) =
-  let newEntry = Entry (succ count) newValue
+  let !newEntry = Entry (succ count) newValue
       newEntries = HashMap.insert key newEntry entries
       newTouches = Deque.snoc key touches
    in recurseCompacting newTouches newEntries
@@ -111,7 +111,7 @@ data Missing k v
 {-# INLINE write #-}
 write :: (Hashable k, Eq k) => v -> Missing k v -> TouchTrackingHashMap k v
 write val (Missing key touches entries) =
-  let entry = Entry 1 val
+  let !entry = Entry 1 val
       newEntries = HashMap.insert key entry entries
       newTouches = Deque.snoc key touches
    in TouchTrackingHashMap newTouches newEntries
@@ -145,7 +145,8 @@ recurseFoldring step end touches entries =
               let newEntries = HashMap.delete key entries
                in step key value (recurseFoldring step end newTouches newEntries)
             else
-              let newEntries = HashMap.insert key (Entry (pred count) value) entries
+              let !newEntry = Entry (pred count) value
+                  newEntries = HashMap.insert key newEntry entries
                in recurseFoldring step end newTouches newEntries
         Nothing ->
           error "Oops"
@@ -163,8 +164,9 @@ recurseCompacting !touches !entries =
         Just (Entry count value) ->
           if count == 1
             then TouchTrackingHashMap touches entries
-            else case HashMap.insert key (Entry (pred count) value) entries of
-              newEntries -> recurseCompacting newTouches newEntries
+            else case Entry (pred count) value of
+              newEntry -> case HashMap.insert key newEntry entries of
+                newEntries -> recurseCompacting newTouches newEntries
         Nothing ->
           error "Oops"
     Nothing ->
@@ -181,8 +183,9 @@ recurseEvicting !touches !entries =
             then case HashMap.delete key entries of
               newEntries -> case recurseCompacting newTouches newEntries of
                 tthm -> (Just (key, value), tthm)
-            else case HashMap.insert key (Entry (pred count) value) entries of
-              newEntries -> recurseEvicting newTouches newEntries
+            else case Entry (pred count) value of
+              newEntry -> case HashMap.insert key newEntry entries of
+                newEntries -> recurseEvicting newTouches newEntries
         Nothing ->
           error "Oops"
     Nothing ->
