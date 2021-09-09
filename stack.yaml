@@ -1,4 +1,1 @@
-resolver: nightly-2021-09-02
-extra-deps:
-  - deque-0.4.4
-  - strict-list-0.1.6
+resolver: nightly-2021-09-09
