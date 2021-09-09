@@ -152,11 +152,11 @@ lruHashCache =
               )
               ([], initialCache)
               inserts
-              & second LruHashCache.toList
           usingInsertMany =
             LruHashCache.insertMany inserts initialCache
-              & second LruHashCache.toList
-      return $ usingMultipleInserts === usingInsertMany,
+      return . counterexample ("Size: " <> show size <> "; Cap: " <> show cap) $
+        label "Entries equal" (on (===) (LruHashCache.toList . snd) usingMultipleInserts usingInsertMany)
+          .&&. label "Evictions equal" (fst usingMultipleInserts === fst usingInsertMany),
     testProperty "Freshly inserted entry must be possible to lookup" $ do
       initialSize <- chooseInt (0, 999)
       cap <- chooseInt (1, 999)
