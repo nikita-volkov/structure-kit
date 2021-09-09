@@ -135,7 +135,7 @@ toList =
 -- * Helpers
 
 recurseFoldring :: (Hashable k, Eq k) => (k -> v -> s -> s) -> s -> Deque k -> HashMap.HashMap k (Entry v) -> s
-recurseFoldring step end !touches !entries =
+recurseFoldring step end touches entries =
   case Deque.uncons touches of
     Just (key, newTouches) ->
       case HashMap.lookup key entries of
@@ -146,7 +146,7 @@ recurseFoldring step end !touches !entries =
                in step key value (recurseFoldring step end newTouches newEntries)
             else
               let newEntries = HashMap.insert key (Entry (pred count) value) entries
-               in recurseFoldring step end touches newEntries
+               in recurseFoldring step end newTouches newEntries
         Nothing ->
           error "Oops"
     Nothing -> end
