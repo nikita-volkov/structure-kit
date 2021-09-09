@@ -8,7 +8,7 @@ main =
 
 {-# NOINLINE performLookups #-}
 performLookups :: (Hashable k, Eq k) => LruHashCache.LruHashCache k v -> [k] -> IO ()
-performLookups lhc existingKeys =
+performLookups !lhc !existingKeys =
   do
     res <-
       {-# SCC "performLookups" #-}
