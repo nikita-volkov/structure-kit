@@ -48,4 +48,5 @@ stack \
 --work-dir .test.stack-work \
 build \
 --fast \
---test --ta "-p \"Running insertMany results in the same as running insert multiple times\" --quickcheck-verbose" structure-kit:test
+--test \
+structure-kit:test
