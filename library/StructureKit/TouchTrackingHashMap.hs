@@ -62,12 +62,6 @@ evict (TouchTrackingHashMap touches entries) =
 locate :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Either (Missing k v) (Existing k v)
 locate key (TouchTrackingHashMap touches entries) =
   {-# SCC "locate" #-}
-  -- case HashMap.locate (hash key) ((==) key . entryKey) entries of
-  --   Right existingEntry ->
-  --     let Entry count key val = HashMap.read existingEntry
-  --      in Right $ Existing count key val touches existingEntry
-  --   Left missingEntry ->
-  --     Left $ Missing key touches missingEntry
   case HashMap.lookup key entries of
     Just (Entry cnt val) -> Right (Existing cnt val key touches entries)
     Nothing -> Left (Missing key touches entries)
