@@ -20,7 +20,7 @@ main =
           !hashMap = HashMap.fromList inserts
           !map = Map.fromList inserts
       case LruHashCache.lookup existingKey lhc of
-        (Nothing, _) -> error "Key not found"
+        Nothing -> error "Key not found"
         _ -> return ()
       return $
         [ bgroup
