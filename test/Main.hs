@@ -114,7 +114,41 @@ by32Bits =
         & either (const Nothing) (Just . By32Bits.read)
 
 lruHashCache =
-  [ testProperty "Freshly inserted entry must be possible to lookup" $ do
+  [ testProperty "toList produces the insertion list" $ do
+      size <- chooseInt (0, 999)
+      cap <- chooseInt (1, 999)
+      inserts <- replicateM size (arbitrary @(Word16, Word16))
+      let recordsSupposedToBeEvicted =
+            if cap > size then 0 else size - cap
+          insertsSupposedToBePresent =
+            inserts & drop recordsSupposedToBeEvicted
+          cache =
+            LruHashCache.empty cap
+              & LruHashCache.insertMany inserts
+              & snd
+      return $ insertsSupposedToBePresent === LruHashCache.toList cache,
+    testProperty "Running insertMany results in the same as running insert multiple times" $ do
+      size <- chooseInt (0, 999)
+      cap <- chooseInt (1, 999)
+      inserts <- replicateM size (arbitrary @(Word16, Word16))
+      let initialCache = LruHashCache.empty cap
+          usingMultipleInserts =
+            foldl'
+              ( \(!evictions, !lhc) (k, v) ->
+                  LruHashCache.insert k v lhc & \(eviction, lhc) ->
+                    let newEvictions = case eviction of
+                          Just eviction -> eviction : evictions
+                          Nothing -> evictions
+                     in (newEvictions, lhc)
+              )
+              ([], initialCache)
+              inserts
+              & second LruHashCache.toList
+          usingInsertMany =
+            LruHashCache.insertMany inserts initialCache
+              & second LruHashCache.toList
+      return $ usingMultipleInserts === usingInsertMany,
+    testProperty "Freshly inserted entry must be possible to lookup" $ do
       initialSize <- chooseInt (0, 999)
       cap <- chooseInt (1, 999)
       inserts <- replicateM initialSize (arbitrary @(Word16, Word16))
