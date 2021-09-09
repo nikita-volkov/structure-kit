@@ -11,7 +11,7 @@ import StructureKit.Prelude hiding (empty)
 
 data IdGen
   = IdGen
-      {-# UNPACK #-} !(Deque Int)
+      !(Deque Int)
       {-# UNPACK #-} !Int
 
 instance Semigroup IdGen where
