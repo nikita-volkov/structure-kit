@@ -20,10 +20,15 @@ module StructureKit.LruHashCache
     lookup,
     insert,
     insertMany,
+
+    -- * Folding
+    foldr,
+    toList,
   )
 where
 
-import StructureKit.Prelude hiding (empty, insert, lookup, read, touch)
+import qualified Data.List as List
+import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch)
 import qualified StructureKit.TouchTrackingHashMap as TouchTrackingHashMap
 
 data LruHashCache k v
@@ -121,7 +126,7 @@ insert k v lhc =
 
 insertMany :: (Hashable k, Eq k) => [(k, v)] -> LruHashCache k v -> ([(k, v)], LruHashCache k v)
 insertMany =
-  \inserts lhc -> foldr step end inserts lhc []
+  \inserts lhc -> List.foldr step end inserts lhc []
   where
     step (k, v) next !lhc !evictions =
       case locate k lhc of
@@ -136,3 +141,19 @@ insertMany =
           next (overwrite v loc) evictions
     end lhc evictions =
       (evictions, lhc)
+
+-- * Folding
+
+-- |
+-- Fold right in eviction order.
+{-# INLINE foldr #-}
+foldr :: (Hashable k, Eq k) => (k -> v -> s -> s) -> s -> LruHashCache k v -> s
+foldr step state (LruHashCache _ _ mem) =
+  TouchTrackingHashMap.foldr step state mem
+
+-- |
+-- Convert to list in eviction order.
+{-# INLINE toList #-}
+toList :: (Hashable k, Eq k) => LruHashCache k v -> [(k, v)]
+toList (LruHashCache _ _ mem) =
+  TouchTrackingHashMap.toList mem

@@ -16,12 +16,16 @@ module StructureKit.TouchTrackingHashMap
     -- ** Missing
     Missing,
     write,
+
+    -- * Folding
+    foldr,
+    toList,
   )
 where
 
 import qualified Data.HashMap.Strict as HashMap
 import qualified Deque.Strict as Deque
-import StructureKit.Prelude hiding (empty, insert, lookup, read, touch, write)
+import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch, write)
 
 data TouchTrackingHashMap k v
   = TouchTrackingHashMap
@@ -112,7 +116,40 @@ write val (Missing key touches entries) =
       newTouches = Deque.snoc key touches
    in TouchTrackingHashMap newTouches newEntries
 
+-- * Folding
+
+-- |
+-- Fold right in eviction order.
+{-# INLINE foldr #-}
+foldr :: (Hashable k, Eq k) => (k -> v -> s -> s) -> s -> TouchTrackingHashMap k v -> s
+foldr step state (TouchTrackingHashMap touches entries) =
+  recurseFoldring step state touches entries
+
+-- |
+-- Convert to list in eviction order.
+{-# INLINE toList #-}
+toList :: (Hashable k, Eq k) => TouchTrackingHashMap k v -> [(k, v)]
+toList =
+  foldr (\k v s -> (k, v) : s) []
+
 -- * Helpers
+
+recurseFoldring :: (Hashable k, Eq k) => (k -> v -> s -> s) -> s -> Deque k -> HashMap.HashMap k (Entry v) -> s
+recurseFoldring step end touches entries =
+  case Deque.uncons touches of
+    Just (key, newTouches) ->
+      case HashMap.lookup key entries of
+        Just (Entry count value) ->
+          if count == 1
+            then
+              let newEntries = HashMap.delete key entries
+               in step key value (recurseFoldring step end newTouches newEntries)
+            else
+              let newEntries = HashMap.insert key (Entry (pred count) value) entries
+               in recurseFoldring step end newTouches newEntries
+        Nothing ->
+          error "Oops"
+    Nothing -> end
 
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
