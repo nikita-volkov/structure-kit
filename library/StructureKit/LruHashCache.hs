@@ -90,8 +90,8 @@ insertMany inserts (LruHashCache occ cap mem) =
     evict evictions mem inserts =
       case TouchTrackingHashMap.evict mem of
         (eviction, mem) ->
-          let evictions' = maybe id (:) eviction evictions
-           in eliminateInsertsCapped evictions' mem inserts
+          case maybe id (:) eviction evictions of
+            evictions -> eliminateInsertsCapped evictions mem inserts
     eliminateInsertsCapped !evictions !mem = \case
       (k, v) : inserts ->
         case TouchTrackingHashMap.insert k v mem of
