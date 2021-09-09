@@ -21,12 +21,15 @@ instance Semigroup IdGen where
 instance Monoid IdGen where
   mempty = empty
 
+{-# INLINE empty #-}
 empty :: IdGen
 empty = IdGen mempty 1
 
+{-# INLINE release #-}
 release :: Int -> IdGen -> IdGen
 release key (IdGen released counter) = IdGen (Deque.snoc key released) counter
 
+{-# INLINE fetch #-}
 fetch :: IdGen -> (Int, IdGen)
 fetch (IdGen released counter) =
   case Deque.uncons released of
