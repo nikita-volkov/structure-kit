@@ -6,22 +6,21 @@ import Prelude
 main =
   uncurry performLookups generate
 
+{-# SCC performLookups #-}
 {-# NOINLINE performLookups #-}
-performLookups :: (Hashable k, Eq k) => LruHashCache.LruHashCache k v -> [k] -> IO ()
+performLookups :: (Hashable k, Eq k) => LruHashCache.LruHashCache k Int64 -> [k] -> IO ()
 performLookups !lhc !existingKeys =
-  do
-    res <-
-      {-# SCC "performLookups" #-}
-      existingKeys
-        & replicate 1000
-        & concat
-        & fmap (`LruHashCache.lookup` lhc)
-        & evaluate
-    print $ length $ filter isJust $ res
+  existingKeys
+    & replicate 1000
+    & concat
+    & foldl'
+      (\(!x, !lhc) k -> LruHashCache.lookup k lhc & maybe (x, lhc) (first (+ x)))
+      (0, lhc)
+    & \(!x, !lhc) -> print x
 
+{-# SCC generate #-}
 {-# NOINLINE generate #-}
 generate =
-  {-# SCC "generate" #-}
   GenExtras.seedGen gen 0
   where
     gen = do

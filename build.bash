@@ -1,3 +1,3 @@
 #!/bin/bash
 ./format.bash
-./bench.bash
+./profile.bash
