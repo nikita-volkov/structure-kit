@@ -214,7 +214,6 @@ recurseCompacting = go
         Nothing ->
           TouchTrackingHashMap touches entries
 
-{-# SCC recurseEvicting #-}
 recurseEvicting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v) -> (Maybe (k, v), TouchTrackingHashMap k v)
 recurseEvicting = go
   where
