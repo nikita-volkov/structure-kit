@@ -102,9 +102,9 @@ benchmark bench
     rerebase >=1.13.0.1 && <2,
     QuickCheck >=2.14.2 && <3,
 
-test-suite profile
+test-suite profile-lhc
   type: exitcode-stdio-1.0
-  hs-source-dirs: profile
+  hs-source-dirs: profile-lhc
   main-is: Main.hs
   default-extensions: BangPatterns, BinaryLiterals, BlockArguments, ConstraintKinds, DataKinds, DefaultSignatures, DeriveDataTypeable, DeriveFoldable, DeriveFunctor, DeriveGeneric, DeriveTraversable, EmptyDataDecls, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, GeneralizedNewtypeDeriving, InstanceSigs, LambdaCase, LiberalTypeSynonyms, MagicHash, MultiParamTypeClasses, MultiWayIf, NoImplicitPrelude, NoMonomorphismRestriction, OverloadedStrings, PatternGuards, RankNTypes, RecordWildCards, ScopedTypeVariables, StandaloneDeriving, TupleSections, TypeApplications, TypeFamilies, TypeOperators, UnboxedSums, UnboxedTuples, ViewPatterns
   default-language: Haskell2010
