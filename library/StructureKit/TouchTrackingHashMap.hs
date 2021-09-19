@@ -33,7 +33,7 @@ import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, 
 
 data TouchTrackingHashMap k v
   = TouchTrackingHashMap
-      {-# UNPACK #-} !(Deque k)
+      !(Deque k)
       -- ^ Queue of touches to keys.
       !(HashMap.HashMap k (Entry v))
       -- ^ Specialised hash map of entries.
@@ -190,40 +190,51 @@ recurseFoldring step end touches entries =
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
 -- and construct a map from those.
-{-# SCC recurseCompacting #-}
-{-# NOINLINE recurseCompacting #-}
 recurseCompacting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v) -> TouchTrackingHashMap k v
-recurseCompacting !touches !entries =
-  case Deque.uncons touches of
-    Just (key, newTouches) ->
-      case HashMap.lookup key entries of
-        Just (Entry count value) ->
-          if count == 1
-            then TouchTrackingHashMap touches entries
-            else case Entry (pred count) value of
-              newEntry -> case HashMap.insert key newEntry entries of
-                newEntries -> recurseCompacting newTouches newEntries
+recurseCompacting = go
+  where
+    go !touches !entries =
+      case Deque.uncons touches of
+        Just (key, newTouches) ->
+          HashMap.alterF
+            ( \case
+                Just (Entry count value) ->
+                  if count == 1
+                    then (False, Just (Entry count value))
+                    else case pred count of
+                      nextCount -> (True, Just (Entry nextCount value))
+                Nothing -> error "Oops!"
+            )
+            key
+            entries
+            & \(continue, newEntries) ->
+              if continue
+                then recurseCompacting newTouches newEntries
+                else TouchTrackingHashMap touches entries
         Nothing ->
-          error "Oops"
-    Nothing ->
-      TouchTrackingHashMap touches entries
+          TouchTrackingHashMap touches entries
 
-{-# SCC recurseEvicting #-}
-{-# NOINLINE recurseEvicting #-}
 recurseEvicting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v) -> (Maybe (k, v), TouchTrackingHashMap k v)
-recurseEvicting !touches !entries =
-  case Deque.uncons touches of
-    Just (key, newTouches) ->
-      case HashMap.lookup key entries of
-        Just (Entry count value) ->
-          if count == 1
-            then case HashMap.delete key entries of
-              newEntries -> case recurseCompacting newTouches newEntries of
-                tthm -> (Just (key, value), tthm)
-            else case Entry (pred count) value of
-              newEntry -> case HashMap.insert key newEntry entries of
-                newEntries -> recurseEvicting newTouches newEntries
+recurseEvicting = go
+  where
+    go !touches !entries =
+      case Deque.uncons touches of
+        Just (key, touches) ->
+          HashMap.alterF
+            ( \case
+                Just (Entry count value) ->
+                  if count == 1
+                    then (Just (key, value), Nothing)
+                    else case Entry (pred count) value of
+                      newEntry -> (Nothing, Just newEntry)
+                Nothing ->
+                  error "Oops"
+            )
+            key
+            entries
+            & \(eviction, entries) ->
+              case eviction of
+                Just eviction -> (Just eviction, recurseCompacting touches entries)
+                Nothing -> recurseEvicting touches entries
         Nothing ->
-          error "Oops"
-    Nothing ->
-      TouchTrackingHashMap touches entries & \tthm -> (Nothing, tthm)
+          TouchTrackingHashMap touches entries & \tthm -> (Nothing, tthm)
