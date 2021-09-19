@@ -81,10 +81,10 @@ insert k v (TouchTrackingOrdMap touches entries) =
   case Map.alterF replaceEmitting k entries of
     (replacedVal, newEntries) ->
       let newTouches = Deque.snoc k touches
-          newTthm = case replacedVal of
+          newTtom = case replacedVal of
             Just _ -> recurseCompacting newTouches newEntries
             Nothing -> TouchTrackingOrdMap newTouches newEntries
-       in (replacedVal, newTthm)
+       in (replacedVal, newTtom)
   where
     replaceEmitting = \case
       Just (Entry count oldVal) -> (Just oldVal, Just $! Entry (succ count) v)
