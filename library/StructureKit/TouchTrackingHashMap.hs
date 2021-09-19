@@ -62,14 +62,22 @@ empty =
 {-# INLINE lookup #-}
 lookup :: (Hashable k, Eq k) => k -> TouchTrackingHashMap k v -> Maybe (v, TouchTrackingHashMap k v)
 lookup k (TouchTrackingHashMap touches entries) =
-  case HashMap.lookup k entries of
-    Just (Entry count value) ->
-      let !newEntry = Entry (succ count) value
-          newEntries = HashMap.insert k newEntry entries
-          newTouches = Deque.snoc k touches
-          newTthm = recurseCompacting newTouches newEntries
-       in Just (value, newTthm)
-    Nothing -> Nothing
+  HashMap.alterF
+    ( \case
+        Just (Entry count value) ->
+          let !newEntry = Entry (succ count) value
+           in (Just value, Just newEntry)
+        Nothing -> (Nothing, Nothing)
+    )
+    k
+    entries
+    & \(res, newEntries) ->
+      case res of
+        Just value ->
+          let newTouches = Deque.snoc k touches
+              newTthm = recurseCompacting newTouches newEntries
+           in Just (value, newTthm)
+        Nothing -> Nothing
 
 -- |
 -- Insert value possibly replacing an old one, in which case the old one is returned.
