@@ -64,14 +64,22 @@ empty =
 {-# INLINE lookup #-}
 lookup :: (Ord k) => k -> TouchTrackingOrdMap k v -> Maybe (v, TouchTrackingOrdMap k v)
 lookup k (TouchTrackingOrdMap touches entries) =
-  case Map.lookup k entries of
-    Just (Entry count value) ->
-      let !newEntry = Entry (succ count) value
-          newEntries = Map.insert k newEntry entries
-          newTouches = Deque.snoc k touches
-          newTthm = recurseCompacting newTouches newEntries
-       in Just (value, newTthm)
-    Nothing -> Nothing
+  Map.alterF
+    ( \case
+        Just (Entry count value) ->
+          let !newEntry = Entry (succ count) value
+           in (Just value, Just newEntry)
+        Nothing -> (Nothing, Nothing)
+    )
+    k
+    entries
+    & \(res, newEntries) ->
+      case res of
+        Just value ->
+          let newTouches = Deque.snoc k touches
+              newTtom = recurseCompacting newTouches newEntries
+           in Just (value, newTtom)
+        Nothing -> Nothing
 
 -- |
 -- Insert value possibly replacing an old one, in which case the old one is returned.
