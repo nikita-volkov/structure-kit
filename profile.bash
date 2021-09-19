@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-target=lhc
+target=loc
 ghc_options="-fno-prof-auto -O2 -rtsopts -j6 +RTS -A128m -n2m -RTS"
 time_allocation_report_file="reports/$target"
 gc_report_file="reports/$target.gc"

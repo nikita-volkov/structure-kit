@@ -64,14 +64,22 @@ empty =
 {-# INLINE lookup #-}
 lookup :: (Ord k) => k -> TouchTrackingOrdMap k v -> Maybe (v, TouchTrackingOrdMap k v)
 lookup k (TouchTrackingOrdMap touches entries) =
-  case Map.lookup k entries of
-    Just (Entry count value) ->
-      let !newEntry = Entry (succ count) value
-          newEntries = Map.insert k newEntry entries
-          newTouches = Deque.snoc k touches
-          newTthm = recurseCompacting newTouches newEntries
-       in Just (value, newTthm)
-    Nothing -> Nothing
+  Map.alterF
+    ( \case
+        Just (Entry count value) ->
+          let !newEntry = Entry (succ count) value
+           in (Just value, Just newEntry)
+        Nothing -> (Nothing, Nothing)
+    )
+    k
+    entries
+    & \(res, newEntries) ->
+      case res of
+        Just value ->
+          let newTouches = Deque.snoc k touches
+              newTtom = recurseCompacting newTouches newEntries
+           in Just (value, newTtom)
+        Nothing -> Nothing
 
 -- |
 -- Insert value possibly replacing an old one, in which case the old one is returned.
@@ -81,10 +89,10 @@ insert k v (TouchTrackingOrdMap touches entries) =
   case Map.alterF replaceEmitting k entries of
     (replacedVal, newEntries) ->
       let newTouches = Deque.snoc k touches
-          newTthm = case replacedVal of
+          newTtom = case replacedVal of
             Just _ -> recurseCompacting newTouches newEntries
             Nothing -> TouchTrackingOrdMap newTouches newEntries
-       in (replacedVal, newTthm)
+       in (replacedVal, newTtom)
   where
     replaceEmitting = \case
       Just (Entry count oldVal) -> (Just oldVal, Just $! Entry (succ count) v)
@@ -192,7 +200,7 @@ recurseFoldring step end touches entries =
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
 -- and construct a map from those.
-{-# NOINLINE recurseCompacting #-}
+{-# SCC recurseCompacting #-}
 recurseCompacting :: (Ord k) => Deque k -> Map.Map k (Entry v) -> TouchTrackingOrdMap k v
 recurseCompacting !touches !entries =
   case Deque.uncons touches of
@@ -209,7 +217,7 @@ recurseCompacting !touches !entries =
     Nothing ->
       TouchTrackingOrdMap touches entries
 
-{-# NOINLINE recurseEvicting #-}
+{-# SCC recurseEvicting #-}
 recurseEvicting :: (Ord k) => Deque k -> Map.Map k (Entry v) -> (Maybe (k, v), TouchTrackingOrdMap k v)
 recurseEvicting !touches !entries =
   case Deque.uncons touches of
