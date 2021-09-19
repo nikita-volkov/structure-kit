@@ -2,6 +2,7 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Gauge.Main
 import qualified StructureKit.LruHashCache as LruHashCache
+import qualified StructureKit.LruOrdCache as LruOrdCache
 import qualified StructureKit.QuickCheckUtil.ExtrasFor.Gen as GenExtras
 import qualified Test.QuickCheck.Gen as Gen
 import qualified Test.QuickCheck.Random as Random
@@ -16,6 +17,7 @@ main =
         val <- Gen.chooseInt64 (0, 9)
         return (key, val)
       let !lhc = snd $ LruHashCache.insertMany inserts $ LruHashCache.empty 500
+          !loc = snd $ LruOrdCache.insertMany inserts $ LruOrdCache.empty 500
           !existingKey = fst $ inserts !! 777
           !hashMap = HashMap.fromList inserts
           !map = Map.fromList inserts
@@ -24,6 +26,12 @@ main =
         _ -> return ()
       return $
         [ bgroup
+            "lru-ord-cache"
+            [ bench "lookup" $ nf (LruOrdCache.lookup existingKey) loc,
+              bench "insert-missing" $ nf (LruOrdCache.insert "something new" 7) loc,
+              bench "insert-existing" $ nf (LruOrdCache.insert existingKey 7) loc
+            ],
+          bgroup
             "lru-hash-cache"
             [ bench "lookup" $ nf (LruHashCache.lookup existingKey) lhc,
               bench "insert-missing" $ nf (LruHashCache.insert "something new" 7) lhc,

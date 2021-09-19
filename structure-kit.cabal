@@ -35,8 +35,10 @@ library
     StructureKit.LookupOrderedHashMap
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
+    StructureKit.LruOrdCache
     StructureKit.Speedometer
     StructureKit.TouchTrackingHashMap
+    StructureKit.TouchTrackingOrdMap
   other-modules:
     StructureKit.By32Bits.KeyOps
     StructureKit.ByteArrayCacheEntry
