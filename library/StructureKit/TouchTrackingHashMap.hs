@@ -33,7 +33,7 @@ import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, 
 
 data TouchTrackingHashMap k v
   = TouchTrackingHashMap
-      {-# UNPACK #-} !(Deque k)
+      !(Deque k)
       -- ^ Queue of touches to keys.
       !(HashMap.HashMap k (Entry v))
       -- ^ Specialised hash map of entries.
