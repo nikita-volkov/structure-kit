@@ -190,32 +190,27 @@ recurseFoldring step end touches entries =
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
 -- and construct a map from those.
-{-# SCC recurseCompacting #-}
-{-# NOINLINE recurseCompacting #-}
 recurseCompacting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v) -> TouchTrackingHashMap k v
-recurseCompacting =
-  go
-  where
-    go !touches !entries =
-      case Deque.uncons touches of
-        Just (key, newTouches) ->
-          HashMap.alterF
-            ( \case
-                Just (Entry count value) ->
-                  if count == 1
-                    then (False, Just (Entry count value))
-                    else case pred count of
-                      nextCount -> (True, Just (Entry nextCount value))
-                Nothing -> error "Oops!"
-            )
-            key
-            entries
-            & \(continue, newEntries) ->
-              if continue
-                then go newTouches newEntries
-                else TouchTrackingHashMap touches entries
-        Nothing ->
-          TouchTrackingHashMap touches entries
+recurseCompacting !touches !entries =
+  case Deque.uncons touches of
+    Just (key, newTouches) ->
+      HashMap.alterF
+        ( \case
+            Just (Entry count value) ->
+              if count == 1
+                then (False, Just (Entry count value))
+                else case pred count of
+                  nextCount -> (True, Just (Entry nextCount value))
+            Nothing -> error "Oops!"
+        )
+        key
+        entries
+        & \(continue, newEntries) ->
+          if continue
+            then recurseCompacting newTouches newEntries
+            else TouchTrackingHashMap touches entries
+    Nothing ->
+      TouchTrackingHashMap touches entries
 
 {-# SCC recurseEvicting #-}
 {-# NOINLINE recurseEvicting #-}
