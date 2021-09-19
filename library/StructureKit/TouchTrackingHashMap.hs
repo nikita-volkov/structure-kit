@@ -213,21 +213,25 @@ recurseCompacting !touches !entries =
       TouchTrackingHashMap touches entries
 
 {-# SCC recurseEvicting #-}
-{-# NOINLINE recurseEvicting #-}
 recurseEvicting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v) -> (Maybe (k, v), TouchTrackingHashMap k v)
 recurseEvicting !touches !entries =
   case Deque.uncons touches of
-    Just (key, newTouches) ->
-      case HashMap.lookup key entries of
-        Just (Entry count value) ->
-          if count == 1
-            then case HashMap.delete key entries of
-              newEntries -> case recurseCompacting newTouches newEntries of
-                tthm -> (Just (key, value), tthm)
-            else case Entry (pred count) value of
-              newEntry -> case HashMap.insert key newEntry entries of
-                newEntries -> recurseEvicting newTouches newEntries
-        Nothing ->
-          error "Oops"
+    Just (key, touches) ->
+      HashMap.alterF
+        ( \case
+            Just (Entry count value) ->
+              if count == 1
+                then (Just (key, value), Nothing)
+                else case Entry (pred count) value of
+                  newEntry -> (Nothing, Just newEntry)
+            Nothing ->
+              error "Oops"
+        )
+        key
+        entries
+        & \(eviction, entries) ->
+          case eviction of
+            Just eviction -> (Just eviction, recurseCompacting touches entries)
+            Nothing -> recurseEvicting touches entries
     Nothing ->
       TouchTrackingHashMap touches entries & \tthm -> (Nothing, tthm)
