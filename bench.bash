@@ -6,5 +6,5 @@ stack \
 build \
 --ghc-options "-O2 -threaded" \
 --bench \
---ba "-s -m pattern lru-hash-cache" \
+--ba "-s -m pattern" \
 structure-kit:bench

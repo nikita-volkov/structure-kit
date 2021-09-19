@@ -1,3 +1,3 @@
 #!/bin/bash
 ./format.bash
-./test.bash
+./bench.bash
