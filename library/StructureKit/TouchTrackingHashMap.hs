@@ -196,15 +196,17 @@ recurseCompacting :: (Hashable k, Eq k) => Deque k -> HashMap.HashMap k (Entry v
 recurseCompacting !touches !entries =
   case Deque.uncons touches of
     Just (key, newTouches) ->
-      case HashMap.lookup key entries of
-        Just (Entry count value) ->
-          if count == 1
-            then TouchTrackingHashMap touches entries
-            else case Entry (pred count) value of
-              newEntry -> case HashMap.insert key newEntry entries of
-                newEntries -> recurseCompacting newTouches newEntries
-        Nothing ->
-          error "Oops"
+      HashMap.alterF
+        ( \case
+            Just (Entry count value) ->
+              if count == 1
+                then (const $ TouchTrackingHashMap touches entries, Just (Entry count value))
+                else (recurseCompacting newTouches, Just (Entry (pred count) value))
+            Nothing -> error "Oops!"
+        )
+        key
+        entries
+        & uncurry ($)
     Nothing ->
       TouchTrackingHashMap touches entries
 
