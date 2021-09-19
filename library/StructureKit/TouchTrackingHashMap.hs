@@ -200,13 +200,17 @@ recurseCompacting !touches !entries =
         ( \case
             Just (Entry count value) ->
               if count == 1
-                then (const $ TouchTrackingHashMap touches entries, Just (Entry count value))
-                else (recurseCompacting newTouches, Just (Entry (pred count) value))
+                then (False, Just (Entry count value))
+                else case pred count of
+                  nextCount -> (True, Just (Entry nextCount value))
             Nothing -> error "Oops!"
         )
         key
         entries
-        & uncurry ($)
+        & \(continue, newEntries) ->
+          if continue
+            then recurseCompacting newTouches newEntries
+            else TouchTrackingHashMap touches entries
     Nothing ->
       TouchTrackingHashMap touches entries
 
