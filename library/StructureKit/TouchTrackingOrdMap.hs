@@ -33,7 +33,7 @@ import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, 
 
 data TouchTrackingOrdMap k v
   = TouchTrackingOrdMap
-      {-# UNPACK #-} !(Deque k)
+      !(Deque k)
       -- ^ Queue of touches to keys.
       !(Map.Map k (Entry v))
       -- ^ Specialised map of entries.
@@ -119,10 +119,10 @@ locate key (TouchTrackingOrdMap touches entries) =
 
 data Existing k v
   = Existing
-      {-# UNPACK #-} !Int
+      !Int
       v
       !k
-      {-# UNPACK #-} !(Deque.Deque k)
+      !(Deque.Deque k)
       !(Map.Map k (Entry v))
 
 {-# INLINE read #-}
@@ -150,7 +150,7 @@ overwrite newValue (Existing count _ key touches entries) =
 data Missing k v
   = Missing
       !k
-      {-# UNPACK #-} !(Deque.Deque k)
+      !(Deque.Deque k)
       !(Map.Map k (Entry v))
 
 {-# INLINE write #-}

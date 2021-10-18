@@ -33,11 +33,11 @@ import qualified StructureKit.TouchTrackingOrdMap as TouchTrackingOrdMap
 
 data LruOrdCache k v
   = LruOrdCache
-      {-# UNPACK #-} !Int
+      !Int
       -- ^ Slots occupied.
-      {-# UNPACK #-} !Int
+      !Int
       -- ^ Slots available.
-      {-# UNPACK #-} !(TouchTrackingOrdMap.TouchTrackingOrdMap k v)
+      !(TouchTrackingOrdMap.TouchTrackingOrdMap k v)
   deriving (Functor)
 
 instance (NFData k, NFData v) => NFData (LruOrdCache k v) where
