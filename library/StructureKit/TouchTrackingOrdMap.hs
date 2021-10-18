@@ -36,7 +36,7 @@ data TouchTrackingOrdMap k v
       {-# UNPACK #-} !(Deque k)
       -- ^ Queue of touches to keys.
       !(Map.Map k (Entry v))
-      -- ^ Specialised hash map of entries.
+      -- ^ Specialised map of entries.
   deriving (Functor)
 
 instance (NFData k, NFData v) => NFData (TouchTrackingOrdMap k v) where
