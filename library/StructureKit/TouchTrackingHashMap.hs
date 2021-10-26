@@ -218,7 +218,7 @@ recurseCompacting = go
             & \(continue, newEntries) ->
               if continue
                 then recurseCompacting newTouches newEntries
-                else TouchTrackingHashMap touches entries
+                else TouchTrackingHashMap (Deque.cons key newTouches) entries
         Nothing ->
           TouchTrackingHashMap touches entries
 
