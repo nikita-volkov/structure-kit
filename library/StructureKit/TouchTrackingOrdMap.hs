@@ -208,7 +208,7 @@ recurseCompacting !touches !entries =
       case Map.lookup key entries of
         Just (Entry count value) ->
           if count == 1
-            then TouchTrackingOrdMap touches entries
+            then TouchTrackingOrdMap (Deque.cons key newTouches) entries
             else case Entry (pred count) value of
               newEntry -> case Map.insert key newEntry entries of
                 newEntries -> recurseCompacting newTouches newEntries
