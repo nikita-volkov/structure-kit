@@ -205,15 +205,19 @@ recurseCompacting :: (Ord k) => Deque k -> Map.Map k (Entry v) -> TouchTrackingO
 recurseCompacting !touches !entries =
   case Deque.uncons touches of
     Just (key, newTouches) ->
-      case Map.lookup key entries of
-        Just (Entry count value) ->
-          if count == 1
-            then TouchTrackingOrdMap (Deque.cons key newTouches) entries
-            else case Entry (pred count) value of
-              newEntry -> case Map.insert key newEntry entries of
-                newEntries -> recurseCompacting newTouches newEntries
-        Nothing ->
-          error "Oops"
+      Map.alterF alter key entries & \(touches, entries) ->
+        case touches of
+          Nothing -> TouchTrackingOrdMap (Deque.cons key newTouches) entries
+          Just touches -> recurseCompacting touches entries
+      where
+        alter = \case
+          Just (Entry count value) ->
+            if count == 1
+              then (Nothing, Just (Entry count value))
+              else case pred count of
+                newCount ->
+                  (Just newTouches, Just (Entry newCount value))
+          Nothing -> error "Oops!"
     Nothing ->
       TouchTrackingOrdMap touches entries
 
