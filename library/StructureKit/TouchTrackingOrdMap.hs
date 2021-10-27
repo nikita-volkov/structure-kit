@@ -62,24 +62,34 @@ empty =
 -- * Basics
 
 {-# INLINE lookup #-}
-lookup :: (Ord k) => k -> TouchTrackingOrdMap k v -> Maybe (v, TouchTrackingOrdMap k v)
+lookup :: (Ord k) => k -> TouchTrackingOrdMap k v -> (Maybe v, TouchTrackingOrdMap k v)
 lookup k (TouchTrackingOrdMap touches entries) =
-  Map.alterF
-    ( \case
-        Just (Entry count value) ->
-          let !newEntry = Entry (succ count) value
-           in (Just value, Just newEntry)
-        Nothing -> (Nothing, Nothing)
-    )
-    k
-    entries
-    & \(res, newEntries) ->
-      case res of
-        Just value ->
-          let newTouches = Deque.snoc k touches
-              newTtom = recurseCompacting newTouches newEntries
-           in Just (value, newTtom)
-        Nothing -> Nothing
+  case Deque.uncons touches of
+    Just (touch, touches) ->
+      if touch == k
+        then
+          Map.lookup k entries & \case
+            Just (Entry _ value) ->
+              (Just value, recurseCompacting (Deque.snoc k touches) entries)
+            Nothing -> error "Oops!"
+        else
+          Map.alterF
+            ( \case
+                Just (Entry count value) ->
+                  (Just value, Just $! Entry (succ count) value)
+                Nothing ->
+                  (Nothing, Nothing)
+            )
+            k
+            entries
+            & \(value, entries) ->
+              case value of
+                Just value ->
+                  (Just value, TouchTrackingOrdMap (Deque.snoc k (Deque.cons touch touches)) entries)
+                Nothing ->
+                  (Nothing, TouchTrackingOrdMap (Deque.cons touch touches) entries)
+    Nothing ->
+      (Nothing, TouchTrackingOrdMap mempty mempty)
 
 -- |
 -- Insert value possibly replacing an old one, in which case the old one is returned.

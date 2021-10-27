@@ -55,11 +55,10 @@ empty capacity =
 -- * Basics
 
 {-# INLINE lookup #-}
-lookup :: (Ord k) => k -> LruOrdCache k v -> Maybe (v, LruOrdCache k v)
+lookup :: (Ord k) => k -> LruOrdCache k v -> (Maybe v, LruOrdCache k v)
 lookup k (LruOrdCache occ cap mem) =
   case TouchTrackingOrdMap.lookup k mem of
-    Just (v, mem) -> Just (v, LruOrdCache occ cap mem)
-    Nothing -> Nothing
+    (v, mem) -> (v, LruOrdCache occ cap mem)
 
 {-# INLINE insert #-}
 insert :: (Ord k) => k -> v -> LruOrdCache k v -> (Maybe (k, v), LruOrdCache k v)
