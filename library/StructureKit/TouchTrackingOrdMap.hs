@@ -199,7 +199,7 @@ recurseFoldring step end touches entries =
 
 -- |
 -- Manage the queue by dropping the entries with multiple appearances in it from its end
--- and construct a map from those.
+-- and construct a map from what's left.
 {-# SCC recurseCompacting #-}
 recurseCompacting :: (Ord k) => Deque k -> Map.Map k (Entry v) -> TouchTrackingOrdMap k v
 recurseCompacting !touches !entries =
