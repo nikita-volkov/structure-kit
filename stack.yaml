@@ -1,6 +1,1 @@
-resolver: nightly-2021-10-18
-extra-deps:
-  - git: https://github.com/nikita-volkov/deque
-    commit: 74010a84b0b9a04125671dd6c5e627194f7c9470
-  - git: https://github.com/nikita-volkov/strict-list
-    commit: 6b0418aefc11bd47c730153db9af100796baca3a
+resolver: nightly-2021-09-09
