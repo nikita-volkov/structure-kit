@@ -36,6 +36,7 @@ library
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
     StructureKit.LruOrdCache
+    StructureKit.SparseVector
     StructureKit.Speedometer
     StructureKit.TouchTrackingHashMap
     StructureKit.TouchTrackingOrdMap
