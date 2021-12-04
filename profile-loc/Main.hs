@@ -14,7 +14,7 @@ performLookups !lhc !existingKeys =
     & replicate 1000
     & concat
     & foldl'
-      (\(!x, !lhc) k -> LruOrdCache.lookup k lhc & maybe (x, lhc) (first (+ x)))
+      (\(!x, !lhc) k -> LruOrdCache.lookup k lhc & \(eviction, lhc) -> (maybe x (+ x) eviction, lhc))
       (0, lhc)
     & \(!x, !lhc) -> print x
 
