@@ -273,7 +273,7 @@ lruOrdCache =
       key <- arbitrary
       val <- arbitrary
       let lhc' = LruOrdCache.insert key val lhc & snd
-          lookupRes = LruOrdCache.lookup key lhc' & fmap fst
+          lookupRes = LruOrdCache.lookup key lhc' & fst
       return $
         Just val === lookupRes,
     testProperty "Records get evicted in the order of last lookup" $ do
@@ -284,7 +284,7 @@ lruOrdCache =
       let initialLhc =
             fromInserts size initialEntries
           lhcAfterLookups =
-            foldl' (\lhc k -> LruOrdCache.lookup k lhc & maybe lhc snd) initialLhc keysToLookup
+            foldl' (\lhc k -> LruOrdCache.lookup k lhc & snd) initialLhc keysToLookup
           evictions =
             lhcAfterLookups & LruOrdCache.insertMany otherEntries & fst & fmap fst & reverse
       return $
@@ -308,7 +308,7 @@ lruOrdCache =
         (eviction, lhc) -> case eviction of
           Nothing -> discard
           Just (key, val) ->
-            let lookupRes = LruOrdCache.lookup key lhc & fmap fst
+            let lookupRes = LruOrdCache.lookup key lhc & fst
              in return $ Nothing === lookupRes
   ]
   where

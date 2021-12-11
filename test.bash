@@ -6,4 +6,4 @@ stack \
 build \
 --fast \
 --test \
-structure-kit:test
+:test
