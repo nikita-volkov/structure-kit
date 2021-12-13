@@ -4,6 +4,7 @@ module StructureKit.IdRegistry
     register,
     unregister,
     lookup,
+    alterF,
     toAssocList,
   )
 where
@@ -51,6 +52,10 @@ unregister id (IdRegistry gen map) =
 lookup :: Int -> IdRegistry a -> Maybe a
 lookup id (IdRegistry _ map) =
   IntMap.lookup id map
+
+alterF :: Functor f => (Maybe a -> f (Maybe a)) -> Int -> IdRegistry a -> f (IdRegistry a)
+alterF f k (IdRegistry idGen map) =
+  IntMap.alterF f k map & fmap (IdRegistry idGen)
 
 toAssocList :: IdRegistry a -> [(Int, a)]
 toAssocList (IdRegistry _ map) = IntMap.toList map
