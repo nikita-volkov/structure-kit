@@ -27,6 +27,10 @@ instance IsString Charset where
 instance ToString Charset where
   toString = fmap chr . IntRange.toAscList . coerce
 
+instance Hashable Charset where
+  hashWithSalt salt (Charset range) =
+    hashWithSalt salt (IntRange.toAscList range)
+
 -- *
 
 contains :: Char -> Charset -> Bool
