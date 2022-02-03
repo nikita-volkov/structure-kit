@@ -32,12 +32,12 @@ library
     StructureKit.IdGen
     StructureKit.IdRegistry
     StructureKit.IntCountMap
+    StructureKit.IntRange
     StructureKit.LookupOrderedHashMap
     StructureKit.LrlHashCache
     StructureKit.LruHashCache
     StructureKit.LruOrdCache
     StructureKit.NullableBVec
-    StructureKit.Range
     StructureKit.SparseVector
     StructureKit.Speedometer
     StructureKit.TouchTrackingHashMap
