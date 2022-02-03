@@ -66,6 +66,7 @@ import Data.Ratio as Exports
 import Data.STRef as Exports
 import Data.Semigroup as Exports hiding (First (..), Last (..))
 import Data.String as Exports
+import Data.String.ToString as Exports (ToString (..))
 import Data.Text as Exports (Text)
 import Data.Traversable as Exports
 import Data.Tuple as Exports

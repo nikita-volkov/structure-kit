@@ -7,6 +7,8 @@ module StructureKit.Charset
 
     -- *
     range,
+    string,
+    text,
   )
 where
 
@@ -19,6 +21,12 @@ newtype Charset
   = Charset IntRange.RIntSet
   deriving (Eq, Ord, Show, Semigroup, Monoid, NFData)
 
+instance IsString Charset where
+  fromString = string
+
+instance ToString Charset where
+  toString = fmap chr . IntRange.toAscList . coerce
+
 -- *
 
 contains :: Char -> Charset -> Bool
@@ -28,7 +36,14 @@ contains char (Charset intRange) =
 -- *
 
 range :: Char -> Char -> Charset
-range = error "TODO"
+range min max =
+  Charset $ IntRange.singletonRange (ord min, ord max)
+
+codepointList :: [Int] -> Charset
+codepointList = Charset . IntRange.fromList
+
+string :: String -> Charset
+string = codepointList . fmap ord
 
 text :: Text -> Charset
-text = error "TODO"
+text = string . toString
