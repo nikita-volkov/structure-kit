@@ -4,6 +4,7 @@ module StructureKit.Charset
 
     -- *
     toCharPredicate,
+    toCodepointPredicate,
 
     -- *
     charRange,
@@ -39,6 +40,10 @@ instance Hashable Charset where
 toCharPredicate :: Charset -> Char -> Bool
 toCharPredicate (Charset intRange) char =
   IntRange.member (ord char) intRange
+
+toCodepointPredicate :: Charset -> Int -> Bool
+toCodepointPredicate (Charset intRange) codepoint =
+  IntRange.member codepoint intRange
 
 -- *
 
