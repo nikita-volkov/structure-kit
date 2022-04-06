@@ -6,7 +6,8 @@ module StructureKit.Charset
     contains,
 
     -- *
-    range,
+    charRange,
+    codepointRange,
     string,
     text,
   )
@@ -39,9 +40,13 @@ contains (Charset intRange) char =
 
 -- *
 
-range :: Char -> Char -> Charset
-range min max =
+charRange :: Char -> Char -> Charset
+charRange min max =
   Charset $ IntRange.singletonRange (ord min, ord max)
+
+codepointRange :: Int -> Int -> Charset
+codepointRange min max =
+  Charset $ IntRange.singletonRange (min, max)
 
 codepointList :: [Int] -> Charset
 codepointList = Charset . IntRange.fromList
