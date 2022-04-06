@@ -33,8 +33,8 @@ instance Hashable Charset where
 
 -- *
 
-contains :: Char -> Charset -> Bool
-contains char (Charset intRange) =
+contains :: Charset -> Char -> Bool
+contains (Charset intRange) char =
   IntRange.member (ord char) intRange
 
 -- *
