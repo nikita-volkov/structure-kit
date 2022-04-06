@@ -2,11 +2,12 @@ module StructureKit.Charset
   ( -- *
     Charset,
 
-    -- *
+    -- * Execution
     toCharPredicate,
     toCodepointPredicate,
+    findInText,
 
-    -- *
+    -- * Construction
     charRange,
     codepointRange,
     string,
@@ -15,6 +16,7 @@ module StructureKit.Charset
 where
 
 import qualified Data.RangeSet.IntMap as IntRange
+import qualified Data.Text as Text
 import StructureKit.Prelude hiding (range)
 
 -- *
@@ -44,6 +46,10 @@ toCharPredicate (Charset intRange) char =
 toCodepointPredicate :: Charset -> Int -> Bool
 toCodepointPredicate (Charset intRange) codepoint =
   IntRange.member codepoint intRange
+
+findInText :: Charset -> Text -> Maybe Char
+findInText charset =
+  Text.find (toCharPredicate charset)
 
 -- *
 
