@@ -34,6 +34,8 @@ instance Hashable Charset where
 
 -- *
 
+-- |
+-- Convert a charset to predicate.
 contains :: Charset -> Char -> Bool
 contains (Charset intRange) char =
   IntRange.member (ord char) intRange
