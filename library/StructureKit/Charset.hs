@@ -3,7 +3,7 @@ module StructureKit.Charset
     Charset,
 
     -- *
-    contains,
+    toCharPredicate,
 
     -- *
     charRange,
@@ -35,9 +35,9 @@ instance Hashable Charset where
 -- *
 
 -- |
--- Convert a charset to predicate.
-contains :: Charset -> Char -> Bool
-contains (Charset intRange) char =
+-- Convert a charset to a predicate that checks whether it contains a char.
+toCharPredicate :: Charset -> Char -> Bool
+toCharPredicate (Charset intRange) char =
   IntRange.member (ord char) intRange
 
 -- *
