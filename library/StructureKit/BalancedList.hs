@@ -6,6 +6,7 @@ module StructureKit.BalancedList
     map,
     StructureKit.BalancedList.filter,
     StructureKit.BalancedList.mapMaybe,
+    StructureKit.BalancedList.catMaybes,
   )
 where
 
@@ -35,6 +36,7 @@ instance Functor BalancedList where
 
 instance Filterable BalancedList where
   mapMaybe = StructureKit.BalancedList.mapMaybe
+  catMaybes = StructureKit.BalancedList.catMaybes
   filter = StructureKit.BalancedList.filter
 
 -- * --
@@ -57,7 +59,9 @@ filter predicate =
   mapReverseList (StrictList.filterReversed predicate)
 
 mapMaybe :: (a -> Maybe b) -> BalancedList a -> BalancedList b
-mapMaybe mapper =
-  mapReverseList . StrictList.explodeReversed $
-    maybe StrictList.Nil (flip StrictList.Cons StrictList.Nil)
-      . mapper
+mapMaybe =
+  mapReverseList . StrictList.mapMaybeReversed
+
+catMaybes :: BalancedList (Maybe a) -> BalancedList a
+catMaybes =
+  mapReverseList StrictList.catMaybesReversed
