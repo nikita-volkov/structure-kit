@@ -2,7 +2,13 @@ module StructureKit.BalancedList
   ( -- * --
     BalancedList,
 
-    -- * --
+    -- * Construction
+    StructureKit.BalancedList.empty,
+    singleton,
+    fromStrictList,
+    fromLazyList,
+
+    -- * Transformation
     map,
     StructureKit.BalancedList.filter,
     StructureKit.BalancedList.mapMaybe,
@@ -38,6 +44,20 @@ instance Filterable BalancedList where
   mapMaybe = StructureKit.BalancedList.mapMaybe
   catMaybes = StructureKit.BalancedList.catMaybes
   filter = StructureKit.BalancedList.filter
+
+-- * --
+
+empty :: BalancedList a
+empty = BalancedList False mempty
+
+singleton :: a -> BalancedList a
+singleton = BalancedList False . pure
+
+fromStrictList :: List a -> BalancedList a
+fromStrictList = BalancedList False
+
+fromLazyList :: [a] -> BalancedList a
+fromLazyList = BalancedList True . StrictList.fromListReversed
 
 -- * --
 
