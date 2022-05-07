@@ -78,7 +78,7 @@ library structure-kit-quickcheck-util
     StructureKit.QuickCheckUtil.ExtrasFor.Gen
   build-depends:
     QuickCheck >=2.14.2 && <3,
-    rerebase >=1.13.0.1 && <2,
+    rerebase >=1.15.0.3 && <2,
 
 test-suite test
   type: exitcode-stdio-1.0
@@ -110,7 +110,7 @@ benchmark bench
     gauge >=0.2.5 && <0.3,
     structure-kit,
     structure-kit-quickcheck-util,
-    rerebase >=1.13.0.1 && <2,
+    rerebase >=1.15.0.3 && <2,
     QuickCheck >=2.14.2 && <3,
 
 test-suite profile-lhc
@@ -122,7 +122,7 @@ test-suite profile-lhc
   build-depends:
     structure-kit,
     structure-kit-quickcheck-util,
-    rerebase >=1.13.0.1 && <2,
+    rerebase >=1.15.0.3 && <2,
     QuickCheck >=2.14.2 && <3,
 
 test-suite profile-loc
@@ -134,5 +134,5 @@ test-suite profile-loc
   build-depends:
     structure-kit,
     structure-kit-quickcheck-util,
-    rerebase >=1.13.0.1 && <2,
+    rerebase >=1.15.0.3 && <2,
     QuickCheck >=2.14.2 && <3,
