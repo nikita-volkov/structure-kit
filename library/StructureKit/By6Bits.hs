@@ -1,5 +1,5 @@
 module StructureKit.By6Bits
-  ( -- *
+  ( -- * --
     By6Bits,
     empty,
     singleton,
@@ -104,7 +104,7 @@ locate key (By6Bits keys arr) =
         then Left $ Missing (keySingleton .|. keys) idx arr
         else Right $ Existing keySingleton keys idx arr
 
--- **
+-- ** --
 
 data Existing a
   = Existing
@@ -132,7 +132,7 @@ overwrite :: a -> Existing a -> By6Bits a
 overwrite val (Existing _ keys idx array) =
   By6Bits keys (SmallArray.set idx val array)
 
--- **
+-- ** --
 
 data Missing a
   = Missing

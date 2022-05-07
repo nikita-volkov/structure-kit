@@ -23,7 +23,7 @@ module StructureKit.Bits64
     unfoldr,
     toList,
 
-    -- *
+    -- * --
     locate,
     Location (..),
   )
@@ -203,7 +203,7 @@ toList :: Bits64 -> [Int]
 toList =
   foldr (:) []
 
--- *
+-- * --
 
 data Location
   = FoundLocation

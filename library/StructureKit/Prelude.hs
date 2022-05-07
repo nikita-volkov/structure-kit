@@ -7,7 +7,7 @@ module StructureKit.Prelude
     showBin,
     showBinFinite,
 
-    -- *
+    -- * --
     BVec,
     UVec,
   )

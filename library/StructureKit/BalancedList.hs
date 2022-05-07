@@ -1,8 +1,8 @@
 module StructureKit.BalancedList
-  ( -- *
+  ( -- * --
     BalancedList,
 
-    -- **
+    -- ** --
     filter,
   )
 where
@@ -23,7 +23,7 @@ data BalancedList a
       -- decide how to process this data.
       !(StrictList.List a)
 
--- **
+-- ** --
 
 filter :: (a -> Bool) -> BalancedList a -> BalancedList a
 filter predicate (BalancedList reversed list) =

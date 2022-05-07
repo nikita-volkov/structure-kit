@@ -1,5 +1,5 @@
 module StructureKit.By8Bits
-  ( -- *
+  ( -- * --
     By8Bits,
     empty,
     singleton,
@@ -118,7 +118,7 @@ locate key (By8Bits a b c d) =
           Right x -> Right $ DExisting a b c x
           Left x -> Left $ DMissing a b c x
 
--- **
+-- ** --
 
 data Existing a
   = AExisting
@@ -163,7 +163,7 @@ overwrite val = \case
   CExisting a b x d -> By8Bits a b (By6Bits.overwrite val x) d
   DExisting a b c x -> By8Bits a b c (By6Bits.overwrite val x)
 
--- **
+-- ** --
 
 data Missing a
   = AMissing

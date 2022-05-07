@@ -1,5 +1,5 @@
 module StructureKit.SparseVector
-  ( -- *
+  ( -- * --
     SparseVector,
     lookup,
   )

@@ -1,5 +1,5 @@
 module StructureKit.Hamt
-  ( -- *
+  ( -- * --
     Hamt,
     empty,
     findMapping,
@@ -100,7 +100,7 @@ locate hash predicate (Hamt map) =
     Left arrayMissing ->
       Left $ ArrayMissing arrayMissing
 
--- **
+-- ** --
 
 data Existing a
   = Existing
@@ -124,7 +124,7 @@ overwrite val (Existing a b) =
     & flip By32Bits.overwrite a
     & Hamt
 
--- **
+-- ** --
 
 data Missing a
   = ArrayMissing

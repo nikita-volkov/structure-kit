@@ -1,18 +1,18 @@
 module StructureKit.Range
-  ( -- *
+  ( -- * --
     Range (..),
 
-    -- **
+    -- ** --
     toPredicate,
 
-    -- **
+    -- ** --
     isEmpty,
   )
 where
 
 import StructureKit.Prelude
 
--- *
+-- * --
 
 data Range a
   = Range
@@ -29,7 +29,7 @@ instance (Bounded a, Ord a) => Monoid (Range a) where
   mempty =
     Range minBound maxBound
 
--- *
+-- * --
 
 -- |
 -- Check whether the range contains the element.
@@ -37,7 +37,7 @@ toPredicate :: Ord a => Range a -> a -> Bool
 toPredicate (Range min max) a =
   a >= min && a < max
 
--- *
+-- * --
 
 -- |
 -- Checks whether the range includes any elements at all.

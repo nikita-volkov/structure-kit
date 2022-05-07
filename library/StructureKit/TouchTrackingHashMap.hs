@@ -1,5 +1,5 @@
 module StructureKit.TouchTrackingHashMap
-  ( -- *
+  ( -- * --
     TouchTrackingHashMap,
     empty,
 
@@ -113,7 +113,7 @@ locate key (TouchTrackingHashMap touches entries) =
     Just (Entry cnt val) -> Right (Existing cnt val key touches entries)
     Nothing -> Left (Missing key touches entries)
 
--- **
+-- ** --
 
 data Existing k v
   = Existing
@@ -143,7 +143,7 @@ overwrite newValue (Existing count _ key touches entries) =
       newTouches = Deque.snoc key touches
    in recurseCompacting newTouches newEntries
 
--- **
+-- ** --
 
 data Missing k v
   = Missing

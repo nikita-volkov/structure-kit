@@ -1,5 +1,5 @@
 module StructureKit.LruHashCache
-  ( -- *
+  ( -- * --
     LruHashCache,
     empty,
 
@@ -110,7 +110,7 @@ locate k (LruHashCache occupied capacity tthm) =
     Right loc -> Right (Existing occupied capacity loc)
     Left loc -> Left (Missing occupied capacity loc)
 
--- **
+-- ** --
 
 data Existing k v
   = Existing
@@ -133,7 +133,7 @@ overwrite :: (Hashable k, Eq k) => v -> Existing k v -> LruHashCache k v
 overwrite val (Existing occupied capacity loc) =
   LruHashCache occupied capacity (TouchTrackingHashMap.overwrite val loc)
 
--- **
+-- ** --
 
 data Missing k v
   = Missing

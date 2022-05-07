@@ -1,5 +1,5 @@
 module StructureKit.LruOrdCache
-  ( -- *
+  ( -- * --
     LruOrdCache,
     empty,
 
@@ -109,7 +109,7 @@ locate k (LruOrdCache occupied capacity tthm) =
     Right loc -> Right (Existing occupied capacity loc)
     Left loc -> Left (Missing occupied capacity loc)
 
--- **
+-- ** --
 
 data Existing k v
   = Existing
@@ -132,7 +132,7 @@ overwrite :: (Ord k) => v -> Existing k v -> LruOrdCache k v
 overwrite val (Existing occupied capacity loc) =
   LruOrdCache occupied capacity (TouchTrackingOrdMap.overwrite val loc)
 
--- **
+-- ** --
 
 data Missing k v
   = Missing

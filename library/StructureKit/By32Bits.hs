@@ -1,7 +1,7 @@
 -- |
 -- Map indexed by 32 bits.
 module StructureKit.By32Bits
-  ( -- *
+  ( -- * --
     By32Bits,
     empty,
     lookup,
@@ -70,7 +70,7 @@ locate key (By32Bits tree1) =
     !key4 = KeyOps.toIndexOfLevel4 key
     !key5 = KeyOps.toIndexOfLevel5 key
 
--- **
+-- ** --
 
 data Existing a
   = Existing
@@ -131,7 +131,7 @@ overwrite val (Existing a b c d e) =
     & flip By6Bits.overwrite a
     & By32Bits
 
--- **
+-- ** --
 
 data Missing a
   = At1Missing

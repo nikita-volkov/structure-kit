@@ -1,5 +1,5 @@
 module StructureKit.Charset
-  ( -- *
+  ( -- * --
     Charset,
 
     -- * Execution
@@ -19,7 +19,7 @@ import qualified Data.RangeSet.IntMap as IntRange
 import qualified Data.Text as Text
 import StructureKit.Prelude hiding (range)
 
--- *
+-- * --
 
 newtype Charset
   = Charset IntRange.RIntSet
@@ -35,7 +35,7 @@ instance Hashable Charset where
   hashWithSalt salt (Charset range) =
     hashWithSalt salt (IntRange.toAscList range)
 
--- *
+-- * --
 
 -- |
 -- Convert a charset to a predicate that checks whether it contains a char.
@@ -51,7 +51,7 @@ findInText :: Charset -> Text -> Maybe Char
 findInText charset =
   Text.find (toCharPredicate charset)
 
--- *
+-- * --
 
 charRange :: Char -> Char -> Charset
 charRange min max =
