@@ -4,16 +4,19 @@ module StructureKit.BalancedList
 
     -- * --
     map,
-    filter,
+    StructureKit.BalancedList.filter,
+    StructureKit.BalancedList.mapMaybe,
   )
 where
 
 import StrictList (List)
 import qualified StrictList
-import StructureKit.Prelude hiding (empty, filter, map)
+import StructureKit.Prelude
 
 -- * --
 
+-- |
+-- Balanced strict list.
 data BalancedList a
   = BalancedList
       !Bool
@@ -29,6 +32,10 @@ data BalancedList a
 
 instance Functor BalancedList where
   fmap = map
+
+instance Filterable BalancedList where
+  mapMaybe = StructureKit.BalancedList.mapMaybe
+  filter = StructureKit.BalancedList.filter
 
 -- * --
 
@@ -48,3 +55,9 @@ map mapper =
 filter :: (a -> Bool) -> BalancedList a -> BalancedList a
 filter predicate =
   mapReverseList (StrictList.filterReversed predicate)
+
+mapMaybe :: (a -> Maybe b) -> BalancedList a -> BalancedList b
+mapMaybe mapper =
+  mapReverseList . StrictList.explodeReversed $
+    maybe StrictList.Nil (flip StrictList.Cons StrictList.Nil)
+      . mapper

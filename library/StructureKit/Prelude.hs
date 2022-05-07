@@ -55,7 +55,7 @@ import Data.Int as Exports
 import Data.IntMap.Strict as Exports (IntMap)
 import Data.IntSet as Exports (IntSet)
 import Data.Ix as Exports
-import Data.List as Exports hiding (all, and, any, concat, concatMap, elem, filter, find, foldl, foldl', foldl1, foldr, foldr1, isSubsequenceOf, mapAccumL, mapAccumR, maximum, maximumBy, minimum, minimumBy, notElem, or, product, sortOn, sum, uncons)
+import Data.List as Exports hiding (all, and, any, concat, concatMap, elem, filter, find, foldl, foldl', foldl1, foldr, foldr1, isSubsequenceOf, map, mapAccumL, mapAccumR, maximum, maximumBy, minimum, minimumBy, notElem, or, product, sortOn, sum, uncons)
 import Data.List.NonEmpty as Exports (NonEmpty (..))
 import Data.Maybe as Exports hiding (catMaybes, mapMaybe)
 import Data.Monoid as Exports hiding (Alt)
@@ -103,7 +103,7 @@ import Text.Printf as Exports (hPrintf, printf)
 import Text.Read as Exports (Read (..), readEither, readMaybe)
 import Unsafe.Coerce as Exports
 import Witherable as Exports
-import Prelude as Exports hiding (all, and, any, concat, concatMap, elem, fail, filter, foldl, foldl1, foldr, foldr1, id, mapM, mapM_, maximum, minimum, notElem, or, product, sequence, sequence_, sum, (.))
+import Prelude as Exports hiding (all, and, any, concat, concatMap, elem, fail, filter, foldl, foldl1, foldr, foldr1, id, map, mapM, mapM_, maximum, minimum, notElem, or, product, sequence, sequence_, sum, (.))
 
 guarded :: Alternative f => (a -> Bool) -> a -> f a
 guarded pred x = if pred x then pure x else empty
