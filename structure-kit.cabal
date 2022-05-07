@@ -69,6 +69,7 @@ library
     transformers >=0.5 && <0.6,
     unordered-containers >=0.2.14 && <0.3,
     vector >=0.12 && <0.13,
+    witherable >=0.4.2 && <0.5,
 
 library structure-kit-quickcheck-util
   hs-source-dirs: quickcheck-util
