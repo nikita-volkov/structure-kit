@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name: structure-kit
-version: 0.1
+version: 0.1.0.1
 synopsis: Rich collection of persistent data-structures
 homepage: https://github.com/nikita-volkov/structure-kit
 bug-reports: https://github.com/nikita-volkov/structure-kit/issues
