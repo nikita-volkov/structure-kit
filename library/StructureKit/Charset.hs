@@ -34,8 +34,10 @@ newtype Charset
 instance IsString Charset where
   fromString = string
 
-instance ToString Charset where
-  toString = fmap chr . IntRange.toAscList . coerce
+instance IsList Charset where
+  type Item Charset = Char
+  fromList = string
+  toList = fmap chr . IntRange.toAscList . coerce
 
 instance Hashable Charset where
   hashWithSalt salt (Charset range) =
@@ -74,7 +76,7 @@ string :: String -> Charset
 string = codepointList . fmap ord
 
 text :: Text -> Charset
-text = string . toString
+text = string . toList
 
 -- * Specific
 

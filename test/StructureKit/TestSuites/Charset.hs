@@ -14,5 +14,5 @@ import Prelude hiding (assert)
 tests =
   [ testProperty "(from/to)String" $ \string ->
       let reference = nub (sort string)
-       in reference === toString (fromString @Charset string)
+       in reference === toList (fromString @Charset string)
   ]
