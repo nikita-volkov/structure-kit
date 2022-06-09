@@ -12,6 +12,12 @@ module StructureKit.Charset
     codepointRange,
     string,
     text,
+
+    -- * Specific
+    upperLatin,
+    lowerLatin,
+    latin,
+    num,
   )
 where
 
@@ -69,3 +75,19 @@ string = codepointList . fmap ord
 
 text :: Text -> Charset
 text = string . toString
+
+-- * Specific
+
+upperLatin :: Charset
+upperLatin = charRange 'A' 'Z'
+
+lowerLatin :: Charset
+lowerLatin = charRange 'a' 'z'
+
+-- | Latin chars.
+latin :: Charset
+latin = upperLatin <> lowerLatin
+
+-- | Numerals.
+num :: Charset
+num = charRange '0' '9'
