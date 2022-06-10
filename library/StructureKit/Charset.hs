@@ -18,6 +18,7 @@ module StructureKit.Charset
     lowerLatin,
     latin,
     num,
+    hexDigit,
   )
 where
 
@@ -93,3 +94,8 @@ latin = upperLatin <> lowerLatin
 -- | Numerals.
 num :: Charset
 num = charRange '0' '9'
+
+-- | Hexadecimal digits.
+{-# NOINLINE hexDigit #-}
+hexDigit :: Charset
+hexDigit = charRange '0' '9' <> charRange 'a' 'f' <> charRange 'A' 'F'
