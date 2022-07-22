@@ -21,6 +21,7 @@ data Range a
       !a
       -- ^ Smaller than.
 
+-- | Implements intersection.
 instance Ord a => Semigroup (Range a) where
   Range lMin lMax <> Range rMin rMax =
     Range (max lMin rMin) (min lMax rMax)
