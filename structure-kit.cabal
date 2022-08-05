@@ -45,6 +45,7 @@ library
     StructureKit.Speedometer
     StructureKit.TouchTrackingHashMap
     StructureKit.TouchTrackingOrdMap
+    StructureKit.Version
   other-modules:
     StructureKit.By32Bits.KeyOps
     StructureKit.ByteArrayCacheEntry
