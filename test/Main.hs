@@ -7,6 +7,7 @@ import StructureKit.By6Bits qualified as By6Bits
 import StructureKit.LruHashCache qualified as LruHashCache
 import StructureKit.LruOrdCache qualified as LruOrdCache
 import StructureKit.TestSuites.Charset qualified as CharsetSuite
+import StructureKit.TestSuites.TextArray qualified as TextArraySuite
 import Test.QuickCheck qualified as QuickCheck
 import Test.QuickCheck.Instances
 import Test.Tasty
@@ -22,7 +23,8 @@ main =
       testGroup "By32Bits" by32Bits,
       testGroup "LruHashCache" lruHashCache,
       testGroup "LruOrdCache" lruOrdCache,
-      testGroup "Charset" CharsetSuite.tests
+      testGroup "Charset" CharsetSuite.tests,
+      testGroup "TextArray" TextArraySuite.tests
     ]
 
 by6Bits =
