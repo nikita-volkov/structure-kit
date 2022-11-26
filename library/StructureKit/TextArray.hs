@@ -15,23 +15,21 @@ import VectorExtras.Generic qualified
 -- |
 -- A space-efficient representation of an array of text chunks.
 data TextArray = TextArray
-  { -- | Array.
-    flatArray :: !TextArray.Array,
-    -- | Lengths.
-    lengths :: !(UVec Int)
+  { flatArray :: !TextArray.Array,
+    bounds :: !(UVec (Int, Int))
   }
 
 fromList :: [Text] -> TextArray
 fromList textList =
   foldr step finish textList 0 0 []
   where
-    step (TextInternal.Text _ offset length) next !totalLength !totalCount !lengthRevList =
-      next (totalLength + length) (succ totalCount) (length : lengthRevList)
-    finish totalLength totalCount lengthRevList =
-      TextArray flatArray lengthVec
+    step (TextInternal.Text _ offset length) next !totalLength !totalCount !boundRevList =
+      next (totalLength + length) (succ totalCount) ((totalLength, length) : boundRevList)
+    finish totalLength totalCount boundRevList =
+      TextArray flatArray boundVec
       where
-        lengthVec =
-          VectorExtras.Generic.fromReverseListN totalCount lengthRevList
+        boundVec =
+          VectorExtras.Generic.fromReverseListN totalCount boundRevList
         flatArray =
           TextArray.run $ do
             dstArray <- TextArray.new totalLength
@@ -49,11 +47,8 @@ toList TextArray {..} =
   where
     builder :: (Text -> b -> b) -> b -> b
     builder cons nil =
-      UVec.foldr step finish lengths 0
+      UVec.foldr step nil bounds
       where
-        step length next !offset =
+        step (offset, length) =
           cons
             (TextInternal.Text flatArray offset length)
-            (next (offset + length))
-        finish _ =
-          nil
