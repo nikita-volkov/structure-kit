@@ -9,14 +9,13 @@ maintainer:    Nikita Volkov <nikita.y.volkov@mail.ru>
 copyright:     (c) 2021 Nikita Volkov
 license:       MIT
 license-file:  LICENSE
-build-type:    Simple
 
 source-repository head
   type:     git
   location: git://github.com/nikita-volkov/structure-kit.git
 
-library
-  hs-source-dirs:     library
+common base-settings
+  default-language:   Haskell2010
   default-extensions:
     NoImplicitPrelude
     NoMonomorphismRestriction
@@ -57,7 +56,13 @@ library
     UnboxedTuples
     ViewPatterns
 
-  default-language:   Haskell2010
+common executable-settings
+  import:      base-settings
+  ghc-options: -O2 -threaded "-with-rtsopts=-N -I0 -qg"
+
+library
+  import:          base-settings
+  hs-source-dirs:  library
   exposed-modules:
     StructureKit.BalancedList
     StructureKit.Bits256
@@ -114,99 +119,19 @@ library
     , witherable            ^>=0.4.2
 
 library structure-kit-quickcheck-util
-  hs-source-dirs:     quickcheck-util
-  default-extensions:
-    NoImplicitPrelude
-    NoMonomorphismRestriction
-    BangPatterns
-    BinaryLiterals
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DefaultSignatures
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    EmptyDataDecls
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    LiberalTypeSynonyms
-    MagicHash
-    MultiParamTypeClasses
-    MultiWayIf
-    OverloadedStrings
-    PatternGuards
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    UnboxedSums
-    UnboxedTuples
-    ViewPatterns
-
-  default-language:   Haskell2010
-  exposed-modules:    StructureKit.QuickCheckUtil.ExtrasFor.Gen
+  import:          base-settings
+  hs-source-dirs:  quickcheck-util
+  exposed-modules: StructureKit.QuickCheckUtil.ExtrasFor.Gen
   build-depends:
     , QuickCheck  >=2.14.2   && <3
     , rerebase    >=1.15.0.3 && <2
 
 test-suite test
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     test
-  default-extensions:
-    NoImplicitPrelude
-    NoMonomorphismRestriction
-    BangPatterns
-    BinaryLiterals
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DefaultSignatures
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    EmptyDataDecls
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    LiberalTypeSynonyms
-    MagicHash
-    MultiParamTypeClasses
-    MultiWayIf
-    OverloadedStrings
-    PatternGuards
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    UnboxedSums
-    UnboxedTuples
-    ViewPatterns
-
-  default-language:   Haskell2010
-  main-is:            Main.hs
-  other-modules:      StructureKit.TestSuites.Charset
+  import:         base-settings
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Main.hs
+  other-modules:  StructureKit.TestSuites.Charset
   build-depends:
     , QuickCheck                     >=2.14.2  && <3
     , quickcheck-instances           ^>=0.3.11
@@ -219,51 +144,10 @@ test-suite test
     , tostring                       ^>=0.2.1.1
 
 benchmark bench
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     bench
-  main-is:            Main.hs
-  ghc-options:        -O2 -threaded -with-rtsopts=-N
-  default-extensions:
-    NoImplicitPrelude
-    NoMonomorphismRestriction
-    BangPatterns
-    BinaryLiterals
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DefaultSignatures
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    EmptyDataDecls
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    LiberalTypeSynonyms
-    MagicHash
-    MultiParamTypeClasses
-    MultiWayIf
-    OverloadedStrings
-    PatternGuards
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    UnboxedSums
-    UnboxedTuples
-    ViewPatterns
-
-  default-language:   Haskell2010
+  import:         executable-settings
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs
   build-depends:
     , gauge                          ^>=0.2.5
     , QuickCheck                     >=2.14.2   && <3
@@ -272,50 +156,10 @@ benchmark bench
     , structure-kit-quickcheck-util
 
 test-suite profile-lhc
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     profile-lhc
-  main-is:            Main.hs
-  default-extensions:
-    NoImplicitPrelude
-    NoMonomorphismRestriction
-    BangPatterns
-    BinaryLiterals
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DefaultSignatures
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    EmptyDataDecls
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    LiberalTypeSynonyms
-    MagicHash
-    MultiParamTypeClasses
-    MultiWayIf
-    OverloadedStrings
-    PatternGuards
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    UnboxedSums
-    UnboxedTuples
-    ViewPatterns
-
-  default-language:   Haskell2010
+  import:         base-settings
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: profile-lhc
+  main-is:        Main.hs
   build-depends:
     , QuickCheck                     >=2.14.2   && <3
     , rerebase                       >=1.15.0.3 && <2
@@ -323,50 +167,10 @@ test-suite profile-lhc
     , structure-kit-quickcheck-util
 
 test-suite profile-loc
-  type:               exitcode-stdio-1.0
-  hs-source-dirs:     profile-loc
-  main-is:            Main.hs
-  default-extensions:
-    NoImplicitPrelude
-    NoMonomorphismRestriction
-    BangPatterns
-    BinaryLiterals
-    BlockArguments
-    ConstraintKinds
-    DataKinds
-    DefaultSignatures
-    DeriveDataTypeable
-    DeriveFoldable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    EmptyDataDecls
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    InstanceSigs
-    LambdaCase
-    LiberalTypeSynonyms
-    MagicHash
-    MultiParamTypeClasses
-    MultiWayIf
-    OverloadedStrings
-    PatternGuards
-    RankNTypes
-    RecordWildCards
-    ScopedTypeVariables
-    StandaloneDeriving
-    TupleSections
-    TypeApplications
-    TypeFamilies
-    TypeOperators
-    UnboxedSums
-    UnboxedTuples
-    ViewPatterns
-
-  default-language:   Haskell2010
+  import:         base-settings
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: profile-loc
+  main-is:        Main.hs
   build-depends:
     , QuickCheck                     >=2.14.2   && <3
     , rerebase                       >=1.15.0.3 && <2
