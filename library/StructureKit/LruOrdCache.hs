@@ -27,9 +27,9 @@ module StructureKit.LruOrdCache
   )
 where
 
-import qualified Data.List as List
+import Data.List qualified as List
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch)
-import qualified StructureKit.TouchTrackingOrdMap as TouchTrackingOrdMap
+import StructureKit.TouchTrackingOrdMap qualified as TouchTrackingOrdMap
 
 data LruOrdCache k v
   = LruOrdCache

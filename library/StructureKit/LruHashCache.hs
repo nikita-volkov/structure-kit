@@ -27,9 +27,9 @@ module StructureKit.LruHashCache
   )
 where
 
-import qualified Data.List as List
+import Data.List qualified as List
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch)
-import qualified StructureKit.TouchTrackingHashMap as TouchTrackingHashMap
+import StructureKit.TouchTrackingHashMap qualified as TouchTrackingHashMap
 
 data LruHashCache k v
   = LruHashCache

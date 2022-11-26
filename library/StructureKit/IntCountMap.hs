@@ -6,7 +6,7 @@ module StructureKit.IntCountMap
   )
 where
 
-import qualified Data.IntMap.Strict as IntMap
+import Data.IntMap.Strict qualified as IntMap
 import StructureKit.Prelude hiding (empty, insert, lookup)
 
 newtype IntCountMap

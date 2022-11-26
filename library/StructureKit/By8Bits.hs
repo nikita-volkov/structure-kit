@@ -23,7 +23,7 @@ module StructureKit.By8Bits
   )
 where
 
-import qualified StructureKit.By6Bits as By6Bits
+import StructureKit.By6Bits qualified as By6Bits
 import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, singleton, write)
 
 -- |

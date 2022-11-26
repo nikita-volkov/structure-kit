@@ -23,9 +23,9 @@ module StructureKit.Hamt
   )
 where
 
-import qualified StructureKit.By32Bits as By32Bits
+import StructureKit.By32Bits qualified as By32Bits
 import StructureKit.Prelude hiding (delete, empty, null, read, remove, write)
-import qualified StructureKit.Util.SmallArray as SmallArray
+import StructureKit.Util.SmallArray qualified as SmallArray
 
 newtype Hamt a
   = Hamt (By32Bits.By32Bits (SmallArray a))

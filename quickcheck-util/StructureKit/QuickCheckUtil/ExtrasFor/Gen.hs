@@ -1,8 +1,8 @@
 module StructureKit.QuickCheckUtil.ExtrasFor.Gen where
 
-import qualified Data.Text as Text
+import Data.Text qualified as Text
 import Test.QuickCheck.Gen
-import qualified Test.QuickCheck.Random as Random
+import Test.QuickCheck.Random qualified as Random
 import Prelude hiding (choose, optional)
 
 -- * Execution

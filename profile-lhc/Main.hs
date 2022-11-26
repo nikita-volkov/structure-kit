@@ -1,6 +1,6 @@
-import qualified StructureKit.LruHashCache as LruHashCache
-import qualified StructureKit.QuickCheckUtil.ExtrasFor.Gen as GenExtras
-import qualified Test.QuickCheck.Gen as Gen
+import StructureKit.LruHashCache qualified as LruHashCache
+import StructureKit.QuickCheckUtil.ExtrasFor.Gen qualified as GenExtras
+import Test.QuickCheck.Gen qualified as Gen
 import Prelude
 
 main =

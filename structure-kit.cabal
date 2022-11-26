@@ -30,20 +30,26 @@ common base-settings
     DeriveFunctor
     DeriveGeneric
     DeriveTraversable
+    DuplicateRecordFields
+    EmptyCase
     EmptyDataDecls
     FlexibleContexts
     FlexibleInstances
     FunctionalDependencies
     GADTs
     GeneralizedNewtypeDeriving
+    HexFloatLiterals
+    ImportQualifiedPost
     InstanceSigs
     LambdaCase
     LiberalTypeSynonyms
     MagicHash
     MultiParamTypeClasses
     MultiWayIf
+    NumericUnderscores
     OverloadedStrings
     PatternGuards
+    PatternSynonyms
     RankNTypes
     RecordWildCards
     ScopedTypeVariables
@@ -55,6 +61,8 @@ common base-settings
     UnboxedSums
     UnboxedTuples
     ViewPatterns
+    NoFieldSelectors
+    OverloadedRecordDot
 
 common executable-settings
   import:      base-settings

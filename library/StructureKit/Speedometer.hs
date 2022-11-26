@@ -6,7 +6,7 @@ module StructureKit.Speedometer
   )
 where
 
-import qualified StructureKit.IntCountMap as IntCountMap
+import StructureKit.IntCountMap qualified as IntCountMap
 import StructureKit.Prelude hiding (empty, insert, lookup)
 
 data Speedometer

@@ -3,8 +3,8 @@ module StructureKit.NullableBVec
   )
 where
 
-import qualified Data.Vector as BVec
-import qualified Data.Vector.Unboxed as UVec
+import Data.Vector qualified as BVec
+import Data.Vector.Unboxed qualified as UVec
 import StructureKit.Prelude hiding (empty)
 
 -- | Optimised alternative to @Vector (Maybe a)@.

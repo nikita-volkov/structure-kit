@@ -5,8 +5,8 @@ module StructureKit.SparseVector
   )
 where
 
-import qualified Data.Vector.Generic as GenericVector
-import qualified Data.Vector.Unboxed as UnboxedVector
+import Data.Vector.Generic qualified as GenericVector
+import Data.Vector.Unboxed qualified as UnboxedVector
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch, write)
 
 data SparseVector v a

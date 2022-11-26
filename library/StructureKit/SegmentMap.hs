@@ -1,10 +1,10 @@
 module StructureKit.SegmentMap where
 
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
+import Data.Map.Strict qualified as Map
 import StructureKit.Prelude
 import StructureKit.Range (Range)
-import qualified StructureKit.Range as Range
+import StructureKit.Range qualified as Range
 
 newtype SegmentMap k v = SegmentMap
   { rangeIndexedMap :: Map k (Entry k v)

@@ -1,11 +1,11 @@
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.Map.Strict as Map
+import Data.HashMap.Strict qualified as HashMap
+import Data.Map.Strict qualified as Map
 import Gauge.Main
-import qualified StructureKit.LruHashCache as LruHashCache
-import qualified StructureKit.LruOrdCache as LruOrdCache
-import qualified StructureKit.QuickCheckUtil.ExtrasFor.Gen as GenExtras
-import qualified Test.QuickCheck.Gen as Gen
-import qualified Test.QuickCheck.Random as Random
+import StructureKit.LruHashCache qualified as LruHashCache
+import StructureKit.LruOrdCache qualified as LruOrdCache
+import StructureKit.QuickCheckUtil.ExtrasFor.Gen qualified as GenExtras
+import Test.QuickCheck.Gen qualified as Gen
+import Test.QuickCheck.Random qualified as Random
 import Prelude
 
 main =

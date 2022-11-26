@@ -8,7 +8,7 @@ module StructureKit.LrlHashCache
   )
 where
 
-import qualified StructureKit.LookupOrderedHashMap as LookupOrderedHashMap
+import StructureKit.LookupOrderedHashMap qualified as LookupOrderedHashMap
 import StructureKit.Prelude hiding (empty, insert, lookup)
 
 data LrlHashCache k v

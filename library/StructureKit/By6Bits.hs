@@ -25,8 +25,8 @@ module StructureKit.By6Bits
 where
 
 import StructureKit.Prelude hiding (empty, insert, lookup, null, read, remove, singleton, toList, write)
-import qualified StructureKit.Prelude as Prelude
-import qualified StructureKit.Util.SmallArray as SmallArray
+import StructureKit.Prelude qualified as Prelude
+import StructureKit.Util.SmallArray qualified as SmallArray
 
 -- |
 -- Map indexed with 6 bits.

@@ -5,8 +5,8 @@ module StructureKit.ByteStringArray
   )
 where
 
-import qualified Data.ByteString as ByteString
-import qualified Data.Vector.Unboxed as UVec
+import Data.ByteString qualified as ByteString
+import Data.Vector.Unboxed qualified as UVec
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup)
 
 -- |
@@ -22,7 +22,7 @@ data ByteStringArray = ByteStringArray
 -- |
 -- Get the underlying monolith vector.
 getByteStringMonolith :: ByteStringArray -> ByteString
-getByteStringMonolith = byteString
+getByteStringMonolith = (.byteString)
 
 foldr :: (ByteString -> a -> a) -> a -> ByteStringArray -> a
 foldr step start (ByteStringArray boundaryVec monolith) =

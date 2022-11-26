@@ -27,8 +27,8 @@ module StructureKit.TouchTrackingHashMap
   )
 where
 
-import qualified Data.HashMap.Strict as HashMap
-import qualified Deque.Strict as Deque
+import Data.HashMap.Strict qualified as HashMap
+import Deque.Strict qualified as Deque
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch, write)
 
 data TouchTrackingHashMap k v

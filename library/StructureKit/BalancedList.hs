@@ -17,7 +17,7 @@ module StructureKit.BalancedList
 where
 
 import StrictList (List)
-import qualified StrictList
+import StrictList qualified
 import StructureKit.Prelude
 
 -- * --

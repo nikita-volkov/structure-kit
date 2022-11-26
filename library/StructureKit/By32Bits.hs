@@ -22,11 +22,11 @@ module StructureKit.By32Bits
   )
 where
 
-import qualified StructureKit.By32Bits.KeyOps as KeyOps
+import StructureKit.By32Bits.KeyOps qualified as KeyOps
 import StructureKit.By6Bits (By6Bits)
-import qualified StructureKit.By6Bits as By6Bits
+import StructureKit.By6Bits qualified as By6Bits
 import StructureKit.By8Bits (By8Bits)
-import qualified StructureKit.By8Bits as By8Bits
+import StructureKit.By8Bits qualified as By8Bits
 import StructureKit.Prelude hiding (adjust, empty, lookup, null, read, remove, write)
 
 newtype By32Bits a

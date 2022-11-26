@@ -5,7 +5,7 @@ module StructureKit.Bits256
 where
 
 import StructureKit.Bits64 (Bits64)
-import qualified StructureKit.Bits64 as Bits64
+import StructureKit.Bits64 qualified as Bits64
 import StructureKit.Prelude hiding (adjust, empty, foldl', foldlM, foldr, forM_, insert, lookup, member, null, split, toList, unfoldr)
 
 data Bits256

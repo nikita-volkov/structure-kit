@@ -27,8 +27,8 @@ module StructureKit.TouchTrackingOrdMap
   )
 where
 
-import qualified Data.Map.Strict as Map
-import qualified Deque.Strict as Deque
+import Data.Map.Strict qualified as Map
+import Deque.Strict qualified as Deque
 import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, touch, write)
 
 data TouchTrackingOrdMap k v

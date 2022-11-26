@@ -6,8 +6,8 @@ module StructureKit.ByteArrayMap
   )
 where
 
-import qualified Data.ByteString as ByteString
-import qualified StructureKit.By8Bits as By8Bits
+import Data.ByteString qualified as ByteString
+import StructureKit.By8Bits qualified as By8Bits
 import StructureKit.Prelude
 
 -- |

@@ -7,9 +7,9 @@ module StructureKit.LookupOrderedHashMap
   )
 where
 
-import qualified Deque.Strict as Deque
-import qualified StructureKit.Hamt as Hamt
-import qualified StructureKit.LookupOrderedHashMapEntry as Entry
+import Deque.Strict qualified as Deque
+import StructureKit.Hamt qualified as Hamt
+import StructureKit.LookupOrderedHashMapEntry qualified as Entry
 import StructureKit.Prelude hiding (empty, insert, lookup)
 
 data LookupOrderedHashMap k v

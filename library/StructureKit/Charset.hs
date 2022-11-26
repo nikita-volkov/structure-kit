@@ -22,8 +22,8 @@ module StructureKit.Charset
   )
 where
 
-import qualified Data.RangeSet.IntMap as IntRange
-import qualified Data.Text as Text
+import Data.RangeSet.IntMap qualified as IntRange
+import Data.Text qualified as Text
 import StructureKit.Prelude hiding (range)
 
 -- * --

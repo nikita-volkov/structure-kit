@@ -3,8 +3,8 @@ module StructureKit.ByteArrayCache
   )
 where
 
-import qualified StructureKit.ByteArrayCacheEntry as ByteArrayCacheEntry
-import qualified StructureKit.ByteArrayMap as ByteArrayMap
+import StructureKit.ByteArrayCacheEntry qualified as ByteArrayCacheEntry
+import StructureKit.ByteArrayMap qualified as ByteArrayMap
 import StructureKit.Prelude
 
 data ByteArrayCache a

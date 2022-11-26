@@ -10,8 +10,8 @@ module StructureKit.IdRegistry
   )
 where
 
-import qualified Data.IntMap.Strict as IntMap
-import qualified StructureKit.IdGen as IdGen
+import Data.IntMap.Strict qualified as IntMap
+import StructureKit.IdGen qualified as IdGen
 import StructureKit.Prelude hiding (empty, lookup)
 
 -- |

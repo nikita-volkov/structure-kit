@@ -1,13 +1,13 @@
 module Main where
 
-import qualified Data.List as List
-import qualified StructureKit.Bits64 as Bits64
-import qualified StructureKit.By32Bits as By32Bits
-import qualified StructureKit.By6Bits as By6Bits
-import qualified StructureKit.LruHashCache as LruHashCache
-import qualified StructureKit.LruOrdCache as LruOrdCache
-import qualified StructureKit.TestSuites.Charset as CharsetSuite
-import qualified Test.QuickCheck as QuickCheck
+import Data.List qualified as List
+import StructureKit.Bits64 qualified as Bits64
+import StructureKit.By32Bits qualified as By32Bits
+import StructureKit.By6Bits qualified as By6Bits
+import StructureKit.LruHashCache qualified as LruHashCache
+import StructureKit.LruOrdCache qualified as LruOrdCache
+import StructureKit.TestSuites.Charset qualified as CharsetSuite
+import Test.QuickCheck qualified as QuickCheck
 import Test.QuickCheck.Instances
 import Test.Tasty
 import Test.Tasty.HUnit

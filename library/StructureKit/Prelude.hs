@@ -70,8 +70,8 @@ import Data.Text as Exports (Text)
 import Data.Traversable as Exports
 import Data.Tuple as Exports
 import Data.Unique as Exports
-import qualified Data.Vector as BVec
-import qualified Data.Vector.Unboxed as UVec
+import Data.Vector qualified as BVec
+import Data.Vector.Unboxed qualified as UVec
 import Data.Version as Exports
 import Data.Void as Exports
 import Data.Word as Exports
