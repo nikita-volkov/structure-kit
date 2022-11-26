@@ -2,6 +2,7 @@ module StructureKit.TextArray
   ( TextArray,
     fromList,
     toList,
+    lookup,
   )
 where
 
@@ -9,7 +10,7 @@ import Data.Text.Array qualified as TextArray
 import Data.Text.Internal qualified as TextInternal
 import Data.Vector.Unboxed qualified as UVec
 import GHC.Base qualified as GhcBase
-import StructureKit.Prelude hiding (fromList, toList)
+import StructureKit.Prelude hiding (fromList, lookup, toList)
 import VectorExtras.Generic qualified
 
 -- |
@@ -52,3 +53,9 @@ toList TextArray {..} =
         step (offset, length) =
           cons
             (TextInternal.Text flatArray offset length)
+
+{-# INLINE lookup #-}
+lookup :: Int -> TextArray -> Maybe Text
+lookup index TextArray {..} =
+  bounds UVec.!? index <&> \(offset, length) ->
+    TextInternal.Text flatArray offset length

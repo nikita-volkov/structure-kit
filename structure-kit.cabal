@@ -146,6 +146,7 @@ test-suite test
     StructureKit.TestSuites.TextArray
 
   build-depends:
+    , extra                          ^>=1.7.12
     , QuickCheck                     >=2.14.2  && <3
     , quickcheck-instances           ^>=0.3.11
     , rerebase                       <2
