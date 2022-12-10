@@ -11,6 +11,8 @@ import Data.Text.Internal qualified as TextInternal
 import Data.Vector.Unboxed qualified as UVec
 import GHC.Base qualified as GhcBase
 import StructureKit.Prelude hiding (fromList, lookup, toList)
+import Text.Builder qualified as TextBuilder
+import VectorExtras.Accumulator qualified as VAcc
 import VectorExtras.Generic qualified
 
 -- |
@@ -19,6 +21,22 @@ data TextArray = TextArray
   { flatArray :: !TextArray.Array,
     bounds :: !(UVec (Int, Int))
   }
+
+sliceText :: Text -> [Int] -> TextArray
+sliceText (TextInternal.Text array offset length) bounds =
+  error "TODO" $
+    foldr stepBounds finishBounds bounds offset VAcc.init
+  where
+    stepBounds bound next !prevOffset !boundsAcc =
+      if prevOffset < bound
+        then next bound $ VAcc.add (prevOffset, bound) boundsAcc
+        else next bound $ boundsAcc
+    finishBounds prevOffset boundsAcc =
+      error "TODO"
+
+fromTextBuilderList :: [TextBuilder.Builder] -> TextArray
+fromTextBuilderList =
+  error "TODO"
 
 fromList :: [Text] -> TextArray
 fromList textList =
