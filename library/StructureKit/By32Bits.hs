@@ -103,19 +103,23 @@ remove (Existing a b c d e) =
                             a ->
                               a & By32Bits
                           else
-                            b & flip By6Bits.overwrite a
+                            b
+                              & flip By6Bits.overwrite a
                               & By32Bits
                     else
-                      c & flip By6Bits.overwrite b
+                      c
+                        & flip By6Bits.overwrite b
                         & flip By6Bits.overwrite a
                         & By32Bits
               else
-                d & flip By6Bits.overwrite c
+                d
+                  & flip By6Bits.overwrite c
                   & flip By6Bits.overwrite b
                   & flip By6Bits.overwrite a
                   & By32Bits
         else
-          e & flip By6Bits.overwrite d
+          e
+            & flip By6Bits.overwrite d
             & flip By6Bits.overwrite c
             & flip By6Bits.overwrite b
             & flip By6Bits.overwrite a

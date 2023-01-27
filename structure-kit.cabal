@@ -17,6 +17,7 @@ source-repository head
 common base-settings
   default-language:   Haskell2010
   default-extensions:
+    NoFieldSelectors
     NoImplicitPrelude
     NoMonomorphismRestriction
     BangPatterns
@@ -47,6 +48,7 @@ common base-settings
     MultiParamTypeClasses
     MultiWayIf
     NumericUnderscores
+    OverloadedRecordDot
     OverloadedStrings
     PatternGuards
     PatternSynonyms
@@ -61,8 +63,6 @@ common base-settings
     UnboxedSums
     UnboxedTuples
     ViewPatterns
-    NoFieldSelectors
-    OverloadedRecordDot
 
 common executable-settings
   import:      base-settings
@@ -109,19 +109,19 @@ library
     StructureKit.Util.SmallArray
 
   build-depends:
-    , base                  >=4.11    && <5
-    , bytestring            >=0.10    && <0.12
-    , comonad               >=5       && <6
+    , base                  >=4.11     && <5
+    , bytestring            >=0.10     && <0.12
+    , comonad               >=5        && <6
     , containers            ^>=0.6
     , deepseq               ^>=1.4.3
     , deferred-folds        ^>=0.9.16
     , deque                 ^>=0.4.4
     , groups                ^>=0.5
-    , hashable              >=1       && <2
+    , hashable              >=1        && <2
     , primitive             ^>=0.7.1
     , range-set-list        ^>=0.1.3.1
     , strict-list           ^>=0.1.7
-    , text                  >=2       && <3
+    , text                  >=2        && <3
     , text-builder          ^>=0.6.7
     , transformers          ^>=0.5
     , unordered-containers  ^>=0.2.14
@@ -148,14 +148,14 @@ test-suite test
 
   build-depends:
     , extra                          ^>=1.7.12
-    , QuickCheck                     >=2.14.2  && <3
+    , QuickCheck                     >=2.14.2   && <3
     , quickcheck-instances           ^>=0.3.11
     , rerebase                       <2
     , structure-kit
     , structure-kit-quickcheck-util
-    , tasty                          >=0.12    && <2
-    , tasty-hunit                    >=0.9     && <0.11
-    , tasty-quickcheck               >=0.9     && <0.11
+    , tasty                          >=0.12     && <2
+    , tasty-hunit                    >=0.9      && <0.11
+    , tasty-quickcheck               >=0.9      && <0.11
     , tostring                       ^>=0.2.1.1
 
 benchmark bench

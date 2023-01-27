@@ -80,7 +80,8 @@ bits64 =
       key <- chooseInt (0, 63)
       let x' = delete key x
       return . counterexample (show x) . counterexample (show x') . counterexample (show key) $
-        not $ lookup key x'
+        not $
+          lookup key x'
   ]
   where
     genBits64 =
