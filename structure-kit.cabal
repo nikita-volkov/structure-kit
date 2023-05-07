@@ -123,7 +123,7 @@ library
     , strict-list           ^>=0.1.7
     , text                  >=2        && <3
     , text-builder          ^>=0.6.7
-    , transformers          ^>=0.5
+    , transformers          >=0.5      && <0.7
     , unordered-containers  ^>=0.2.14
     , vector                ^>=0.12
     , vector-extras         ^>=0.2.7.1
