@@ -36,7 +36,7 @@ data By8Bits a
       !(By6Bits.By6Bits a)
   deriving (Functor)
 
-instance NFData a => NFData (By8Bits a) where
+instance (NFData a) => NFData (By8Bits a) where
   rnf (By8Bits a b c d) = a `deepseq` b `deepseq` c `deepseq` d `seq` ()
 
 empty :: By8Bits a

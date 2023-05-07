@@ -22,7 +22,7 @@ data Range a
       -- ^ Smaller than.
 
 -- | Implements intersection.
-instance Ord a => Semigroup (Range a) where
+instance (Ord a) => Semigroup (Range a) where
   Range lMin lMax <> Range rMin rMax =
     Range (max lMin rMin) (min lMax rMax)
 
@@ -34,7 +34,7 @@ instance (Bounded a, Ord a) => Monoid (Range a) where
 
 -- |
 -- Check whether the range contains the element.
-toPredicate :: Ord a => Range a -> a -> Bool
+toPredicate :: (Ord a) => Range a -> a -> Bool
 toPredicate (Range min max) a =
   a >= min && a < max
 
@@ -42,6 +42,6 @@ toPredicate (Range min max) a =
 
 -- |
 -- Checks whether the range includes any elements at all.
-isEmpty :: Ord a => Range a -> Bool
+isEmpty :: (Ord a) => Range a -> Bool
 isEmpty (Range min max) =
   min >= max

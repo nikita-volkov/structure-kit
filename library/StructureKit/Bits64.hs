@@ -101,7 +101,7 @@ justDeleteOmg :: Int -> Bits64 -> Bits64
 justDeleteOmg value (Bits64 word) =
   Bits64 (word .&. complement (bit value))
 
-revise :: Functor f => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
+revise :: (Functor f) => Int -> (Int -> f Bool) -> (Int -> f Bool) -> Bits64 -> f (Maybe Bits64)
 revise value onMissing onPresent (Bits64 word) =
   if value == 0
     then choose 1 0
@@ -171,7 +171,7 @@ foldl' step acc (Bits64 word) =
         then loop (succ i) (if testBit word i then step acc i else acc)
         else acc
 
-foldlM :: Monad m => (a -> Int -> m a) -> a -> Bits64 -> m a
+foldlM :: (Monad m) => (a -> Int -> m a) -> a -> Bits64 -> m a
 foldlM step acc (Bits64 word) =
   loop 0 acc
   where
@@ -183,7 +183,7 @@ foldlM step acc (Bits64 word) =
             else loop (succ i) acc
         else return acc
 
-forM_ :: Monad m => (Int -> m ()) -> Bits64 -> m ()
+forM_ :: (Monad m) => (Int -> m ()) -> Bits64 -> m ()
 forM_ fn (Bits64 word) =
   loop 0
   where

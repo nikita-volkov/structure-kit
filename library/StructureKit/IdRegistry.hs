@@ -56,7 +56,7 @@ lookup id (IdRegistry _ map) =
 
 -- |
 -- Same operation as 'IntMap.alterF'.
-alterF :: Functor f => (Maybe a -> f (Maybe a)) -> Int -> IdRegistry a -> f (IdRegistry a)
+alterF :: (Functor f) => (Maybe a -> f (Maybe a)) -> Int -> IdRegistry a -> f (IdRegistry a)
 alterF f k (IdRegistry idGen map) =
   IntMap.alterF f k map & fmap (IdRegistry idGen)
 

@@ -104,14 +104,14 @@ import Unsafe.Coerce as Exports
 import Witherable as Exports
 import Prelude as Exports hiding (all, and, any, concat, concatMap, elem, fail, filter, foldl, foldl1, foldr, foldr1, id, map, mapM, mapM_, maximum, minimum, notElem, or, product, sequence, sequence_, sum, (.))
 
-guarded :: Alternative f => (a -> Bool) -> a -> f a
+guarded :: (Alternative f) => (a -> Bool) -> a -> f a
 guarded pred x = if pred x then pure x else empty
 
-mapCoercible :: Coercible a b => (a -> a) -> b -> b
+mapCoercible :: (Coercible a b) => (a -> a) -> b -> b
 mapCoercible mapper =
   coerce . mapper . coerce
 
-mapCoercible2 :: Coercible f g => (g a -> g b) -> f a -> f b
+mapCoercible2 :: (Coercible f g) => (g a -> g b) -> f a -> f b
 mapCoercible2 mapper =
   coerce . mapper . coerce
 

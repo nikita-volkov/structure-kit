@@ -15,7 +15,7 @@ data Entry k v = Entry
     entryValue :: v
   }
 
-lookup :: Ord k => k -> SegmentMap k v -> Maybe (Range k, v)
+lookup :: (Ord k) => k -> SegmentMap k v -> Maybe (Range k, v)
 lookup k SegmentMap {..} =
   case Map.lookupLE k rangeIndexedMap of
     Just (k, Entry {..}) ->

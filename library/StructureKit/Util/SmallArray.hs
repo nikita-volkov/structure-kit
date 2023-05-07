@@ -42,7 +42,7 @@ import StructureKit.Prelude hiding (drop, find, insert, null, read, remove, sing
 
 -- | A workaround for the weird forcing of 'undefined' values int 'newSmallArray'
 {-# INLINE newEmptySmallArray #-}
-newEmptySmallArray :: PrimMonad m => Int -> m (SmallMutableArray (PrimState m) a)
+newEmptySmallArray :: (PrimMonad m) => Int -> m (SmallMutableArray (PrimState m) a)
 newEmptySmallArray size = newSmallArray size (unsafeCoerce 0)
 
 singleton :: a -> SmallArray a
@@ -144,7 +144,7 @@ unsafeIndexAndAdjustWithSize fn index size array =
     return (element, newArray)
 
 {-# INLINE unsafeAdjustF #-}
-unsafeAdjustF :: Functor f => (a -> f a) -> Int -> SmallArray a -> f (SmallArray a)
+unsafeAdjustF :: (Functor f) => (a -> f a) -> Int -> SmallArray a -> f (SmallArray a)
 unsafeAdjustF fn index array =
   fn (indexSmallArray array index)
     & fmap (\newElement -> set index newElement array)
@@ -190,7 +190,7 @@ orderedPair i1 e1 i2 e2 =
             return a
 
 {-# INLINE reviseSelected #-}
-reviseSelected :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
+reviseSelected :: (Functor f) => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
 reviseSelected select onMissing onPresent array =
   let size = sizeofSmallArray array
       iterate index =

@@ -51,7 +51,7 @@ findAndReplace hash narrow hamt =
 
 -- |
 -- Deprecated.
-revise :: Functor f => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
+revise :: (Functor f) => Int -> (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> Hamt a -> f (Maybe (Hamt a))
 revise hash narrow onMissing onPresent hamt =
   case locate hash (isJust . narrow) hamt of
     Right existing ->

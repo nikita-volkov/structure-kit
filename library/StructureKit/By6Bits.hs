@@ -37,10 +37,10 @@ data By6Bits a
 
 deriving instance Functor By6Bits
 
-instance Show a => Show (By6Bits a) where
+instance (Show a) => Show (By6Bits a) where
   show = show . toList
 
-instance NFData a => NFData (By6Bits a) where
+instance (NFData a) => NFData (By6Bits a) where
   rnf (By6Bits a b) = rwhnf (seq a (rnf b))
 
 {-# INLINE empty #-}

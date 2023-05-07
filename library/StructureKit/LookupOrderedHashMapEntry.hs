@@ -62,7 +62,7 @@ entryKey =
     MissingLookupOrderedHashMapEntry count entryKey -> entryKey
     PresentLookupOrderedHashMapEntry count entryKey value -> entryKey
 
-select :: Eq k => k -> LookupOrderedHashMapEntry k v -> Maybe (LookupOrderedHashMapEntry k v)
+select :: (Eq k) => k -> LookupOrderedHashMapEntry k v -> Maybe (LookupOrderedHashMapEntry k v)
 select key entry =
   if entryKey entry == key
     then Just entry
