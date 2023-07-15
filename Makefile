@@ -1,8 +1,8 @@
 all: test-strictly
 
 format:
-	path=structure-kit.cabal && cabal-fmt -c $$path || cabal-fmt -i $$path
-	ormolu --mode inplace -c $$(find . -name "*.hs" -not -path "./.stack-snapshot/*" -not -path "./dist/*" -not -path "./dist-newstyle/*" -not -path "./*.stack-work/*" -not -path "./sketches/*")
+	for path in $$(git diff --staged --name-only -- '*.cabal') $$(git ls-files -om --exclude-standard -- '*.cabal'); do if test -f $$path; then cabal-fmt --no-tabular -c $$path 2> /dev/null || cabal-fmt --no-tabular -i $$path; fi; done
+	for path in $$(git diff --staged --name-only -- '*.hs') $$(git ls-files -om --exclude-standard -- '*.hs'); do if test -f $$path; then ormolu -ic $$path; fi; done
 
 build-fast: format
 	stack build --fast --test --no-run-tests --ghc-options "-j -threaded +RTS -A128m -n2m -RTS -fno-warn-typed-holes -fdefer-typed-holes"

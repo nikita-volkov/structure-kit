@@ -14,7 +14,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
 import Test.Tasty.Runners
-import Prelude hiding (assert)
+import Prelude hiding (assert, label)
 
 main =
   defaultMain . testGroup "All tests" $
