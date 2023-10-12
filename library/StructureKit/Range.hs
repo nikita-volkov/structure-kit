@@ -1,3 +1,5 @@
+{-# LANGUAGE StrictData #-}
+
 module StructureKit.Range
   ( -- * --
     Range (..),
@@ -16,10 +18,10 @@ import StructureKit.Prelude
 
 data Range a
   = Range
-      !a
-      -- ^ Equal or larger than.
-      !a
-      -- ^ Smaller than.
+      -- | Equal or larger than.
+      a
+      -- | Smaller than.
+      a
 
 -- | Implements intersection.
 instance (Ord a) => Semigroup (Range a) where

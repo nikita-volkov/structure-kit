@@ -91,6 +91,7 @@ library
     StructureKit.LruHashCache
     StructureKit.LruOrdCache
     StructureKit.NullableBVec
+    StructureKit.OpenRange
     StructureKit.Range
     StructureKit.SegmentMap
     StructureKit.SparseVector
