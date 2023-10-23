@@ -1,18 +1,15 @@
 {-# LANGUAGE StrictData #-}
 
 module StructureKit.OpenRange
-  ( -- * --
-    Range (..),
+  ( Range (..),
 
-    -- ** --
+    -- * Execution
     toPredicate,
-
-    -- ** --
     isEmpty,
   )
 where
 
-import StructureKit.Prelude
+import StructureKit.Prelude hiding (intersection, union)
 
 -- * --
 
@@ -45,15 +42,13 @@ instance (Ord a) => Monoid (Range a) where
   mempty =
     Range Nothing Nothing
 
--- * --
+-- * Execution
 
 -- |
 -- Check whether the range contains the element.
 toPredicate :: (Ord a) => Range a -> a -> Bool
 toPredicate (Range from upTo) a =
   maybe True (a >=) from && maybe True (a <) upTo
-
--- * --
 
 -- |
 -- Checks whether the range includes any elements at all.
