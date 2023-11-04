@@ -33,10 +33,10 @@ import StructureKit.TouchTrackingHashMap qualified as TouchTrackingHashMap
 
 data LruHashCache k v
   = LruHashCache
+      -- | Slots occupied.
       {-# UNPACK #-} !Int
-      -- ^ Slots occupied.
+      -- | Slots available.
       {-# UNPACK #-} !Int
-      -- ^ Slots available.
       {-# UNPACK #-} !(TouchTrackingHashMap.TouchTrackingHashMap k v)
   deriving (Functor)
 

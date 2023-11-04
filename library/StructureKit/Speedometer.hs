@@ -11,13 +11,13 @@ import StructureKit.Prelude hiding (empty, insert, lookup)
 
 data Speedometer
   = Speedometer
+      -- | Count by timestamp.
       IntCountMap.IntCountMap
-      -- ^ Count by timestamp.
-      Int
-      -- ^ Aggregate count.
+      -- | Aggregate count.
       --        For fast calculation of speed.
       Int
-      -- ^ Memory period.
+      -- | Memory period.
+      Int
 
 empty :: Int -> Speedometer
 empty = Speedometer IntCountMap.empty 0

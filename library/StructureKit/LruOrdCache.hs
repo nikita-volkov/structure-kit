@@ -33,10 +33,10 @@ import StructureKit.TouchTrackingOrdMap qualified as TouchTrackingOrdMap
 
 data LruOrdCache k v
   = LruOrdCache
+      -- | Slots occupied.
       !Int
-      -- ^ Slots occupied.
+      -- | Slots available.
       !Int
-      -- ^ Slots available.
       !(TouchTrackingOrdMap.TouchTrackingOrdMap k v)
   deriving (Functor)
 

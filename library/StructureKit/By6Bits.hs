@@ -108,14 +108,14 @@ locate key (By6Bits keys arr) =
 
 data Existing a
   = Existing
+      -- | Singleton set pointing to the value.
       {-# UNPACK #-} !Word64
-      -- ^ Singleton set pointing to the value.
+      -- | Old key set.
       {-# UNPACK #-} !Word64
-      -- ^ Old key set.
+      -- | Index in array.
       {-# UNPACK #-} !Int
-      -- ^ Index in array.
+      -- | Array.
       {-# UNPACK #-} !(SmallArray a)
-      -- ^ Array.
 
 {-# INLINE read #-}
 read :: Existing a -> a
@@ -136,12 +136,12 @@ overwrite val (Existing _ keys idx array) =
 
 data Missing a
   = Missing
+      -- | Key bitmap with this key.
       {-# UNPACK #-} !Word64
-      -- ^ Key bitmap with this key.
+      -- | Found index in the array.
       {-# UNPACK #-} !Int
-      -- ^ Found index in the array.
+      -- | Array of entries.
       {-# UNPACK #-} !(SmallArray a)
-      -- ^ Array of entries.
 
 {-# INLINE write #-}
 write :: a -> Missing a -> By6Bits a

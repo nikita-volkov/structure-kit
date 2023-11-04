@@ -11,10 +11,10 @@ import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, 
 
 data SparseVector v a
   = SparseVector
+      -- | Null markers.
       !(UnboxedVector.Vector Bool)
-      -- ^ Null markers.
+      -- | Vector filled with noise in places of missing values.
       !(v a)
-      -- ^ Vector filled with noise in places of missing values.
 
 lookup :: (GenericVector.Vector v a) => Int -> SparseVector v a -> Maybe a
 lookup i (SparseVector nulls elements) =

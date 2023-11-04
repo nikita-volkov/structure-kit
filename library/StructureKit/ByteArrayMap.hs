@@ -14,10 +14,10 @@ import StructureKit.Prelude
 -- Map indexed by a sequence of bytes. Be it ByteArray or ByteString.
 data ByteArrayMap a
   = ByteArrayMap
+      -- | Possible value at zero prefix.
       (Maybe a)
-      -- ^ Possible value at zero prefix.
+      -- | Next trees indexed by first byte of the suffix.
       (By8Bits.By8Bits (ByteArrayMap a))
-      -- ^ Next trees indexed by first byte of the suffix.
 
 mapAt :: (a -> a) -> ByteString -> ByteArrayMap a -> ByteArrayMap a
 mapAt =

@@ -26,8 +26,7 @@ import StructureKit.Prelude
 -- Balanced strict list.
 data BalancedList a
   = BalancedList
-      !Bool
-      -- ^
+      -- |
       -- Whether it is currently reversed.
       --
       -- This is useful because many list functions work better,
@@ -35,6 +34,7 @@ data BalancedList a
       --
       -- Thus it lets the next function to be called on it
       -- decide how to process this data.
+      !Bool
       !(List a)
 
 instance Functor BalancedList where

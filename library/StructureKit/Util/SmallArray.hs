@@ -175,19 +175,19 @@ snoc a array =
 orderedPair :: Int -> e -> Int -> e -> SmallArray e
 orderedPair i1 e1 i2 e2 =
   {-# SCC "orderedPair" #-}
-  runSmallArray $
-    if
-        | i1 < i2 -> do
-            a <- newSmallArray 2 e1
-            writeSmallArray a 1 e2
-            return a
-        | i1 > i2 -> do
-            a <- newSmallArray 2 e1
-            writeSmallArray a 0 e2
-            return a
-        | otherwise -> do
-            a <- newSmallArray 1 e2
-            return a
+  runSmallArray
+    $ if
+      | i1 < i2 -> do
+          a <- newSmallArray 2 e1
+          writeSmallArray a 1 e2
+          return a
+      | i1 > i2 -> do
+          a <- newSmallArray 2 e1
+          writeSmallArray a 0 e2
+          return a
+      | otherwise -> do
+          a <- newSmallArray 1 e2
+          return a
 
 {-# INLINE reviseSelected #-}
 reviseSelected :: (Functor f) => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))

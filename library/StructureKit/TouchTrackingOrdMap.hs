@@ -33,10 +33,10 @@ import StructureKit.Prelude hiding (empty, foldr, insert, lookup, read, toList, 
 
 data TouchTrackingOrdMap k v
   = TouchTrackingOrdMap
+      -- | Queue of touches to keys.
       !(Deque k)
-      -- ^ Queue of touches to keys.
+      -- | Specialised map of entries.
       !(Map.Map k (Entry v))
-      -- ^ Specialised map of entries.
   deriving (Functor)
 
 instance (NFData k, NFData v) => NFData (TouchTrackingOrdMap k v) where

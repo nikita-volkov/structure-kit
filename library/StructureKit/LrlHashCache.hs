@@ -13,10 +13,10 @@ import StructureKit.Prelude hiding (empty, insert, lookup)
 
 data LrlHashCache k v
   = LrlHashCache
+      -- | Slots occupied.
       Int
-      -- ^ Slots occupied.
+      -- | Slots available.
       Int
-      -- ^ Slots available.
       (LookupOrderedHashMap.LookupOrderedHashMap k v)
 
 empty ::

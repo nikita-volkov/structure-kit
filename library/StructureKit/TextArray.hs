@@ -24,8 +24,8 @@ data TextArray = TextArray
 
 sliceText :: Text -> [Int] -> TextArray
 sliceText (TextInternal.Text array offset length) bounds =
-  error "TODO" $
-    foldr stepBounds finishBounds bounds offset VAcc.init
+  error "TODO"
+    $ foldr stepBounds finishBounds bounds offset VAcc.init
   where
     stepBounds bound next !prevOffset !boundsAcc =
       if prevOffset < bound
@@ -57,7 +57,8 @@ fromList textList =
           where
             foldStep dstArray dstOffset (TextInternal.Text srcArray srcOffset length) =
               TextArray.copyI length dstArray dstOffset srcArray srcOffset
-                $> dstOffset + length
+                $> dstOffset
+                + length
 
 {-# INLINE toList #-}
 toList :: TextArray -> [Text]
