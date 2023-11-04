@@ -1,7 +1,7 @@
 {-# LANGUAGE StrictData #-}
 
 module StructureKit.OpenRange
-  ( Range (..),
+  ( OpenRange (..),
 
     -- * Execution
     toPredicate,
@@ -13,7 +13,7 @@ import StructureKit.Prelude hiding (intersection, union)
 
 -- * --
 
-data Range a = Range
+data OpenRange a = OpenRange
   { -- | Equal or larger than.
     from :: Maybe a,
     -- | Smaller than.
@@ -22,9 +22,9 @@ data Range a = Range
   deriving (Show, Eq)
 
 -- | Implements intersection.
-instance (Ord a) => Semigroup (Range a) where
-  Range lFrom lUpTo <> Range rFrom rUpTo =
-    Range
+instance (Ord a) => Semigroup (OpenRange a) where
+  OpenRange lFrom lUpTo <> OpenRange rFrom rUpTo =
+    OpenRange
       { from =
           case lFrom of
             Nothing -> rFrom
@@ -39,20 +39,20 @@ instance (Ord a) => Semigroup (Range a) where
               Just rUpTo -> Just (min lUpTo rUpTo)
       }
 
-instance (Ord a) => Monoid (Range a) where
+instance (Ord a) => Monoid (OpenRange a) where
   mempty =
-    Range Nothing Nothing
+    OpenRange Nothing Nothing
 
 -- * Execution
 
 -- |
 -- Check whether the range contains the element.
-toPredicate :: (Ord a) => Range a -> a -> Bool
-toPredicate (Range from upto) a =
+toPredicate :: (Ord a) => OpenRange a -> a -> Bool
+toPredicate (OpenRange from upto) a =
   maybe True (a >=) from && maybe True (a <) upto
 
 -- |
 -- Checks whether the range includes any elements at all.
-isEmpty :: (Ord a) => Range a -> Bool
-isEmpty (Range from upto) =
+isEmpty :: (Ord a) => OpenRange a -> Bool
+isEmpty (OpenRange from upto) =
   from >= upto
