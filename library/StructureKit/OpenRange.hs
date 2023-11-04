@@ -19,6 +19,7 @@ data Range a = Range
     -- | Smaller than.
     upto :: Maybe a
   }
+  deriving (Show, Eq)
 
 -- | Implements intersection.
 instance (Ord a) => Semigroup (Range a) where
