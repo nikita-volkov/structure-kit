@@ -45,7 +45,7 @@ import Data.Either as Exports
 import Data.Fixed as Exports
 import Data.Foldable as Exports hiding (toList)
 import Data.Function as Exports hiding (id, (.))
-import Data.Functor as Exports
+import Data.Functor as Exports hiding (unzip)
 import Data.Functor.Compose as Exports
 import Data.Functor.Identity as Exports
 import Data.Group as Exports
@@ -96,8 +96,6 @@ import System.IO.Unsafe as Exports
 import System.Mem as Exports
 import System.Mem.StableName as Exports
 import System.Timeout as Exports
-import Text.ParserCombinators.ReadP as Exports (ReadP, readP_to_S, readS_to_P)
-import Text.ParserCombinators.ReadPrec as Exports (ReadPrec, readP_to_Prec, readPrec_to_P, readPrec_to_S, readS_to_Prec)
 import Text.Printf as Exports (hPrintf, printf)
 import Text.Read as Exports (Read (..), readEither, readMaybe)
 import Unsafe.Coerce as Exports
@@ -119,10 +117,10 @@ traverseCoercible :: (Coercible a b, Functor f) => (a -> f a) -> b -> f b
 traverseCoercible f =
   fmap coerce . f . coerce
 
-showBin :: (Integral a, Show a) => a -> String
+showBin :: (Integral a) => a -> String
 showBin a = showIntAtBase 2 intToDigit a ""
 
-showBinFinite :: (Integral a, Show a, FiniteBits a) => a -> String
+showBinFinite :: (Integral a, FiniteBits a) => a -> String
 showBinFinite a =
   let str = showBin a
       len = length str

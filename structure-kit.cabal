@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          structure-kit
-version:       0.1.0.1
+version:       0
 synopsis:      Rich collection of persistent pure data-structures
 homepage:      https://github.com/nikita-volkov/structure-kit
 bug-reports:   https://github.com/nikita-volkov/structure-kit/issues
@@ -111,19 +111,18 @@ library
 
   build-depends:
     , base >=4.11 && <5
-    , bytestring >=0.10 && <0.12
-    , comonad >=5 && <6
+    , bytestring >=0.10 && <0.13
     , containers ^>=0.6
-    , deepseq ^>=1.4.3
+    , deepseq ^>=1.5
     , deferred-folds ^>=0.9.16
-    , deque ^>=0.4.4
+    , deque ^>=0.4.4.1
     , groups ^>=0.5
     , hashable >=1 && <2
     , primitive >=0.7.1 && <0.9
     , range-set-list ^>=0.1.3.1
     , strict-list ^>=0.1.7
     , text >=2 && <3
-    , text-builder ^>=0.6.7
+    , text-builder ^>=0.6.7.2
     , transformers >=0.5 && <0.7
     , unordered-containers ^>=0.2.14
     , vector >=0.12 && <0.14
@@ -165,7 +164,7 @@ benchmark bench
   hs-source-dirs: bench
   main-is:        Main.hs
   build-depends:
-    , gauge ^>=0.2.5
+    , criterion ^>=1.6.3
     , QuickCheck >=2.14.2 && <3
     , rerebase >=1.15.0.3 && <2
     , structure-kit

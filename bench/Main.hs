@@ -1,6 +1,8 @@
+module Main where
+
+import Criterion.Main
 import Data.HashMap.Strict qualified as HashMap
 import Data.Map.Strict qualified as Map
-import Gauge.Main
 import StructureKit.LruHashCache qualified as LruHashCache
 import StructureKit.LruOrdCache qualified as LruOrdCache
 import StructureKit.QuickCheckUtil.ExtrasFor.Gen qualified as GenExtras
@@ -24,29 +26,29 @@ main =
       case LruHashCache.lookup existingKey lhc of
         Nothing -> error "Key not found"
         _ -> return ()
-      return $
-        [ bgroup
-            "lru-ord-cache"
-            [ bench "lookup" $ nf (LruOrdCache.lookup existingKey) loc,
-              bench "insert-missing" $ nf (LruOrdCache.insert "something new" 7) loc,
-              bench "insert-existing" $ nf (LruOrdCache.insert existingKey 7) loc
-            ],
-          bgroup
-            "lru-hash-cache"
-            [ bench "lookup" $ nf (LruHashCache.lookup existingKey) lhc,
-              bench "insert-missing" $ nf (LruHashCache.insert "something new" 7) lhc,
-              bench "insert-existing" $ nf (LruHashCache.insert existingKey 7) lhc
-            ],
-          bgroup
-            "std-hash-map"
-            [ bench "lookup" $ nf (HashMap.lookup existingKey) hashMap,
-              bench "insert-missing" $ nf (HashMap.insert "something new" 7) hashMap,
-              bench "insert-existing" $ nf (HashMap.insert existingKey 7) hashMap
-            ],
-          bgroup
-            "std-map"
-            [ bench "lookup" $ nf (Map.lookup existingKey) map,
-              bench "insert-missing" $ nf (Map.insert "something new" 7) map,
-              bench "insert-existing" $ nf (Map.insert existingKey 7) map
-            ]
-        ]
+      return
+        $ [ bgroup
+              "lru-ord-cache"
+              [ bench "lookup" $ nf (LruOrdCache.lookup existingKey) loc,
+                bench "insert-missing" $ nf (LruOrdCache.insert "something new" 7) loc,
+                bench "insert-existing" $ nf (LruOrdCache.insert existingKey 7) loc
+              ],
+            bgroup
+              "lru-hash-cache"
+              [ bench "lookup" $ nf (LruHashCache.lookup existingKey) lhc,
+                bench "insert-missing" $ nf (LruHashCache.insert "something new" 7) lhc,
+                bench "insert-existing" $ nf (LruHashCache.insert existingKey 7) lhc
+              ],
+            bgroup
+              "std-hash-map"
+              [ bench "lookup" $ nf (HashMap.lookup existingKey) hashMap,
+                bench "insert-missing" $ nf (HashMap.insert "something new" 7) hashMap,
+                bench "insert-existing" $ nf (HashMap.insert existingKey 7) hashMap
+              ],
+            bgroup
+              "std-map"
+              [ bench "lookup" $ nf (Map.lookup existingKey) map,
+                bench "insert-missing" $ nf (Map.insert "something new" 7) map,
+                bench "insert-existing" $ nf (Map.insert existingKey 7) map
+              ]
+          ]
