@@ -1,11 +1,1 @@
 packages: .
-allow-newer:
-  , deque:deepseq
-  , foldl:bytestring
-  , foldl:text
-  , range-set-list:base
-  , range-set-list:deepseq
-  , strict-list:deepseq
-  , text-builder-dev:bytestring
-  , text-builder:bytestring
-  , tostring:text
