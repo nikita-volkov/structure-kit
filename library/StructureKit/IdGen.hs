@@ -6,11 +6,12 @@ module StructureKit.IdGen
   )
 where
 
+import Data.IntSet qualified as IntSet
 import StructureKit.Prelude hiding (empty)
 
 data IdGen
   = IdGen
-      ![Int]
+      !IntSet
       !Int
 
 instance Semigroup IdGen where
@@ -26,11 +27,11 @@ empty = IdGen mempty 1
 
 {-# INLINE release #-}
 release :: Int -> IdGen -> IdGen
-release key (IdGen released counter) = IdGen (key : released) counter
+release key (IdGen released counter) = IdGen (IntSet.insert key released) counter
 
 {-# INLINE fetch #-}
 fetch :: IdGen -> (Int, IdGen)
 fetch (IdGen released counter) =
-  case released of
-    id : newReleased -> (id, IdGen newReleased counter)
-    _ -> (counter, IdGen released (succ counter))
+  case IntSet.minView released of
+    Nothing -> (counter, IdGen released (succ counter))
+    Just (id, newReleased) -> (id, IdGen newReleased counter)
