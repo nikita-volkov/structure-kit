@@ -1,6 +1,5 @@
 module StructureKit.TestSuites.Charset where
 
-import Data.String.ToString as Exports (ToString (..))
 import StructureKit.Charset (Charset)
 import StructureKit.Charset qualified as Charset
 import Test.QuickCheck qualified as QuickCheck

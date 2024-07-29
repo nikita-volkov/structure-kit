@@ -18,7 +18,7 @@ where
 
 import StrictList (List)
 import StrictList qualified
-import StructureKit.Prelude
+import StructureKit.Prelude hiding (List)
 
 -- * --
 
