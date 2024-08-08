@@ -5,6 +5,8 @@ module StructureKit.Charset
     -- * Execution
     toCharPredicate,
     toCodepointPredicate,
+    toCharRangeList,
+    toCodepointRangeList,
     findInText,
 
     -- * Construction
@@ -59,6 +61,14 @@ toCodepointPredicate (Charset intRange) codepoint =
 findInText :: Charset -> Text -> Maybe Char
 findInText charset =
   Text.find (toCharPredicate charset)
+
+toCharRangeList :: Charset -> [(Char, Char)]
+toCharRangeList =
+  fmap (\(a, b) -> (chr a, chr b)) . toCodepointRangeList
+
+toCodepointRangeList :: Charset -> [(Int, Int)]
+toCodepointRangeList (Charset intRange) =
+  IntRange.toRangeList intRange
 
 -- * --
 
